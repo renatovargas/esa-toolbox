@@ -78,8 +78,8 @@ class Grid:
         return f"{int(self.xmin)}_{int(self.ymin)}"
 
 
-# Analysis window of the pollination accounts, the European territory of the EU27 (Corine grid).
-POLLINATION_GRID = Grid(2630000, 1380000, 7320000, 5420000, 1000)
-# Grid of the wood and carbon accounts. Its 1 km cells are offset from the pollination grid, an item recorded
-# as an open decision. The grids stay as they were, so the results match the earlier accounts.
-FOREST_GRID = Grid(2636000, 1385900, 7317000, 5415900, 1000)
+# Analysis window of all services, the European territory of the EU27 on the Corine grid, in whole kilometres,
+# so the 1 km cells of every service coincide.
+EU_GRID = Grid(2630000, 1380000, 7320000, 5420000, 1000)
+POLLINATION_GRID = EU_GRID
+FOREST_GRID = EU_GRID

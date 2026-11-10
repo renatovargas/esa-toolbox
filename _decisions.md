@@ -28,11 +28,10 @@ size limits of GitHub, or depended on how a library split the work, and running 
 | 2026-11-10 | The cell-by-cell comparison with the R results and the store adoption script are retired, with the `--legacy` setting and its GDAL distance files | None on the numbers of a normal run |
 | 2026-11-10 | All Eurostat extracts retrieved again, on 2026-11-10, and each report lists the retrieval date of its inputs | Pollination: value of the flow in 2024 +0.48 percent (Spain +4.1 percent, France +0.13 percent) from revisions of `aact_eaa02`. Physical accounts unchanged. Wood and carbon: every table unchanged |
 | 2026-11-10 | EU27 HICP before 2000 estimated from the annual rates of the euro area and the other Member States, with the country weights of the first published year (`prc_hicp_cow`). The same calculation gives the published EU27 rates of 2001 to 2007 within 0.1 points. Before, the mean of 1998 to 2000 skipped the missing years and used 2000 alone | Pollination: deflator of 2000 from 1.272 to 1.316, so every value of 2000 rises by 3.44 percent. Other years and services unchanged |
+| 2026-11-10 | Wood and carbon move to the 1 km grid of pollination, from x = 2,630,000 and y = 1,380,000. Their earlier grid started at x = 2,636,000 and y = 1,385,900, so its 1 km cells sat 100 m north of those of pollination. The two windows had been chosen independently, with no technical reason recorded | National tables unchanged. Regions are assigned by the 1 km cell centre, so regional shares move. Median change at NUTS3 0.23 percent for wood and 0.20 percent for carbon, and at NUTS2 0.05 percent. About 3 percent of NUTS3 region-years move by more than 5 percent, all in regions with little forest. The largest, NL325, moves from 0.15 to 0.07 thousand cubic metres in 2006. The 100 m maps cover the slightly larger window and keep their cells |
 
 ## Open items
 
-- **Grids.** Pollination uses a 1 km grid from x = 2,630,000 and y = 1,380,000, while wood and carbon use x = 2,636,000 and
-  y = 1,385,900, so their 1 km cells do not overlay.
 - **Unmet demand in tonnes, and all ecosystems against agroecosystems**, as the pollination report explains.
 - **Service providing area.** The area of medium and high potential grows from 225.9 million hectares in 2000 to 239.8 million in
   2024. Holding land cover and climate in turn at the earlier year, the activity index explains 3.8, -0.1, 4.9 and 3.9 million
