@@ -1,0 +1,245 @@
+
+# Methods
+
+## Overview
+
+The accounts deliver five quantities for every reporting year. The **flow without offset** is the CO2 that land removes from the
+atmosphere. The **actual flow** is what remains of those removals once the emissions of land are compensated, and it is the service
+that reaches society. The **missed flow** is the difference between the two, which is the part of the removals used up by emissions.
+The actual flow and the missed flow are also valued in euro. Each quantity is reported in two forms, as tables by country (NUTS0) and
+by NUTS2 and NUTS3 region in an Excel workbook, and as maps on a grid of 100 m cells. The section on products at the end describes both.
+
+National greenhouse gas inventories report CO2 by country and land category, and they do not say where on the land it is taken up.
+The work therefore runs in four steps, which the sections below follow in order.
+
+1. The inventory gives the removals and the emissions of each land category in each country and year.
+2. The offset nets all emissions against all removals across the European Union, and the result is shared among countries. This
+   gives the actual flow, the flow without offset and the missed flow by country.
+3. A price per tonne of CO2 turns the flows into values, in current prices and in constant prices of 2010.
+4. A spatial key, which combines where forest grows with how productive the vegetation is, shares each national value among the
+   regions and the 100 m cells of the country. Regions and cells therefore add up to the national values, and they show where
+   within a country the service is most likely to occur.
+
+The analysis covers the EU27, by country, NUTS2 region and NUTS3 region under the NUTS 2024
+boundaries[, which give {{< fact nuts2 >}} NUTS2 regions and {{< fact nuts3 >}} NUTS3 regions,]{.content-visible when-meta="results"} [@gisco2024nuts]. The boundaries carry the notice © EuroGeographics for the administrative boundaries. All grids use the
+projection EPSG:3035, in which every cell covers the same area on the ground[\ (see the stage [`prepare`](#code-prepare) in the code annex)]{.content-visible unless-meta="results"}.
+
+## Removals and emissions
+
+We took CO2 by source sector from the Eurostat dataset `env_air_gge`[, in the release retrieved on
+{{< fact inventory_retrieved >}},]{.content-visible when-meta="results"} [@eurostat2026envairgge] for the 27 Member States and the EU27 aggregate[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}. This dataset
+carries the national inventories that countries report under the climate conventions, and its part on land use, land use change and
+forestry (LULUCF) gives the CO2 that each land category exchanges with the atmosphere. Following @vallecillo2019, the land categories
+are forest land, cropland, grassland, wetlands, settlements and other land, which are the codes `CRF4A` to `CRF4F`.
+
+The inventory uses the point of view of the atmosphere, so a negative value is CO2 removed and a positive value is CO2 released. The
+accounts reverse the sign, so that a positive balance $b$ of category $k$ in country $c$ is uptake. The removals $R$ and emissions $E$
+are the two parts of that balance.
+
+$$
+R_{k,c} = \max(b_{k,c},\, 0), \qquad E_{k,c} = \max(-b_{k,c},\, 0)
+$$ {#eq-split}
+
+A category that is a net source in a year therefore counts fully as an emission and adds nothing to the removals of that year. Forest
+land can be a net source in a country[, as @tbl-sources shows for the reporting years]{.content-visible when-meta="results"}. A category that a country does not report is
+set to zero and listed.[\ Among the six land categories, this concerns only other land in Denmark, in
+{{< fact dk_other_land_gap_years >}} years.]{.content-visible when-meta="results"} The residual category `CRF4H`[, which {{< fact residual_reporters >}}
+of the 27 countries report,]{.content-visible when-meta="results"} stays outside the account.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-sources}
+{{< datatable forest_sources >}}
+
+Countries where forest land is a net source of CO2 in the reporting years, in thousand tonnes of CO2.
+:::
+:::
+
+### Harvested wood products
+
+The inventory reports the change in the stock of harvested wood products as its own category, `CRF4G`. A deduction of that sink from
+the removals of forest land is one possible treatment, since the carbon in harvested wood has left the forest. The carbon chapters of
+@vallecillo2019 and @lanotte2021 take forest uptake from the inventory as reported and make no such deduction, and the handbook of
+Eurostat keeps these products out of net sequestration as a separate category [@eurostat2026handbook, para. 9.56]. A decision was
+therefore made not to deduct them. The sink stays outside the flow as a memo item[, at {{< fact balance_CRF4G_2024 >}} million tonnes
+in 2024]{.content-visible when-meta="results"}.
+
+## The offset and the actual flow
+
+@lanotte2021 define the service that reaches society as the balance of removals and emissions over all ecosystem types at the level
+of the European Union, so an ecosystem type with more emissions than removals provides no service. The EU net flow $N$ is computed
+once, over all land categories and countries.
+
+$$
+N = \sum_{k,c} R_{k,c} - \sum_{k,c} E_{k,c}
+$$ {#eq-net}
+
+@lanotte2021 then attribute this net flow to each country $c$ in proportion to its removals of forest land $R_{F,c}$, in their Equation
+6.1. This share is the allocation key of the actual flow.
+
+$$
+F_c = N \, \frac{R_{F,c}}{\sum_{c} R_{F,c}}
+$$ {#eq-flow}
+
+The flow without offset $W_c$ of a country is the sum of its removals over the six land categories, and the missed flow $M_c$ is the
+difference between that and the actual flow.
+
+$$
+W_c = \sum_{k} R_{k,c}, \qquad M_c = W_c - F_c
+$$ {#eq-missed}
+
+At the level of the European Union, the missed flow equals total emissions by construction. The definition follows from
+the distinction that @lanotte2021 draw between the role of forests, shown by removals, and the contribution to society, shown by the
+actual flow[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}.
+
+### Choice of the allocation key
+
+The allocation key of @eq-flow is a choice, and a natural alternative exists. Net annual increment is the growth of living trees minus
+natural mortality, so it measures forest growth directly and does not depend on the sign that a category takes in the inventory. Every
+run compares the two keys[\ (@tbl-comparison)]{.content-visible when-meta="results"}. The compared key shares the EU net flow by the net annual increment of all forest from
+Eurostat [@eurostat2026forvolefa], with gaps filled from the nearest years of each country, and it also deducts the sink of harvested
+wood products from the removals of forest land. It assigns a flow to countries whose forest land is a net source[, including
+{{< fact compared_de_flow_last >}} million tonnes to Germany in 2024,]{.content-visible when-meta="results"} and it can leave countries with a negative missed flow[, between
+{{< fact compared_negative_min >}} and {{< fact compared_negative_max >}} in each reporting year,]{.content-visible when-meta="results"} which has no direct reading as a service that is not delivered. The series of net annual increment also carries breaks
+between years, and very few countries have reported it for 2024, so most of the key of that year repeats earlier values.
+
+A decision was made to follow Equation 6.1. Under this key no country has a negative missed flow, and a country whose forest land is a
+net source receives no flow, which agrees with the definition of the service. [The sink in @tbl-comparison adds up the countries where
+the category is a sink, so it is slightly larger than the net balance of the category in the memo item above.]{.content-visible when-meta="results"}
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-comparison}
+{{< datatable allocation_comparison >}}
+
+EU27 actual flow under the key of this report and under the compared key, in million tonnes of CO2, with the number of countries with a negative missed flow.
+:::
+:::
+
+### Allocation to emitting sectors
+
+@vallecillo2019 complement the accounts with a table that attributes the actual flow of each country to the economic sectors in
+proportion to their share of its total CO2 emissions, which shows which sectors the service offsets. The attribution does not change the
+flow, and it appears in the report of each run only. We grouped the source categories of the inventory into energy supply, manufacturing and
+construction, transport, agriculture, forestry and fishing, households, services and other, and waste. These keep the sector names of
+the inventory, which differ from the industries of the national accounts, as the fuel that households burn in their cars is reported
+under transport.
+
+## Monetary valuation
+
+The value of a flow is the flow in tonnes of CO2 multiplied by a price per tonne. The accounts need a price for the damage avoided by a
+tonne of CO2 that stays out of the atmosphere. @vallecillo2019 use the benchmark of EUR 30 per tonne of CO2 from @oecd2016, which they
+describe as a reference point and as a lower-end estimate. A decision was made to use a social cost of carbon instead, which is the
+value of the damage that one additional tonne causes, because it reflects the long-term damage of climate change and does not depend on
+the conditions of a carbon market in a given year.
+
+The value draws on the meta-analysis of published estimates by @tol2023. That work standardises every estimate to 2010 US dollars per tonne
+of carbon, for emissions in 2010 [@tol2022], and its update finds a weighted mean of 207 US$ per tonne of carbon, which rises to between 231
+and 253 US$ when older studies are discounted [@tol2025]. A decision was made to adopt 266 US$ per tonne of carbon in 2010 prices, which lies
+just above that range and well below the kernel mean of 509 US$ in @tol2022, whose long right tail reflects the large uncertainty of these
+estimates. We moved it to 2023 prices with the consumer price index of the United States [@bls2023cpi], a factor of 304.70/218.06, and to
+euros at the rate of 1.0813 US$ per euro in 2023 [@ecb2023usd]. Those steps lead to about EUR 344, and the accounts use EUR 343.6 per tonne
+of carbon. One tonne of CO2 holds 12/44 of a tonne of carbon, so the price per tonne of CO2 is 12/44 of that value in 2023 euros[, or EUR {{< fact price_2023 >}}]{.content-visible when-meta="results"}[\ (see the stage [`prepare`](#code-prepare) in the code annex)]{.content-visible unless-meta="results"}.
+
+The social cost of carbon is a single real value, so we held it constant in 2023 euros and moved it to the prices of each year $t$ with
+the harmonised index of consumer prices $H$ of the European Union [@eurostat2026hicp]. This gives the value in current prices. Constant
+prices of 2010 then remove general inflation, so that values of different years can be compared[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}.
+
+$$
+P_t = P_{2023}\, \frac{H_t}{H_{2023}}, \qquad V^{\text{current}}_{c,t} = F_{c,t}\, P_t, \qquad
+V^{\text{constant}}_{c,t} = V^{\text{current}}_{c,t}\, \frac{H_{2010}}{H_t}
+$$ {#eq-value}
+
+[The price moves from EUR {{< fact price_current_2000 >}} per tonne of CO2 in 2000 to EUR
+{{< fact price_current_2024 >}} in 2024 in current prices.]{.content-visible when-meta="results"} The missed flow is valued in the same way. The handbook of Eurostat does not
+value this service [@eurostat2026handbook].
+
+## The spatial key
+
+The steps so far give national values. Regions and map cells receive a part of them through a spatial key, which gives each place a
+weight, and each place takes the national value times its share of the weight of its country.
+
+$$
+F_i = F_c\, \frac{w_i}{\sum_{j \in c} w_j}
+$$ {#eq-spread}
+
+Because the shares of a country add up to one, regions and cells always add up to the national value, and the key decides only how that
+value is distributed within the country.
+
+@vallecillo2019 map forest land only, since it is the one ecosystem type for which almost all countries report uptake, and they spread the
+national values with dry matter productivity over the woodland and forest of Corine Land Cover. We followed that approach, with the two more
+recent products that the Earth observation roadmap of the same programme names [@zurbaran2025]. The weight of a place is therefore the
+forest on it times the productivity of its vegetation.
+
+**Forest** comes from the Corine accounting layers, which the European Environment Agency prepares at 100 m for comparison between years,
+in version 21 for all five years [@eea2026clcacc]. The classes are broad-leaved forest (311), coniferous forest (312), mixed forest (313)
+and transitional woodland and shrub (324).
+
+**Productivity** is Gross Dry Matter Productivity (GDMP), the rate at which vegetation produces dry matter, estimated from satellite
+images by the Copernicus Land Monitoring Service. The annual value is the sum of the 36 ten-day values of the year, each multiplied by its
+number of days. The 1 km product, version 2, covers 2000, 2006 and 2012 [@copernicus2020gdmp1km], and it ends in 2020. The 300 m product,
+version 2, covers 2018 and 2024 [@copernicus2020gdmp300], and it starts in 2014. Since 2018 exists in both, each run compares them over
+the cells of 1 km that are mostly forest.[\ They are {{< fact gdmp_forest_cells_m >}} million cells. The correlation is {{< fact gdmp_pearson >}}, and the mean
+of the 300 m product is {{< fact gdmp_ratio_pct >}} percent of the mean of the 1 km product.]{.content-visible when-meta="results"} A difference in level between the products
+changes no national total, because the key only shares a national value within a country[\ (see the stage [`prepare`](#code-prepare) in the code annex)]{.content-visible unless-meta="results"}.
+
+The key takes two forms, which share these ingredients and differ in resolution.
+
+- **The 1 km key** gives the regional tables. Its forest term $S_i$ is the share of the 100 m cells of each 1 km cell that are forest,
+  and its productivity $G_i$ is the productivity on the 1 km grid, the mean of the 300 m values within each kilometre in 2018 and 2024
+  and the 1 km product interpolated bilinearly to the grid in the earlier years. The weight is $w_i = S_i\, G_i$.
+- **The 100 m key** gives the maps. Its forest term is 1 for a 100 m cell of forest and 0 otherwise, and productivity is interpolated
+  bilinearly to the 100 m grid.
+
+Both forms place the same national totals. Within a country they agree closely, but they interpolate productivity differently, so the
+100 m maps added up over a region can differ slightly from the value of that region in the tables.
+
+## Regional values
+
+NUTS2 and NUTS3 regions receive a share of the national values[\ (see the stage [`prepare`](#code-prepare) in the code annex)]{.content-visible unless-meta="results"}. The actual flow of a region is the national flow
+times the share of the region in the 1 km key of its country. The flow without offset adds up removals of six land categories, and only
+one of them is forest, so each category is shared in proportion to the area of that category in the region, according to the Corine
+accounting layer of the year. The missed flow of a region is the difference between the two. When a country has no mapped area of a
+category, the share of the region in the total mapped land of the country stands in.[\ This concerns only {{< fact fallback_geos >}}.]{.content-visible when-meta="results"}
+
+## Products
+
+**Workbook.** The workbook holds one sheet for each quantity and NUTS level. The sheets of the flow without offset, the actual flow and
+the missed flow give thousand tonnes of CO2 and of carbon, and those of the value of the actual and the missed flow give million euro in
+current prices and in constant prices of 2010. The reporting years are the columns, and a first sheet explains the contents.
+
+**Maps.** There are five maps for each reporting year on the 100 m grid, built with the 100 m key[\ (see the stage [`maps_100m`](#code-maps_100m) in the code annex)]{.content-visible unless-meta="results"}. The first is
+the actual flow and the second its value at constant 2010 prices. The third is the flow without offset, for which a decision was made to
+map the removals of forest land, following @vallecillo2019, because other land categories switch between source and sink across years and
+countries and the key places forest only. This map therefore holds less than the flow without offset in the tables, which report the difference by region.[\ In 2024 the
+difference is {{< fact no_offset_map_gap_2024 >}} million tonnes.]{.content-visible when-meta="results"} The fourth and fifth are the missed
+flow and its value. The missed flow is a balance between removals and emissions and has no place of its own on the land, so a decision
+was made to allocate the national value with the key of the actual flow. These two maps show where the removals that compensate emissions
+are attributed, and they do not show where any loss of the service occurs.
+
+Each cell holds a whole number in small units, kilograms of CO2 or euro cents at 2010 prices. Whole numbers take about a third of the disk
+of decimal numbers, and every country keeps its total to within one part in a thousand. The files are Cloud Optimised GeoTIFF without
+overviews, which keeps them small, and a GIS such as QGIS draws them quickly as they are.
+
+**Working layers.** The run also spreads the same national values over the 1 km key. These 1 km layers are not a product of the
+accounts. They give the map figures of the report, drawn at 10 km, and the checks of the 1 km key against the tables[\ (see the stage [`maps_1km`](#code-maps_1km) in the code annex)]{.content-visible unless-meta="results"}.
+
+## Checks
+
+The run stops if any check fails. It compares the sectors with total emissions without land use, and the total of land use, `CRF4`,
+with the sum of its parts.[\ @tbl-checks records the largest gap of each check. The sectors differ from total emissions without land
+use only for {{< fact sector_gap_geo >}} in {{< fact sector_gap_year >}}, where the inventory holds {{< fact sector_gap_mt >}} million
+tonnes in the total that it does not hold in the sectors, and this year is not one of the reporting years. The total of land use
+equals the sum of its parts in the reporting years, with a largest difference of {{< fact crf4_max_diff >}} thousand tonnes.]{.content-visible when-meta="results"}
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-checks}
+{{< datatable checks >}}
+
+Consistency checks, with the largest gap and the tolerance that would stop the run. Gaps are relative unless they are marked as absolute.
+:::
+:::
+
+The 1 km layers are read back from disk and compared with the tables, and the 100 m maps are added up by country from the whole
+numbers as they are written and compared with the national values. The run also counts the countries that hold a flow and lack forest
+cells, which would lose that flow on the map.[\ The forest area of the 1 km layers is {{< fact forest_grid_mha_2024 >}}
+million hectares in 2024, the same as in the table of regions. The largest difference of the 100 m maps from the tables in any year is
+{{< fact largest_100m_gap_pct >}} percent. The number of countries that hold a flow and lack forest cells is {{< fact countries_without_forest >}}.]{.content-visible when-meta="results"}

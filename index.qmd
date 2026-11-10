@@ -1,0 +1,63 @@
+---
+title: "ESA toolbox"
+subtitle: "Ecosystem service accounts for the EU27, from downloaded inputs to maps, workbooks and reports"
+---
+
+The ESA toolbox is a desktop tool that builds the ecosystem service accounts of the European Union for crop pollination, wood
+provision and carbon sequestration, for the reporting years 2000, 2006, 2012, 2018 and 2024. It downloads its inputs from their
+publishers, calculates the physical and monetary accounts, writes the maps and the results workbooks, and renders one report per
+service that explains the method and presents the results of that run. Each service runs on its own, so a run can cover one, two
+or all of them.
+
+## What a run produces
+
+Each service writes its products to its own folder, `outputs/<service>/`, with the workbook by NUTS level in `tables/`, the maps in
+`maps/`, the report in HTML, PDF and Word in `report/`, and a record of the tool version, settings and timings in `run.json`.
+
+| Service | Maps (100 m and 1 km) | Workbook (NUTS0, NUTS2, NUTS3) |
+|:--|:----|:----|
+| Crop pollination | Potential on all ecosystem types and on agroecosystems, demand, actual flow on all ecosystem types and on agroecosystems, unmet demand, value of the flow and of unmet demand | Potential, demand, actual flow and unmet demand in physical and monetary terms, and flow by ecosystem type |
+| Carbon sequestration | Flow without offset, actual flow, missed flow, and the value of the actual and missed flows | The same quantities in physical and monetary terms |
+| Wood provision | Actual flow, sustainable flow and overuse, in physical and monetary terms | The same quantities |
+
+: Products of each service. {#tbl-products}
+
+The reports carry no code. The method as implemented, with references to the code, is on the page of each service on this site.
+
+## Install
+
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run:
+
+```bash
+uv tool install git+https://github.com/renatovargas/esa-toolbox
+```
+
+To work with exactly the versions of the libraries that made the published results, clone the repository and run the tool from
+it, which installs the environment recorded in `uv.lock`:
+
+```bash
+git clone https://github.com/renatovargas/esa-toolbox && cd esa-toolbox
+uv sync --frozen
+uv run esa doctor
+```
+
+GDAL comes inside the packages, so no system libraries are needed. The reports need [Quarto](https://quarto.org), which also
+ships with Positron and RStudio. The tool finds those copies, and `QUARTO_PATH` points to any other.
+
+## Quick start
+
+Run `esa` with no arguments for a guided menu. It shows which inputs are in the store and which steps of each service are done,
+and it asks what to run. Every choice prints the equivalent command.
+
+```bash
+esa                       # guided menu
+esa doctor                # check the installation, disk, memory and Quarto
+esa fetch carbon          # download the inputs of one service into the store
+esa run carbon            # calculate, write maps, workbook and report
+esa run pollination wood  # several services in one go
+esa status                # what is done and what is out of date
+```
+
+A run resumes where it stopped, and it repeats only the steps whose code or settings changed. The full chain of the three
+services takes about an hour on a desktop with 12 cores, most of it for the 100 m maps. See [Using the tool](site/usage.qmd)
+for every command and setting.

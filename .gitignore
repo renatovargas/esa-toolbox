@@ -1,0 +1,24 @@
+# Inputs downloaded by `esa fetch` (or adopted from the earlier repositories) and every run's outputs.
+/store/
+/outputs/
+/work/
+# Rendered tool site
+/docs/.quarto/
+/docs/.quarto/
+.quarto/
+__pycache__/
+*.pyc
+.venv/
+dist/
+.pytest_cache/
+.ruff_cache/
+*.part.tif
+
+/.quarto/
+**/*.quarto_ipynb
+
+# Working notes of the project, kept out of the repository
+/NEXT_SESSION.md
+/PROJECT_PLAN.md
+/project-plan.html
+/spike/

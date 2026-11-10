@@ -1,0 +1,51 @@
+[project]
+name = "esa-toolbox"
+version = "0.1.0.dev0"
+description = "Ecosystem service accounts for the EU27: crop pollination, wood provision and carbon sequestration, from downloaded inputs to maps, workbooks and reports."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "renatovargas" }]
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.12",
+  "rasterio>=1.4",
+  "pyogrio>=0.9",
+  "shapely>=2.0",
+  "polars>=1.10",
+  "openpyxl>=3.1",
+  "xlsxwriter>=3.2",
+  "matplotlib>=3.8",
+  "typer>=0.16",
+  "rich>=13.0",
+  "pyyaml>=6.0",
+  "requests>=2.31",
+]
+
+[project.scripts]
+esa = "esa_toolbox.cli:main"
+
+[project.urls]
+Repository = "https://github.com/renatovargas/esa-toolbox"
+Documentation = "https://renatovargas.github.io/esa-toolbox/"
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/esa_toolbox"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/docs", "/store", "/outputs", "/spike", "/tools"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+extend-exclude = ["spike", "docs"]

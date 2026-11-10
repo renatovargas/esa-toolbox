@@ -1,0 +1,190 @@
+---
+title: "Wood Provision Ecosystem Service Accounts"
+subtitle: "European Union, 2000 to 2024: methods and results"
+author:
+  - name: renatovargas
+date: "{{< fact run_date >}}"
+results: true
+bibliography: references.bib
+csl: apa.csl
+number-sections: true
+toc: true
+toc-depth: 3
+format:
+  html:
+    embed-resources: true
+    theme: cosmo
+  typst:
+    section-numbering: "1.1.1"
+    papersize: a4
+    margin:
+      x: 2.2cm
+      y: 2.2cm
+    fontsize: 10pt
+  docx: default
+---
+
+::: {.callout-note appearance="minimal"}
+Results of esa-toolbox {{< fact tool_version >}}, run on {{< fact run_date >}}, from the inputs listed in the file
+`run.json` beside this report. The workbook is in the folder `tables` and the 100 m maps are in `maps/100m` of the same run.
+:::
+
+# Summary {.unnumbered}
+
+We provide estimates of the wood provision ecosystem service for the 27 Member States of the European Union in 2000, 2006,
+2012, 2018 and 2024, following the accounting method of INCA Part III [@lanotte2021], which updates INCA Part II
+[@vallecillo2019]. The actual flow is the net annual increment of the forest available for wood supply, which is
+{{< fact nai_mm3_2000 >}} million cubic metres in 2000 and {{< fact nai_mm3_2024 >}} million cubic metres in 2024. Part of that
+change comes from a change of source within the series, as @sec-breaks shows. In 2024, {{< fact n_overuse_2024 >}} Member States
+show overuse, adding up to {{< fact overuse_mm3_2024 >}} million cubic metres, and those flags rest on values carried forward from
+earlier years. At constant 2010 prices, the actual flow is worth {{< fact value_constant_bn_2000 >}} billion euro in 2000 and
+{{< fact value_constant_bn_2024 >}} billion euro in 2024, and the overuse of 2024 is worth {{< fact overuse_constant_meur_2024 >}}
+million euro. All quantities are reported by NUTS0, NUTS2 and NUTS3 region and mapped at 100 m.
+
+# Introduction
+
+Wood provision is the ecological contribution to the production of timber that can be harvested and used as a raw material. Its
+underlying process is the natural growth of a biotic resource, so the accounts measure it through the net annual increment
+(NAI) of standing timber in the forest available for wood supply [@lanotte2021]. NAI is the average annual growth in volume of
+living trees less the average annual losses from natural mortality, measured here in cubic metres over bark
+[@eurostat2026handbook]. Forest available for wood supply is forest without environmental, social or economic restrictions with a
+significant impact on the supply of wood.
+
+Services with a regeneration rate can be used faster than they renew, so the accounts also compare use with regeneration. Overuse
+is the part of the use that exceeds regeneration, and the sustainable flow is the part that stays within it. This report describes
+how we estimated those quantities and valued them, why we took each decision along the way and what the estimates show.
+
+## Sources of orientation
+
+The method comes from Chapter 4 of INCA Part II and Section 6.2 of INCA Part III, and these reports settle any question they
+address. Section 6.2 of Part III replaces two steps of Part II. It reports the whole NAI as the flow, because the forest asset
+accounts already record natural growth as an addition to the stock, and because forest management does not change stand volume
+growth much within a range of thinning grades [@lanotte2021]. The ecosystem contribution coefficient of Part II is therefore
+dropped. It also replaces the valuation through the output of forestry with a valuation through export prices.
+
+The INCA tool applies the same method and adds details that the reports do not state, such as the list of outliers described in
+@sec-screen [@incatool]. We took those details from it. The reports give no method for overuse of wood or for the sustainable
+flow, so those steps are decisions of this work, explained below.
+
+{{< include methods.qmd >}}
+
+# Results
+
+## Actual flow
+
+The actual flow of the EU27 is {{< fact nai_mm3_2000 >}} million cubic metres in 2000, {{< fact nai_mm3_2012 >}} million in 2012
+and {{< fact nai_mm3_2024 >}} million in 2024 (@tbl-eu). The series mixes model estimates of total forest with reported values of
+available forest, so its changes between reporting years should be read with @tbl-sources and @tbl-breaks. @fig-map-nai places the
+flow on forest within each country.
+
+::: {#tbl-eu}
+{{< datatable eu_series >}}
+
+Physical accounts of the EU27, in million cubic metres. The last column counts Member States with overuse.
+:::
+
+![Actual flow of wood provision, in thousand cubic metres per 10 km cell, shown as the sum of the 1 km cells.](figures/wood_map_nai.png){#fig-map-nai width=100%}
+
+## Sustainable flow and overuse
+
+Removals exceed the increment in {{< fact n_overuse_2024 >}} Member States in 2024 (@tbl-overuse and @fig-ratio). The sustainable
+flow equals the removals wherever they stay below the increment, which is the case in every other Member State and year shown.
+
+::: {#tbl-overuse}
+{{< datatable overuse_cases >}}
+
+Member States with overuse in the reporting years, in thousand cubic metres.
+:::
+
+![Removals divided by the net annual increment, by Member State. Points to the right of the dashed line are overuse. Malta has no values.](figures/wood_removals_to_nai.png){#fig-ratio width=100%}
+
+## Value
+
+At constant 2010 prices the actual flow is worth {{< fact value_constant_bn_2000 >}} billion euro in 2000 and
+{{< fact value_constant_bn_2024 >}} billion euro in 2024, and {{< fact value_current_bn_2024 >}} billion euro in current prices of
+2024 (@tbl-value). @fig-map-value shows the value at 10 km, and @fig-unit-value the unit value of each Member State with the
+origin of its ratio. @tbl-unit-value gives the range of unit values in each reporting year, and @tbl-value-country the value by
+Member State in 2024.
+
+::: {#tbl-value}
+{{< datatable value_eu_series >}}
+
+Monetary accounts of the EU27, in million euro.
+:::
+
+::: {#tbl-unit-value}
+{{< datatable unit_value_range >}}
+
+Unit value of the net annual increment across Member States, without Malta, in euro per cubic metre at current prices.
+:::
+
+::: {#tbl-value-country}
+{{< datatable value_by_country >}}
+
+Value of the accounts by Member State in 2024, in million euro.
+:::
+
+![Value of the actual flow, in million euro at 2010 prices per 10 km cell.](figures/wood_map_value.png){#fig-map-value width=100%}
+
+![Unit value of the net annual increment by Member State, in current prices, with the origin of the ratio.](figures/wood_unit_value.png){#fig-unit-value width=100%}
+
+## Comparison with the published accounts {#sec-published}
+
+@tbl-published compares the value of the actual flow in current prices with the member state values printed in INCA Part III
+[@lanotte2021], for the years it covers.
+
+::: {#tbl-published}
+{{< datatable value_against_published_eu >}}
+
+Value of the actual flow in current prices against INCA Part III, EU27, in million euro.
+:::
+
+# Limitations
+
+**Statistics.** Values reported for available forest cover few countries before 2018, and most values before then are model
+estimates of total forest, so they probably overstate the flow. Changes of source move the series for reasons that have nothing to
+do with forests, as @tbl-breaks shows, so comparisons over time within those countries need care. The carbon budget series ends in
+2019 and is flat from 2016, and the values of 2024 mostly repeat earlier years. They should be refreshed when Eurostat holds more of
+that year.
+
+**Overuse.** The removals of available forest are compared with a NAI that in some countries refers to total forest, which
+understates overuse in those countries. The ratio could cross the threshold in more countries if the model estimates were scaled to
+available forest. Regional overuse is the national overuse shared by the key, so it does not show where overharvesting occurs inside
+a country. A map of overuse has the same limit.
+
+**Value.** Few countries report the timber value before 2012, so most early values come from an export price divided by a mean
+ratio, and the monetary series is better read as an estimate than as a measurement. {{< fact ratio_eu_mean_2012 >}} Member States
+take the EU mean in 2012, of which {{< fact screened_count >}} lost their timber values in the screening, so they all share one
+ratio. A country with low export volumes can have an unrepresentative export price. Every cell and region of a country has one unit
+value, so the maps do not show price differences within a country.
+
+**Space.** The key combines forest with the productivity of the vegetation, and productivity measures growth of vegetation in
+general, so some flow is placed on forest that is not harvested. Productivity comes from a 1 km product in 2000, 2006 and 2012 and
+from a 300 m product in 2018 and 2024, so spatial detail differs between the two groups and changes in the pattern between them
+partly reflect the change of product. The equivalence of the gross and net products rests on a sample of 10 of the 180 pairs of
+files, as the Methods section explains. The Corine accounting layers have a minimum mapping unit of 25 hectares. Regional shares use
+weights at 1 km, whose cells on borders are assigned by their centre, so they can differ slightly from a sum of the 100 m maps.
+
+# Appendix: accounts by Member State {.unnumbered}
+
+::: {#tbl-appendix}
+{{< datatable appendix_by_country >}}
+
+Actual flow and its value by Member State in 2000, 2012 and 2024. NAI is in thousand cubic metres and value in million euro at 2010 prices.
+:::
+
+# Appendix: inputs {.unnumbered}
+
+The inputs of this run, with the date on which each was retrieved. Eurostat revises its datasets with each
+release, so a run with a later retrieval can give slightly different values.
+
+::: {#tbl-inputs}
+{{< datatable inputs >}}
+
+Inputs of the run.
+:::
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
