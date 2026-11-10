@@ -1,0 +1,84 @@
+---
+title: "Wood provision"
+subtitle: "Method as implemented, and the code of each step"
+bibliography: ../../src/esa_toolbox/reports/wood/references.bib
+csl: ../../src/esa_toolbox/reports/apa.csl
+number-sections: true
+---
+
+This page describes the method of the wood provision accounts as the tool implements it. Each step points to the stage of the
+tool that carries it out, and the code annex at the end describes each stage with links to its code. The numbers and tables that a
+run produces are in the report of that run, in `outputs/wood/report/`, which carries the same method text together with them.
+
+{{< include ../../src/esa_toolbox/reports/wood/methods.qmd >}}
+
+# Code annex {#code-annex .unnumbered}
+
+The stages run in this order. Each one can run on its own with the command shown, once the stages before it have run. All stages share the modules for the grid, raster input and output and parallel tiles, [grid.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/grid.py), [rio.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/rio.py) and [pool.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/pool.py).
+
+## `fetch` {#code-fetch .unnumbered}
+
+[catalog.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/catalog.py), [fetch.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/fetch.py) · `esa fetch wood`
+
+Downloads the inputs of the service into the store, the folder that all services share.
+
+| Input | Source | Fetcher |
+|:---|:---|:---|
+| Corine Land Cover accounting layers, version 21, 100 m | @eea2026clcacc | `fetch_clc` |
+| NUTS 2024 regions, © EuroGeographics for the administrative boundaries | @gisco2024nuts | `fetch_gisco` |
+| Gross Dry Matter Productivity, 1 km and 300 m, version 2 | @copernicus2020gdmp1km; @copernicus2020gdmp300 | `fetch_gdmp` |
+| Net annual increment of the carbon budget model | @pilli2021 | `fetch_http` |
+| Forest volumes, `for_vol_efa` | @eurostat2026forvolefa | `fetch_eurostat` |
+| Output of forest trees, `for_sup_cp` | @eurostat2026forsupcp | `fetch_eurostat` |
+| Roundwood exports, `for_basic` | @eurostat2026forbasic | `fetch_eurostat` |
+| Harmonised index of consumer prices | @eurostat2026hicp | `fetch_eurostat` |
+
+: Inputs of wood provision. {#tbl-fetch}
+
+**Land cover.** `fetch_clc` downloads the Corine accounting layers of version 21 for the five years from the record of each year
+in the datashare of the European Environment Agency.
+
+**Regions.** `fetch_gisco` downloads the NUTS 2024 file at 1:1 million in EPSG:3035 from GISCO. It removes the French
+outermost regions (FRY) and Svalbard (NO0B2), with their parts in the regions above them, and repairs the five German regions whose
+boundaries cross themselves.
+
+**Annual productivity.** `fetch_gdmp` reads the 36 ten-day files of each year from the S3 interface of the Copernicus Data
+Space Ecosystem, over the window from 32° W to 45° E and from 27° N to 72° N. It applies the scale and offset of each file, multiplies
+each value by the number of days of its period and adds the 36 periods up. Reading the 180 files takes several hours, and it needs a
+free account of the Copernicus Data Space Ecosystem with S3 keys in `CDSE_S3_ACCESS_KEY` and `CDSE_S3_SECRET_KEY`.
+
+**Carbon budget model.** `fetch_http` downloads the workbook of the EFA FRA CBM data analysis from the open data server of the JRC.
+
+The fetchers write each file under a temporary name and rename it when it is complete, so an interrupted download leaves nothing
+half written, and `esa inputs` lists every input with its state. The Eurostat extracts come from the SDMX interface of Eurostat, and
+the fetcher records the date of retrieval of each one in `extracts.json` beside it, since a new release can revise past values.
+The report of each run lists the inputs with those dates.
+
+## `prepare` {#code-prepare .unnumbered}
+
+[inputs.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/wood/inputs.py), [forestmaps.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/forestmaps.py) · `esa run wood -s prepare`
+
+Computes the spatial key, forest times productivity at 100 m, in tiles, and adds it up by country and by 1 km cell. It keeps the resampled productivity of the forest cells in `work/shared/forest_gdmp_100m/`, which the 100 m maps of wood and carbon read back. It then shares the weight of each country among its NUTS2 and NUTS3 regions and reads the increment of the carbon budget model from its workbook.
+
+## `accounts` {#code-accounts .unnumbered}
+
+[tables.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/wood/tables.py), [accounts.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/accounts.py), [workbook.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/workbook.py) · `esa run wood -s accounts`
+
+Fills the series of the net annual increment and of removals, compares them to find overuse and the sustainable flow, screens and fills the unit values, values the accounts in current and 2010 prices and writes the workbook by NUTS level.
+
+## `maps_1km` {#code-maps_1km .unnumbered}
+
+[maps.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/wood/maps.py) · `esa run wood -s maps_1km`
+
+Spreads the national flow and its value over the 1 km key and checks the maps, read back from disk, against the tables.
+
+## `maps_100m` {#code-maps_100m .unnumbered}
+
+[maps.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/wood/maps.py), [forestmaps.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/forestmaps.py) · `esa run wood -s maps_100m`
+
+Reads the kept productivity in each tile and writes six whole-number maps per year, in cubic decimetres and euro cents, and checks every country against its national values.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

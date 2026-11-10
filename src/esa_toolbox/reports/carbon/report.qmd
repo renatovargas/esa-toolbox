@@ -1,0 +1,230 @@
+---
+title: "Carbon Sequestration Ecosystem Service Accounts"
+subtitle: "European Union, 2000 to 2024: methods and results"
+author:
+  - name: renatovargas
+date: "{{< fact run_date >}}"
+results: true
+bibliography: references.bib
+csl: apa.csl
+number-sections: true
+toc: true
+toc-depth: 3
+format:
+  html:
+    embed-resources: true
+    theme: cosmo
+  typst:
+    section-numbering: "1.1.1"
+    papersize: a4
+    margin:
+      x: 2.2cm
+      y: 2.2cm
+    fontsize: 10pt
+  docx: default
+---
+
+::: {.callout-note appearance="minimal"}
+Results of esa-toolbox {{< fact tool_version >}}, run on {{< fact run_date >}}, from the inputs listed in the file
+`run.json` beside this report. The workbook is in the folder `tables` and the 100 m maps are in `maps/100m` of the same run.
+:::
+
+# Summary {.unnumbered}
+
+We provide estimates of the carbon sequestration ecosystem service for the 27 Member States of the European Union in 2000, 2006,
+2012, 2018 and 2024, following the accounting method of @vallecillo2019 and its update in @lanotte2021. In 2024, land removes
+{{< fact removals_mt_2024 >}} million tonnes of CO2 and emits {{< fact emissions_mt_2024 >}} million tonnes. The actual flow that
+reaches society after this offset is {{< fact flow_mt_2024 >}} million tonnes, against {{< fact flow_mt_2000 >}} million tonnes in
+2000, and it is worth {{< fact value_constant_bn_2024 >}} billion euro at constant 2010 prices. The missed flow, which is the part of
+the removals used up by those emissions, is worth {{< fact missed_constant_bn_2024 >}} billion euro. The value rests on a social
+cost of carbon of EUR 343.6 per tonne of carbon, which is EUR {{< fact price_2023 >}} per tonne of CO2, in 2023 euros.
+
+# Introduction
+
+Carbon sequestration is the uptake of carbon dioxide (CO2) from the atmosphere by ecosystems, mainly through the growth of trees,
+which stores carbon in biomass and soil. Ecosystem accounting treats it as a contribution to global climate regulation that benefits
+society as a whole. Ecosystems also release CO2, so the accounts need to separate what land removes from what land emits, and to
+establish how much of the removals is left once those emissions are compensated [@lanotte2021].
+
+This report describes how we estimated those quantities and valued them, why we took each decision along the way and what the
+estimates show. The terms in @tbl-terms recur throughout the report.
+
+| Term | Meaning in this report |
+|:---|:-----|
+| LULUCF | Land use, land use change and forestry, the part of the greenhouse gas inventory that reports the CO2 exchanged between land and the atmosphere. |
+| Removal | CO2 taken up by a land category in a country and year, when the category is a net sink. |
+| Emission | CO2 released by a land category in a country and year, when the category is a net source. |
+| Offset | The netting of all emissions of land against all removals, at the level of the European Union. |
+| Actual flow | The net CO2 that ecosystems deliver to society after the offset. |
+| Flow without offset | The total removals of the land categories, before their emissions are subtracted. |
+| Missed flow | The flow without offset minus the actual flow, which is the part of the removals that compensates the emissions of land use. |
+| GDMP | Gross Dry Matter Productivity, the rate at which vegetation produces dry matter, estimated from satellite images. |
+| NUTS | The European classification of territorial units, where NUTS0 is the country level. |
+
+: Key terms of the report. {#tbl-terms}
+
+{{< include methods.qmd >}}
+
+# Results
+
+## Removals, emissions and actual flow
+
+Forest land provides {{< fact forest_share_of_removals_2024 >}} percent of the removals in 2024 (@tbl-categories). The balance of
+forest land moves from {{< fact balance_CRF4A_2012 >}} million tonnes in 2012 to {{< fact balance_CRF4A_2018 >}} million tonnes in
+2018 and {{< fact balance_CRF4A_2024 >}} million tonnes in 2024, and it drives the series (@fig-series). The actual flow is
+{{< fact flow_mt_2012 >}} million tonnes in 2012, {{< fact flow_mt_2018 >}} million tonnes in 2018 and {{< fact flow_mt_2024 >}}
+million tonnes in 2024 (@tbl-eu). Values of recent years may change with new releases of the inventory.
+
+::: {#tbl-categories}
+{{< datatable balance_by_category >}}
+
+Signed balance by category in the EU27, in million tonnes of CO2, with uptake as positive. The codes CRF4G and CRF4H stay outside the flow.
+:::
+
+::: {#tbl-eu}
+{{< datatable eu_series >}}
+
+Removals, emissions, actual flow and missed flow in the EU27, in million tonnes of CO2.
+:::
+
+![Removals, emissions and actual flow in the EU27, in the reporting years.](figures/carbon_eu_series.png){#fig-series width=100%}
+
+## Countries
+
+Under @eq-flow, the actual flow of a country follows its forest removals, so the flow is concentrated. Five countries hold
+{{< fact top5_share >}} percent of the actual flow in 2024, led by {{< fact top5_countries >}} (@tbl-countries and @fig-countries).
+@tbl-country-counts counts, in each reporting year, the countries without forest removals, which have no actual flow in that year,
+and the countries whose land as a whole emits more than it removes.
+
+::: {#tbl-countries}
+{{< datatable flow_by_country >}}
+
+Accounts by country in 2024, in thousand tonnes of CO2.
+:::
+
+::: {#tbl-country-counts}
+{{< datatable country_counts >}}
+
+Countries without forest removals and countries with a negative balance of land, by reporting year.
+:::
+
+![Actual flow and flow without offset by country, 2024.](figures/carbon_flow_country.png){#fig-countries width=85%}
+
+## Regions
+
+The workbook holds every quantity at NUTS0, NUTS2 and NUTS3. @tbl-regions lists the NUTS2 regions with the largest actual flow in
+2024, which are the large forest regions of the countries with the highest removals.
+
+::: {#tbl-regions}
+{{< datatable top_regions >}}
+
+NUTS2 regions with the largest actual flow in 2024, in thousand tonnes of CO2, with the value in million euro at constant 2010 prices.
+:::
+
+## Maps
+
+@fig-flow-maps shows the actual flow, drawn at 10 km from the 1 km working layers so that it reads at this size. Forest regions of high productivity stand out
+within each country, and the differences between countries reflect their national values, so borders can show as steps in the map.
+@vallecillo2019 note the same effect. Countries with no forest removals in a year appear blank in that panel. Productivity only places
+values within a country, so it has no effect on national totals (@tbl-forest-area). The value maps in @fig-value-maps follow the same
+pattern, since they multiply the flow by one price per year.
+
+::: {#tbl-forest-area}
+{{< datatable forest_area >}}
+
+Forest on the 1 km grid and in the regional tables, and mean productivity on cells that are mostly forest, by reporting year.
+:::
+
+![Actual flow at 10 km, in thousand tonnes of CO2 per cell, on a square root scale.](figures/carbon_flow_maps.png){#fig-flow-maps width=100%}
+
+![Value of the actual flow at 10 km, in million euro at constant 2010 prices per cell, on a square root scale.](figures/carbon_value_maps.png){#fig-value-maps width=100%}
+
+## Value
+
+The actual flow is worth {{< fact value_constant_bn_2024 >}} billion euro in 2024 at constant 2010 prices, and
+{{< fact value_current_bn_2024 >}} billion euro in current prices (@tbl-value and @fig-value). Constant values follow the physical
+flow, because the real price is fixed. The price per tonne of each reporting year is in @tbl-price.
+
+::: {#tbl-value}
+{{< datatable value_eu_series >}}
+
+Value in the EU27, in million euro.
+:::
+
+::: {#tbl-price}
+{{< datatable carbon_price >}}
+
+Social cost of carbon per tonne of CO2, in 2023 euros and in the euros of each year.
+:::
+
+![Value of the actual flow and of the missed flow in the EU27, at constant 2010 prices.](figures/carbon_value_series.png){#fig-value width=100%}
+
+## Sectors
+
+@tbl-sectors shows the actual flow attributed to the sectors that emit CO2. The largest part in 2024 goes to
+{{< fact top_sector >}}, with {{< fact top_sector_mt >}} million tonnes. The attribution follows the emissions of each country weighted
+by its flow, so it also shifts when the flow moves between countries.
+
+::: {#tbl-sectors}
+{{< datatable sector_by_year >}}
+
+Actual flow attributed to emitting sectors in the EU27, in million tonnes of CO2.
+:::
+
+## Comparison with the published accounts
+
+@lanotte2021 report an actual flow of 306 million tonnes of CO2 in 2012 in their main tables, from forest removals of 444 million
+tonnes. We obtain {{< fact flow_mt_2012 >}} million tonnes (@tbl-published). The comparison serves for orientation only, because they
+report the EU-28 with an earlier release of the inventory, and countries revise past years in each release. The price also differs by
+design. Their flow of 2012 is valued at 9,189 million euro, which implies EUR {{< fact price_published_2012 >}} per tonne, whereas the
+price here in 2012 is EUR {{< fact price_implied_2012 >}} per tonne in current prices.
+
+::: {#tbl-published}
+{{< datatable published_flow >}}
+
+Actual flow in this report (EU27) and in La Notte et al. (2021), Table 6.7 (EU-28), in million tonnes of CO2.
+:::
+
+# Limitations
+
+**Inventories.** Countries produce their inventories with their own methods and definitions, so comparisons between countries call
+for caution [@vallecillo2019]. They revise them every year, which changes the values of past years between releases. Some sharp
+changes between years may reflect these methods as well as forests, and we did not separate the two.
+
+**Actual flow.** The flow of a country depends on the removals and emissions of all countries, because the offset is computed once
+for the European Union, and it should not be read as a national balance. The tables show that balance separately. A category counts
+as a removal or an emission according to its net sign in each country and year, so the gross fluxes inside a category are not
+visible. Countries with no forest removals in a year receive no flow, so their value can change abruptly between years when their
+forest moves between source and sink. Harvested wood products stay outside the flow, and including them as a deduction would lower
+the removals of forest land by up to the sink in @tbl-comparison.
+
+**Maps.** The spatial key combines where forest is located with the productivity of the vegetation, which is a proxy for where
+removals happen. Productivity measures growth and does not measure the net carbon balance, so it does not capture the carbon in soils
+or the age of stands. The maps of 2000, 2006 and 2012 use a 1 km product and those of 2018 and 2024 a 300 m product, so the spatial
+detail of the two groups differs. The Corine accounting layers have a minimum mapping unit of 25 hectares. Maps and regional values
+allocate a national value, so they should not be read as independent local estimates. The regional tables use the 1 km key and the
+maps the 100 m key, so a sum of the 100 m maps over a region can differ slightly from its value in the tables. The map of the flow without the offset covers
+forest land only.
+
+**Value.** The value depends directly on the price. The social cost of carbon is a model-based estimate that is sensitive to
+assumptions such as the discount rate and the damage function. This literature quotes estimates per tonne of carbon and per tonne of
+CO2, which differ by a factor of 44/12, and the value adopted here is per tonne of carbon, the unit in which the meta-analysis
+standardises its estimates. The real price is several times the benchmark of earlier accounts, so the values cannot be compared with
+those accounts. It also differs from a market price. A consumer price index for the whole European Union converts values to constant
+prices, so differences in inflation between countries are ignored.
+
+# Appendix: inputs {.unnumbered}
+
+The inputs of this run, with the date on which each was retrieved. Eurostat revises its datasets with each
+release, so a run with a later retrieval can give slightly different values.
+
+::: {#tbl-inputs}
+{{< datatable inputs >}}
+
+Inputs of the run.
+:::
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Crop pollination – ESA toolbox</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-3f84763c4d936fb7d3a98aa829dff287.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ESA toolbox</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../site/usage.html"> 
+<span class="menu-text">Using the tool</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-services" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Services</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-services">    
+        <li>
+    <a class="dropdown-item" href="../../site/services/pollination.html">
+ <span class="dropdown-text">Crop pollination</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../site/services/wood.html">
+ <span class="dropdown-text">Wood provision</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../site/services/carbon.html">
+ <span class="dropdown-text">Carbon sequestration</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../site/inputs.html"> 
+<span class="menu-text">Inputs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../site/downloads.html"> 
+<span class="menu-text">Downloads</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/renatovargas/esa-toolbox"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#methods" id="toc-methods" class="nav-link active" data-scroll-target="#methods"><span class="header-section-number">1</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview"><span class="header-section-number">1.1</span> Overview</a></li>
+  <li><a href="#territory-and-reporting-regions" id="toc-territory-and-reporting-regions" class="nav-link" data-scroll-target="#territory-and-reporting-regions"><span class="header-section-number">1.2</span> Territory and reporting regions</a></li>
+  <li><a href="#the-expert-based-model" id="toc-the-expert-based-model" class="nav-link" data-scroll-target="#the-expert-based-model"><span class="header-section-number">1.3</span> The expert-based model</a>
+  <ul class="collapse">
+  <li><a href="#land-cover" id="toc-land-cover" class="nav-link" data-scroll-target="#land-cover"><span class="header-section-number">1.3.1</span> Land cover</a></li>
+  <li><a href="#major-roads" id="toc-major-roads" class="nav-link" data-scroll-target="#major-roads"><span class="header-section-number">1.3.2</span> Major roads</a></li>
+  <li><a href="#forest-edges" id="toc-forest-edges" class="nav-link" data-scroll-target="#forest-edges"><span class="header-section-number">1.3.3</span> Forest edges</a></li>
+  <li><a href="#distance-to-semi-natural-areas" id="toc-distance-to-semi-natural-areas" class="nav-link" data-scroll-target="#distance-to-semi-natural-areas"><span class="header-section-number">1.3.4</span> Distance to semi-natural areas</a></li>
+  <li><a href="#activity-of-insects" id="toc-activity-of-insects" class="nav-link" data-scroll-target="#activity-of-insects"><span class="header-section-number">1.3.5</span> Activity of insects</a></li>
+  </ul></li>
+  <li><a href="#the-bumblebee-model" id="toc-the-bumblebee-model" class="nav-link" data-scroll-target="#the-bumblebee-model"><span class="header-section-number">1.4</span> The bumblebee model</a></li>
+  <li><a href="#pollination-potential-and-the-service-providing-area" id="toc-pollination-potential-and-the-service-providing-area" class="nav-link" data-scroll-target="#pollination-potential-and-the-service-providing-area"><span class="header-section-number">1.5</span> Pollination potential and the service providing area</a></li>
+  <li><a href="#demand" id="toc-demand" class="nav-link" data-scroll-target="#demand"><span class="header-section-number">1.6</span> Demand</a>
+  <ul class="collapse">
+  <li><a href="#countries-outside-the-crop-data" id="toc-countries-outside-the-crop-data" class="nav-link" data-scroll-target="#countries-outside-the-crop-data"><span class="header-section-number">1.6.1</span> Countries outside the crop data</a></li>
+  </ul></li>
+  <li><a href="#actual-flow-and-unmet-demand" id="toc-actual-flow-and-unmet-demand" class="nav-link" data-scroll-target="#actual-flow-and-unmet-demand"><span class="header-section-number">1.7</span> Actual flow and unmet demand</a>
+  <ul class="collapse">
+  <li><a href="#scaling-to-national-statistics" id="toc-scaling-to-national-statistics" class="nav-link" data-scroll-target="#scaling-to-national-statistics"><span class="header-section-number">1.7.1</span> Scaling to national statistics</a></li>
+  <li><a href="#cases-where-the-sources-disagree-on-the-crop" id="toc-cases-where-the-sources-disagree-on-the-crop" class="nav-link" data-scroll-target="#cases-where-the-sources-disagree-on-the-crop"><span class="header-section-number">1.7.2</span> Cases where the sources disagree on the crop</a></li>
+  <li><a href="#sec-estimates" id="toc-sec-estimates" class="nav-link" data-scroll-target="#sec-estimates"><span class="header-section-number">1.7.3</span> Production without a place on the map</a></li>
+  </ul></li>
+  <li><a href="#monetary-valuation" id="toc-monetary-valuation" class="nav-link" data-scroll-target="#monetary-valuation"><span class="header-section-number">1.8</span> Monetary valuation</a></li>
+  <li><a href="#maps" id="toc-maps" class="nav-link" data-scroll-target="#maps"><span class="header-section-number">1.9</span> Maps</a></li>
+  <li><a href="#products" id="toc-products" class="nav-link" data-scroll-target="#products"><span class="header-section-number">1.10</span> Products</a></li>
+  <li><a href="#checks" id="toc-checks" class="nav-link" data-scroll-target="#checks"><span class="header-section-number">1.11</span> Checks</a></li>
+  </ul></li>
+  <li><a href="#code-annex" id="toc-code-annex" class="nav-link" data-scroll-target="#code-annex">Code annex</a>
+  <ul class="collapse">
+  <li><a href="#code-fetch" id="toc-code-fetch" class="nav-link" data-scroll-target="#code-fetch"><code>fetch</code></a></li>
+  <li><a href="#code-prepare" id="toc-code-prepare" class="nav-link" data-scroll-target="#code-prepare"><code>prepare</code></a></li>
+  <li><a href="#code-model" id="toc-code-model" class="nav-link" data-scroll-target="#code-model"><code>model</code></a></li>
+  <li><a href="#code-accounts" id="toc-code-accounts" class="nav-link" data-scroll-target="#code-accounts"><code>accounts</code></a></li>
+  <li><a href="#code-maps_1km" id="toc-code-maps_1km" class="nav-link" data-scroll-target="#code-maps_1km"><code>maps_1km</code></a></li>
+  <li><a href="#code-maps_100m" id="toc-code-maps_100m" class="nav-link" data-scroll-target="#code-maps_100m"><code>maps_100m</code></a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Crop pollination</h1>
+<p class="subtitle lead">Method as implemented, and the code of each step</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This page describes the method of the crop pollination accounts as the tool implements it. Each step points to the stage of the tool that carries it out, and the code annex at the end describes each stage with links to its code. The numbers and tables that a run produces are in the report of that run, in <code>outputs/pollination/report/</code>, which carries the same method text together with them.</p>
+<section id="methods" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Methods</h1>
+<section id="overview" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="overview"><span class="header-section-number">1.1</span> Overview</h2>
+<p>The idea behind the accounts is that wild pollinators need flowers to feed on and places to nest, and that they forage within a limited distance of both, so a crop benefits from the service only where the surrounding environment can sustain them. The accounting procedure of <span class="citation" data-cites="vallecillo2018">Vallecillo et al. (<a href="#ref-vallecillo2018" role="doc-biblioref">2018</a>)</span>, which we call the method from here on, turns this idea into a chain of four components, and each one builds on the one before.</p>
+<p><strong>Pollination potential</strong> answers the question of how suitable a place is for wild pollinators, with a dimensionless indicator. Two groups of bees enter it, and they are known from different evidence, so the method models them separately and takes the mean. Solitary bees, which fly short distances, are described by an expert-based model that scores land cover and then corrects the score for roads, forest interiors, isolation and climate. Bumblebees are described by a species distribution model, which learns from records of where species were seen. Cells with a potential of at least 0.2 form the <strong>service providing area</strong>, where pollinators are assumed to be present. <strong>Demand</strong> answers the question of where the service is needed, and it is the area of crops that benefit from insect pollination. <strong>Actual flow</strong> brings the two together, as the production attributable to pollination where demand and the service providing area overlap, and <strong>unmet demand</strong> is the same quantity where they do not. Valuation then separates the share of the value of crop production that is due to the service.</p>
+<p>The analysis covers the European territory of the EU27, on the grid of the Corine Land Cover maps in the projection EPSG:3035, in which every cell has the same area on the ground. The inputs arrive at very different resolutions, and this shapes the processing. Land cover comes at 100 m, crops at 1 km, the bumblebee model at 10 km and climate at about 25 km. Potential is therefore modelled at 100 m, where land cover shows its detail, and combined at 1 km, the resolution of the crop data, where it can meet demand. The results are reported by region and mapped at 100 m.</p>
+<p>Several inputs come from the public catalogue of the k.LAB project <span class="citation" data-cites="klab2026">(<a href="#ref-klab2026" role="doc-biblioref">Integrated Modelling Partnership, 2026</a>)</span>, an open web service of harmonised layers for this same service, which a program can read directly from an address. We call it the catalogue from here on. Where a step could use more than one input, the text below says which one we chose and why. The sections follow the order of the chain.</p>
+</section>
+<section id="territory-and-reporting-regions" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="territory-and-reporting-regions"><span class="header-section-number">1.2</span> Territory and reporting regions</h2>
+<p>The accounts are published by region, so before any modelling every kilometre of the grid has to belong to one region. We used the NUTS 2024 boundaries <span class="citation" data-cites="gisco2024">(<a href="#ref-gisco2024" role="doc-biblioref">Eurostat, 2024</a>)</span> (© EuroGeographics for the administrative boundaries), the European classification of territorial units, to report by country (NUTS0), NUTS2 region and NUTS3 region. Each 1 km cell was assigned to the NUTS3 region at its centre. Coastal and border cells can have their centre outside every region while still holding crops, so they took the most common region among the cells up to 2 km away, and crop area on the coast is not lost<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-prepare"><code>prepare</code></a> in the code annex)</span>. All tables are built by adding up the NUTS3 regions, so the three levels match exactly. The Canary Islands, the Azores, Madeira and the overseas regions fall outside the climate data used in the model below, and they are left out.</p>
+</section>
+<section id="the-expert-based-model" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="the-expert-based-model"><span class="header-section-number">1.3</span> The expert-based model</h2>
+<p>The expert-based model, which <span class="citation" data-cites="vallecillo2018">Vallecillo et al. (<a href="#ref-vallecillo2018" role="doc-biblioref">2018</a>)</span> adapt from <span class="citation" data-cites="zulian2013">Zulian, Maes, &amp; Paracchini (<a href="#ref-zulian2013" role="doc-biblioref">2013</a>)</span>, scores each 100 m cell from 0 to 1 for its capacity to support wild solitary bees. It rests on what the literature and experts say about each type of land, and it uses no observations of these bees. The model starts from land cover, which indicates whether a place offers food and nesting sites. Land cover alone misses four things that also matter to a bee. A major road offers nothing, the deep interior of a forest offers less than its margin, farmland far from natural habitat receives fewer pollinators, and a cold, dull climate keeps insects in the nest. The model therefore corrects the land cover score for each of these, in the five steps below<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-model"><code>model</code></a> in the code annex)</span>.</p>
+<section id="land-cover" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="land-cover"><span class="header-section-number">1.3.1</span> Land cover</h3>
+<p>The first requirement is a land cover map that can be compared across years, because a change in the accounts should reflect a change on the ground and not a change in how the map was made. The Corine accounting layers are the versions of the Corine Land Cover maps that the European Environment Agency prepares for this kind of comparison, and they are the land cover data that the method prescribes. Two versions were within reach. The catalogue holds version 20 for the years up to 2018, whereas the Agency published version 21 for all five years in September 2026 and marked version 20 as superseded <span class="citation" data-cites="eea2026clc">(<a href="#ref-eea2026clc" role="doc-biblioref">European Environment Agency, 2026</a>)</span>. We therefore considered two routes<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-fetch"><code>fetch</code></a> in the code annex)</span>.</p>
+<p>Using the harmonised catalogue layer is the shorter route, and it also offers a ready-made map of the distance to semi-natural areas, which a later step needs. Rebuilding from primary sources means downloading version 21 and recomputing those distance maps, and it gives one consistent product across the series, including 2024. To learn whether the choice affects the results, we ran the model on both routes for 2000 and 2018 and compared them at 1 km with the same climate, road and bumblebee layers. The two agree closely on the mean and on the area served, although a few cells change substantially. Since only the rebuilt route reaches 2024, a decision was made to use it as the baseline for all years. The comparison was made once, when the route was chosen.</p>
+<p>With the land cover map in place, the next step translates each type of land into what it offers bees. Each Corine class carries a score for floral availability <span class="math inline">\(F\)</span> and for nesting suitability <span class="math inline">\(N\)</span>, on a scale from 0 to 1, which <span class="citation" data-cites="zulian2013">Zulian et al. (<a href="#ref-zulian2013" role="doc-biblioref">2013</a>)</span> derived from the literature and an expert workshop. A cell takes the mean of the two, as <span class="citation" data-cites="vallecillo2018">Vallecillo et al. (<a href="#ref-vallecillo2018" role="doc-biblioref">2018</a>)</span> prescribe in place of the product that <span class="citation" data-cites="zulian2013">Zulian et al. (<a href="#ref-zulian2013" role="doc-biblioref">2013</a>)</span> used. With the mean, a class that offers one resource and lacks the other keeps part of its score, whereas the product would set it to zero.</p>
+<p><span id="eq-suitability"><span class="math display">\[
+S = \frac{F + N}{2}
+\tag{1}\]</span></span></p>
+<p>The scores are those of Table S1 in the supplement to <span class="citation" data-cites="zulian2013">Zulian et al. (<a href="#ref-zulian2013" role="doc-biblioref">2013</a>)</span>. That article refines them with crop maps, a high resolution forest map, high nature value farmland, riparian areas and road sides, whereas the method of <span class="citation" data-cites="vallecillo2018">Vallecillo et al. (<a href="#ref-vallecillo2018" role="doc-biblioref">2018</a>)</span> works from Corine alone, so a decision was made to use the values that the supplement offers for readers who rely on Corine data only. These include an average for olive groves, which the supplement scores as 0.2 and 0.4 when intensive and 0.6 and 0.6 when extensive. We took the table from the k.LAB project <span class="citation" data-cites="klab2026">(<a href="#ref-klab2026" role="doc-biblioref">Integrated Modelling Partnership, 2026</a>)</span> and compared it with the supplement, and every class agrees<span data-unless-meta="results">. The scores are in the parameter file <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/clc_pollination_scores.csv">clc_pollination_scores.csv</a></span>.</p>
+</section>
+<section id="major-roads" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="major-roads"><span class="header-section-number">1.3.2</span> Major roads</h3>
+<p>Corine has too coarse a view to show most roads, yet major roads cannot provide food or nesting sites, so the method overlays a road network and gives cells on a major road a score of zero. It leaves local roads alone, because their margins can help pollinators or not depending on how they are managed, and that information is lacking. The network it names, TeleAtlas, is commercial and proprietary. A decision was made to use OpenStreetMap <span class="citation" data-cites="osm2026">(<a href="#ref-osm2026" role="doc-biblioref">OpenStreetMap contributors, 2026</a>)</span> instead, taking motorways, trunk roads and primary roads with their links, which correspond to the same categories, and marking the 100 m cells that they touch<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-fetch"><code>fetch</code></a> in the code annex)</span>. As in the method, the road map is a single snapshot that applies to all years.</p>
+</section>
+<section id="forest-edges" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" class="anchored" data-anchor-id="forest-edges"><span class="header-section-number">1.3.3</span> Forest edges</h3>
+<p>Wild bees use forest margins more than forest interiors, but a Corine class gives one score to a whole forest patch, so the score has to be confined to the margin. Following <span class="citation" data-cites="vallecillo2018">Vallecillo et al. (<a href="#ref-vallecillo2018" role="doc-biblioref">2018</a>)</span>, the outer ring of 100 m of each forest patch keeps its score and the interior scores zero. Forest means the broad-leaved, coniferous and mixed forest classes 311, 312 and 313. On a grid of 100 m the ring is one cell wide, so a forest cell belongs to the interior when all eight of its neighbours are also forest, which we tested with a moving window of three by three cells. The edge keeps the Corine score of its class from Table S1. The supplement to <span class="citation" data-cites="zulian2013">Zulian et al. (<a href="#ref-zulian2013" role="doc-biblioref">2013</a>)</span> also holds separate scores for forest edges in its Table S3, which are 0.1 higher for both floral availability and nesting suitability, and which it applies to an edge of 50 m. The method refers to the expert score of the edges without saying which table it means, and we kept Table S1.</p>
+</section>
+<section id="distance-to-semi-natural-areas" class="level3" data-number="1.3.4">
+<h3 data-number="1.3.4" class="anchored" data-anchor-id="distance-to-semi-natural-areas"><span class="header-section-number">1.3.4</span> Distance to semi-natural areas</h3>
+<p>A field can score well and still receive few pollinators if it lies far from the natural habitat that sustains them. Pollinator richness and visits decline exponentially with isolation from natural habitat, at a mean rate of 0.00046 per metre across 23 studies <span class="citation" data-cites="ricketts2008 garibaldi2011">(<a href="#ref-garibaldi2011" role="doc-biblioref">Garibaldi et al., 2011</a>; <a href="#ref-ricketts2008" role="doc-biblioref">Ricketts et al., 2008</a>)</span>, which halves them about every 1.5 km. The method applies this decay to the score, using the distance <span class="math inline">\(d\)</span> in metres from each cell to the nearest semi-natural area.</p>
+<p><span id="eq-decay"><span class="math display">\[
+S_d = \exp\left(\ln(S) - 0.00046\, d\right) = S\, e^{-0.00046\, d}
+\tag{2}\]</span></span></p>
+<p>The score is zero beyond 20 km, a limit that the method sets wide on purpose so that the effect is captured over a sufficient area. Semi-natural areas are the classes 311, 312, 313, 321, 322, 323, 324, 331 and 333, which the method selects following <span class="citation" data-cites="garibaldi2011">Garibaldi et al. (<a href="#ref-garibaldi2011" role="doc-biblioref">2011</a>)</span>. They change as land cover changes, so the distance is computed for each of the five land cover maps. It is the exact Euclidean distance between cell centres, searched up to 20 km around every cell, the limit beyond which the score is zero. This is the distance that the method describes<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-model"><code>model</code></a> in the code annex)</span>.</p>
+</section>
+<section id="activity-of-insects" class="level3" data-number="1.3.5">
+<h3 data-number="1.3.5" class="anchored" data-anchor-id="activity-of-insects"><span class="header-section-number">1.3.5</span> Activity of insects</h3>
+<p>Habitat is of no use if it is too cold for insects to leave the nest, and bees become inactive when the combination of temperature and sunshine falls below a threshold <span class="citation" data-cites="zulian2013">(<a href="#ref-zulian2013" role="doc-biblioref">Zulian et al., 2013</a>)</span>. The activity index <span class="math inline">\(A\)</span> of <span class="citation" data-cites="corbet1993">Corbet et al. (<a href="#ref-corbet1993" role="doc-biblioref">1993</a>)</span>, as adapted by <span class="citation" data-cites="zulian2013">Zulian et al. (<a href="#ref-zulian2013" role="doc-biblioref">2013</a>)</span>, expresses this in percent as a function of air temperature <span class="math inline">\(T\)</span> in degrees Celsius and solar irradiance <span class="math inline">\(R\)</span> in watts per square metre, through the temperature of a black globe that simulates the body of an insect. Its parameters were estimated for honeybees, and the method uses them as an indication for insects of similar size.</p>
+<p><span id="eq-activity"><span class="math display">\[
+A = -39.3 + 4.01\, T_b, \qquad T_b = -0.62 + 1.027\, T + 0.006\, R
+\tag{3}\]</span></span></p>
+<p>The index therefore needs monthly temperature and radiation across Europe for each period of the series. The method takes them from the Agri4Cast climate grid of about 25 km, whose radiation is a total per day, so it first has to convert that total to watts per square metre with an estimate of the hours of daylight at each latitude and date. A decision was made to use instead the ERA5 temperature <span class="citation" data-cites="hersbach2023">(<a href="#ref-hersbach2023" role="doc-biblioref">Hersbach et al., 2023</a>)</span> and the Copernicus radiation <span class="citation" data-cites="c3s2020">(<a href="#ref-c3s2020" role="doc-biblioref">Copernicus Climate Change Service, 2020</a>)</span> of the catalogue, on a grid of 0.25 degrees, which is of a similar size. The catalogue serves them at an open address as monthly means for the same three-year periods that the method uses, it reaches 2025, and its radiation is already expressed over day length, so no conversion is needed. A reader can also repeat this step with no account, because the tool reads the layers directly from that address.</p>
+<p>The method is inconsistent on one point, since its text refers to minimum temperature and its table of inputs to mean temperature. The two would not give the same index, because a lower temperature lowers the result. A decision was made to use mean temperature, which is the variable in <span class="citation" data-cites="zulian2013">Zulian et al. (<a href="#ref-zulian2013" role="doc-biblioref">2013</a>)</span>.</p>
+<p>For each reporting year we took the three years centred on it, as the method does, with 2023 to 2025 for 2024, so that one unusual year does not stand for the whole period. We computed the index for each month from April to September, the months that the method chooses because they cover the sampling period of <span class="citation" data-cites="corbet1993">Corbet et al. (<a href="#ref-corbet1993" role="doc-biblioref">1993</a>)</span> and the time when pollinators visit crop flowers. The equation can return values below 0 in a cold month and above 100 in a warm one, which have no meaning as a percentage and would let one extreme month offset another, so each month was limited to the range from 0 to 100, as <span class="citation" data-cites="zulian2013">Zulian et al. (<a href="#ref-zulian2013" role="doc-biblioref">2013</a>)</span> do, before averaging the six months. The result is as coarse as the climate grid, while the model works at 100 m, so we interpolated it bilinearly to 1 km and then to 100 m<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-fetch"><code>fetch</code></a> in the code annex)</span>.</p>
+<p>The four corrections come together in the expert-based model <span class="math inline">\(E\)</span>, which is the product of the decayed score and the index.</p>
+<p><span id="eq-expert"><span class="math display">\[
+E = S_d \, \frac{A}{100}
+\tag{4}\]</span></span></p>
+<p>The crop data that the model must meet exist at 1 km, so we reduced the result to that resolution, with the mean of the land cells of each kilometre, which keeps sea cells from diluting the score of a coastal kilometre. The 100 m model is kept as well, since the 100 m maps of potential use it directly. <span data-unless-meta="results">The grid holds almost two billion cells for each year, so the five steps run in tiles of 500 km, and the reduction comes out of the same pass as the 100 m model. The 100 m model of each tile is kept in the work folder for the 100 m maps stage.</span></p>
+</section>
+</section>
+<section id="the-bumblebee-model" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="the-bumblebee-model"><span class="header-section-number">1.4</span> The bumblebee model</h2>
+<p>The second model estimates where bumblebees occur, and it works differently from the first. Where the expert-based model reasons from the scores of land cover, a species distribution model learns from observations, by relating the places where a species was recorded to the climate, land cover and terrain of those places, and then predicting where else it could live. The method fits such a model to records of 47 species on a grid of 10 km and projects it to each period, which requires the fitted models. These are unavailable, so a decision was made to use the published aggregated layer of <span class="citation" data-cites="polce2018">Polce et al. (<a href="#ref-polce2018" role="doc-biblioref">2018</a>)</span>, which gives the mean probability of occurrence of the 47 species at 10 km. To combine it with the expert-based model we interpolated it bilinearly to 1 km. A grid this coarse does not reach every stretch of coast, so land cells left without a value there took the mean of their neighbours within 10 km<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-fetch"><code>fetch</code></a> in the code annex)</span>. The layer does not change over time, so all change in potential over the series comes from land cover and climate.</p>
+</section>
+<section id="pollination-potential-and-the-service-providing-area" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="pollination-potential-and-the-service-providing-area"><span class="header-section-number">1.5</span> Pollination potential and the service providing area</h2>
+<p>With both groups of bees described on the same grid, the method combines them. The potential <span class="math inline">\(P\)</span> of a 1 km cell is the mean of the expert-based model and the bumblebee model.</p>
+<p><span id="eq-potential"><span class="math display">\[
+P = \frac{E + B}{2}
+\tag{5}\]</span></span></p>
+<p>Potential is a continuous score, but the accounts need to know where the service can occur, so the method draws a line. The classes follow <span class="citation" data-cites="vallecillo2018">Vallecillo et al. (<a href="#ref-vallecillo2018" role="doc-biblioref">2018</a>)</span>, namely high above 0.3, medium from 0.2 to 0.3, low from 0.1 to 0.2 and none below 0.1. Cells of medium and high potential form the service providing area, where pollinators are assumed to be present. Below that line the method assumes that they are absent, because the environment may not be enough to maintain their populations, and it presents this as a simplification for an experimental account. We added up land and agricultural land in each class by NUTS3 region<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-accounts"><code>accounts</code></a> in the code annex)</span>.</p>
+</section>
+<section id="demand" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="demand"><span class="header-section-number">1.6</span> Demand</h2>
+<p>The other side of the account is where pollination is needed. Demand is the area of the ten crop groups in<span data-unless-meta="results">&nbsp;the parameter file <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/crop_dependency.csv">crop_dependency.csv</a></span>, which benefit from insect pollination to different degrees. This needs a map of crops, which national statistics do not provide, so the method takes the area from the CAPRI agricultural model, whose regional data are disaggregated to 1 km. The method had only two years of these data, 2004 and 2008, which do not match its years of potential. We used the later series of <span class="citation" data-cites="koeble2024">Koeble et al. (<a href="#ref-koeble2024" role="doc-biblioref">2024</a>)</span>, which covers 2000 to 2018 and offers the exact reporting years. The layers were read from the catalogue, which holds the same variables for those years, and reduced to one compact stack of area and one of yield per year<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-fetch"><code>fetch</code></a> in the code annex)</span>. The catalogue copy was used as published, and it was not compared cell by cell with the original archives. The series ends in 2018, so the stacks of that year stand in for 2024.</p>
+<p>Some kilometres hold more than the 100 hectares a square kilometre can contain. These values reflect multiple cropping and the way the source allocates reported land. Truncating them would understate the area, so a decision was made to keep them.</p>
+<section id="countries-outside-the-crop-data" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="countries-outside-the-crop-data"><span class="header-section-number">1.6.1</span> Countries outside the crop data</h3>
+<p>The method notes that CAPRI does not cover Croatia, Malta and Cyprus. Reading the later series gives a more nuanced picture. Croatia is absent, with a few hectares that come from cells along its border. Cyprus and Malta, by contrast, do hold crop area, and in Cyprus it is close to the national statistics. A decision was made to treat the three countries in the same way, in line with the method, so they stay out of the crop maps and take the estimate described in <a href="#sec-estimates" class="quarto-xref">Section&nbsp;1.7.3</a>.</p>
+</section>
+</section>
+<section id="actual-flow-and-unmet-demand" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="actual-flow-and-unmet-demand"><span class="header-section-number">1.7</span> Actual flow and unmet demand</h2>
+<p>Overlaying demand on the service providing area shows which crops have pollinators nearby, and the accounts then need to express this as production. Not all the production of a crop is due to insects, so the method uses the dependency ratio <span class="math inline">\(\delta_c\)</span> of <span class="citation" data-cites="klein2007">Klein et al. (<a href="#ref-klein2007" role="doc-biblioref">2007</a>)</span>, the share of the production of a crop attributable to pollination, which goes from 65 percent for apples, pears and peaches to 5 percent for tomatoes, citrus, pulses, flax and hemp. The actual flow of crop <span class="math inline">\(c\)</span> in cell <span class="math inline">\(i\)</span> is its production times this ratio when the cell belongs to the service providing area <span class="math inline">\(\Omega\)</span>. A cell is either inside or outside, with no gradation by level of potential. Unmet demand applies the same product to the cells outside it, so flow and unmet demand add up to all production that depends on pollination.</p>
+<p><span id="eq-flow"><span class="math display">\[
+F_{c,i} = a_{c,i}\, y_{c,i}\, k_{c}\, \delta_c \quad \text{if } i \in \Omega, \qquad
+U_{c,i} = a_{c,i}\, y_{c,i}\, k_{c}\, \delta_c \quad \text{if } i \notin \Omega
+\tag{6}\]</span></span></p>
+<p>Here <span class="math inline">\(a\)</span> is the crop area, <span class="math inline">\(y\)</span> the yield and <span class="math inline">\(k\)</span> a scaling factor for the crop and country, explained below. A decision was made to measure unmet demand in tonnes by analogy with the flow, because the method defines it by area only and the monetary accounts need a physical quantity. We report the area of met and unmet demand as well.</p>
+<section id="scaling-to-national-statistics" class="level3" data-number="1.7.1">
+<h3 data-number="1.7.1" class="anchored" data-anchor-id="scaling-to-national-statistics"><span class="header-section-number">1.7.1</span> Scaling to national statistics</h3>
+<p>CAPRI is a model, whereas Eurostat publishes the official production of each country, and accounts are expected to agree with official figures. The method anchors its accounts in official statistics, so we compared the CAPRI production of each crop and country with the national production of Eurostat, in the three-year mean around each reporting year <span class="citation" data-cites="eurostatcrops">(<a href="#ref-eurostatcrops" role="doc-biblioref">Eurostat, 2026a</a>)</span>.<span data-unless-meta="results">&nbsp;See the stage <a href="#code-fetch"><code>fetch</code></a> in the code annex.</span><span data-unless-meta="results">&nbsp;The two sources can differ widely for some crops.</span></p>
+<p>A decision was therefore made to keep the CAPRI pattern of each crop within a country and scale its production to the Eurostat total, with the factor <span class="math inline">\(k_c = \text{Eurostat production} / \text{CAPRI production}\)</span>. Maps and tables then agree with official totals. In 2024 the factor compares the crop pattern of 2018 with the national production around 2024, which is how national statistics reach the last year of the series. The national pollination contribution, which is the actual flow divided by total production, is unaffected by this factor, so it remains the production-weighted share that <span class="citation" data-cites="vallecillo2018">Vallecillo et al. (<a href="#ref-vallecillo2018" role="doc-biblioref">2018</a>)</span> define. Demand stays in the hectares of CAPRI, since the crop pattern on the map comes from that source. Where Eurostat has no figure for a crop and country, the CAPRI production is kept and flagged<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-accounts"><code>accounts</code></a> in the code annex)</span>.</p>
+</section>
+<section id="cases-where-the-sources-disagree-on-the-crop" class="level3" data-number="1.7.2">
+<h3 data-number="1.7.2" class="anchored" data-anchor-id="cases-where-the-sources-disagree-on-the-crop"><span class="header-section-number">1.7.2</span> Cases where the sources disagree on the crop</h3>
+<p>Applying the factors can expose crops and countries for which the two sources disagree on whether the crop is present at all. Scaling such cases would place unrealistic amounts in a few cells, so a decision was made to set them aside when the factor is above 10 or below 0.1. Production that Eurostat reports for these cases moves to the estimate below, and CAPRI production that Eurostat does not report is dropped.</p>
+</section>
+<section id="sec-estimates" class="level3" data-number="1.7.3">
+<h3 data-number="1.7.3" class="anchored" data-anchor-id="sec-estimates"><span class="header-section-number">1.7.3</span> Production without a place on the map</h3>
+<p>Some national production has no place on the map, either because of the countries discussed above or because of the cases just set aside. Leaving it out would make the tables fall short of the national statistics, so it needs an estimate, and with no crop map the best remaining guide is farmland. The share of the agricultural land of each region inside the service providing area stands in for the share of the crop inside it, and the agricultural land of each region shares out the national figure. Area follows the same shares, from the national area in Eurostat, and a country that reports production but no area shows flow with no hectares of demand. These values are flagged as estimates in the tables and do not enter the crop maps.</p>
+</section>
+</section>
+<section id="monetary-valuation" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="monetary-valuation"><span class="header-section-number">1.8</span> Monetary valuation</h2>
+<p>Pollination contributes to a product that the national accounts already record, namely crops. The method therefore does not price the service separately. It takes the value of production in the economic accounts for agriculture and separates the part due to pollination, so no value is counted twice <span class="citation" data-cites="vallecillo2018">(<a href="#ref-vallecillo2018" role="doc-biblioref">Vallecillo et al., 2018</a>)</span>. We retrieved the production value at basic price, which is what producers receive for the crop, in the prices of the previous year from Eurostat dataset <code>aact_eaa02</code> <span class="citation" data-cites="eurostateaa">(<a href="#ref-eurostateaa" role="doc-biblioref">Eurostat, 2026b</a>)</span>. The method prefers these prices to current ones so that changes reflect the biophysical side and not inflation, and it takes the mean of the three years around each reporting year to avoid odd fluctuations. Eurostat and CAPRI classify crops differently, so we linked the values to the crop groups through the correspondence in<span data-unless-meta="results">&nbsp;<a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/crop_dependency.csv">crop_dependency.csv</a></span><span data-unless-meta="results">&nbsp;(see the stage <a href="#code-fetch"><code>fetch</code></a> in the code annex)</span>.</p>
+<p>The physical accounts then say how much of each crop is due to pollination, and that share can be carried over to its value. The pollination contribution <span class="math inline">\(C\)</span> of a crop in a country is its actual flow over its total production <span class="math inline">\(T\)</span>, and the value of the flow is the production value <span class="math inline">\(V\)</span> times that contribution. The value of unmet demand follows in the same way.</p>
+<p><span id="eq-value"><span class="math display">\[
+C = \frac{F}{T}, \qquad V_F = V\, C, \qquad V_U = V\, \frac{U}{T}
+\tag{7}\]</span></span></p>
+<p>Each value in the prices of the previous year has a different base year, which is a small matter between two nearby years, but these values still drift with inflation across a series of 24 years. A decision was made to express them in constant prices of 2010, since the method does not prescribe a base for a longer series, and this is the base of the carbon sequestration and wood provision accounts of the same series. We multiplied them by the deflator <span class="math inline">\(H_{2010} / \bar{H}_{y}\)</span>, where <span class="math inline">\(H\)</span> is the harmonised index of consumer prices of the European Union <span class="citation" data-cites="eurostathicp">(<a href="#ref-eurostathicp" role="doc-biblioref">Eurostat, 2026c</a>)</span> and <span class="math inline">\(\bar{H}_{y}\)</span> is its mean over the three years that the prices of each reporting year refer to. Eurostat publishes the EU27 index from 2000, and the mean of 2000 needs the two years before. Those years are estimated from the annual rates of the euro area and of the other Member States, weighted with the country weights of the first published year of the EU27 index <span class="citation" data-cites="eurostathicp">(<a href="#ref-eurostathicp" role="doc-biblioref">Eurostat, 2026c</a>)</span>. For 2001 to 2007 the same calculation gives the published EU27 rates within 0.1 percentage points.<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-accounts"><code>accounts</code></a> in the code annex)</span>.</p>
+<p>The two sources do not match perfectly. A production value in a country with no physical production has no contribution and receives no value. A country that reports production of a crop but no value for it has flow with no monetary counterpart. Regions receive the national value of each crop in proportion to their physical flow and unmet demand, through a value per tonne that is uniform within a crop and country.</p>
+</section>
+<section id="maps" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="maps"><span class="header-section-number">1.9</span> Maps</h2>
+<p>The tables say how much the service is worth in each region, and the maps show where it occurs. They have to tell the same story, so we built them from the same ingredients. We wrote the maps of potential, demand, actual flow, unmet demand and value at 1 km from the rasters and the factors and prices of the tables, and then read their totals back from disk to compare them with the tables<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-maps_1km"><code>maps_1km</code></a> in the code annex)</span>. These 1 km maps are working layers of the accounts and not a product in themselves. The 100 m maps are built from them.</p>
+<p>The 100 m maps add spatial detail in two ways<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-maps_100m"><code>maps_100m</code></a> in the code annex)</span>. Potential is computed directly as the mean of the 100 m expert-based model and the bumblebee model interpolated to 100 m. The other quantities exist only at 1 km, so they are allocated within each kilometre, and each kilometre keeps its total. Demand, unmet demand and the flow and value on agroecosystems go to agricultural cells, and the flow for all ecosystem types goes to all land cells in proportion to their expert-based suitability. A kilometre with no positive weight spreads its value evenly over its land cells. The detail within each kilometre therefore comes from land cover, and crops are not observed at that scale. To make the files several times smaller, values are stored as whole numbers in small units, namely potential multiplied by 10 000, demand in square metres, flow and unmet demand in kilograms, and value in euro. They are written as Cloud Optimised GeoTIFF files without overviews, which keeps them small. A GIS such as QGIS draws them quickly as they are.</p>
+<p>The accounts also ask which ecosystems support the service, and the flow on its own does not say, because it is measured on the crop while the pollinators depend on the land around it. To describe this, we shared the flow of each kilometre among ecosystem types in proportion to their share of its expert-based suitability, and we attributed to cropland the small amount of flow in cells with no support<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-maps_1km"><code>maps_1km</code></a> in the code annex)</span>.</p>
+</section>
+<section id="products" class="level2" data-number="1.10">
+<h2 data-number="1.10" class="anchored" data-anchor-id="products"><span class="header-section-number">1.10</span> Products</h2>
+<p><strong>Workbook.</strong> The workbook holds one sheet for each group of quantities and NUTS level. The potential sheets give the hectares of land with high potential (above 0.3) and medium potential (0.2 to 0.3), on all ecosystem types and on agroecosystems. The demand sheets give the area of pollinator-dependent crops in hectares, split into met and unmet demand. The flow sheets give the actual flow and the unmet demand in tonnes, and the value sheets give both in million euro at constant prices of 2010. A last group of sheets shares the actual flow among ecosystem types, as described above. The reporting years are the columns, and each sheet states its unit and caveats in its heading.</p>
+<p><strong>Maps.</strong> There are eight maps for each reporting year on the 100 m grid, built as the previous section describes. They hold the potential on all ecosystem types and on agroecosystems, the demand, the actual flow on all ecosystem types and on agroecosystems, the unmet demand, and the value of the actual flow and of the unmet demand on agroecosystems. The actual flow has the same total on all ecosystem types and on agroecosystems, and the two maps place it on different cells.</p>
+</section>
+<section id="checks" class="level2" data-number="1.11">
+<h2 data-number="1.11" class="anchored" data-anchor-id="checks"><span class="header-section-number">1.11</span> Checks</h2>
+<p>A chain this long has many places where a quantity could be lost or counted twice as it passes from one step to the next, so the run tests the results as it goes and stops if any check on the tables or on the maps fails. The value of the flow in any crop and country also never exceeds the production value times the dependency ratio.</p>
+<p>The maps agree with the tables once the estimates, which the maps leave out, are set aside. The 100 m maps as written are compared with the 1 km maps for every year<span data-unless-meta="results">&nbsp;(see the stage <a href="#code-maps_100m"><code>maps_100m</code></a> in the code annex)</span>, and the run stops if a kilometre differs by more than the 50 units that rounding allows.</p>
+<p>Potential can differ between the two in a kilometre, because the 100 m map interpolates the bumblebee model to 100 m rather than to 1 km. The mean of the map of potential on agricultural land is about 5 percent below that of its 1 km map because the two averages weigh cells differently. The 100 m mean counts each agricultural cell, and the 1 km mean counts each kilometre once however little agricultural land it holds.</p>
+</section>
+</section>
+<section id="code-annex" class="level1 unnumbered">
+<h1 class="unnumbered">Code annex</h1>
+<p>The stages run in this order. Each one can run on its own with the command shown, once the stages before it have run. All stages share the modules for the grid, raster input and output and parallel tiles, <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/grid.py">grid.py</a>, <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/rio.py">rio.py</a> and <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/pool.py">pool.py</a>.</p>
+<section id="code-fetch" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="code-fetch"><code>fetch</code></h2>
+<p><a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/catalog.py">catalog.py</a>, <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/fetch.py">fetch.py</a> · <code>esa fetch pollination</code></p>
+<p>Downloads the inputs of the service into the store, the folder that all services share.</p>
+<div id="tbl-fetch" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-fetch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Inputs of crop pollination.
+</figcaption>
+<div aria-describedby="tbl-fetch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Input</th>
+<th style="text-align: left;">Source</th>
+<th style="text-align: left;">Fetcher</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Corine Land Cover accounting layers, version 21, 100 m</td>
+<td style="text-align: left;"><span class="citation" data-cites="eea2026clc">European Environment Agency (<a href="#ref-eea2026clc" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;"><code>fetch_clc</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NUTS 2024 regions, © EuroGeographics for the administrative boundaries</td>
+<td style="text-align: left;"><span class="citation" data-cites="gisco2024">Eurostat (<a href="#ref-gisco2024" role="doc-biblioref">2024</a>)</span></td>
+<td style="text-align: left;"><code>fetch_gisco</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Major roads of OpenStreetMap, © OpenStreetMap contributors, under the Open Database License</td>
+<td style="text-align: left;"><span class="citation" data-cites="osm2026">OpenStreetMap contributors (<a href="#ref-osm2026" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;"><code>fetch_roads</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Activity index, from ERA5 temperature and surface solar radiation</td>
+<td style="text-align: left;"><span class="citation" data-cites="hersbach2023">Hersbach et al. (<a href="#ref-hersbach2023" role="doc-biblioref">2023</a>)</span>; <span class="citation" data-cites="c3s2020">Copernicus Climate Change Service (<a href="#ref-c3s2020" role="doc-biblioref">2020</a>)</span>; through <span class="citation" data-cites="klab2026">Integrated Modelling Partnership (<a href="#ref-klab2026" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;"><code>fetch_activity</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bumblebee species distribution model</td>
+<td style="text-align: left;"><span class="citation" data-cites="polce2018">Polce et al. (<a href="#ref-polce2018" role="doc-biblioref">2018</a>)</span>; through <span class="citation" data-cites="klab2026">Integrated Modelling Partnership (<a href="#ref-klab2026" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;"><code>fetch_sdm</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Disaggregated CAPRI crop area and yield</td>
+<td style="text-align: left;"><span class="citation" data-cites="koeble2024">Koeble et al. (<a href="#ref-koeble2024" role="doc-biblioref">2024</a>)</span>; through <span class="citation" data-cites="klab2026">Integrated Modelling Partnership (<a href="#ref-klab2026" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;"><code>fetch_capri</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Crop production</td>
+<td style="text-align: left;"><span class="citation" data-cites="eurostatcrops">Eurostat (<a href="#ref-eurostatcrops" role="doc-biblioref">2026a</a>)</span></td>
+<td style="text-align: left;"><code>fetch_eurostat</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Economic accounts for agriculture</td>
+<td style="text-align: left;"><span class="citation" data-cites="eurostateaa">Eurostat (<a href="#ref-eurostateaa" role="doc-biblioref">2026b</a>)</span></td>
+<td style="text-align: left;"><code>fetch_eurostat</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Harmonised index of consumer prices</td>
+<td style="text-align: left;"><span class="citation" data-cites="eurostathicp">Eurostat (<a href="#ref-eurostathicp" role="doc-biblioref">2026c</a>)</span></td>
+<td style="text-align: left;"><code>fetch_eurostat</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><strong>Land cover.</strong> <code>fetch_clc</code> downloads the Corine accounting layers of version 21 for the five years from the record of each year in the datashare of the European Environment Agency.</p>
+<p><strong>Regions.</strong> <code>fetch_gisco</code> downloads the NUTS 2024 file at 1:1 million in EPSG:3035 from GISCO. It removes the French outermost regions (FRY) and Svalbard (NO0B2), with their parts in the regions above them, and repairs the five German regions whose boundaries cross themselves.</p>
+<p><strong>Roads.</strong> <code>fetch_roads</code> reads the motorways, trunk roads and primary roads with their links from the web feature service of the k.LAB project, page by page, and marks every 100 m cell that a road touches.</p>
+<p><strong>Activity index.</strong> <code>fetch_activity</code> reads the monthly mean temperature and radiation of each three-year window from the catalogue, computes the index of <a href="#eq-activity" class="quarto-xref">Equation&nbsp;3</a> for each month from April to September on the climate grid, limits it to the range from 0 to 100, averages the six months and interpolates the result bilinearly to 1 km. It keeps two decimals and the land within 5 km of the EU27.</p>
+<p><strong>Bumblebees.</strong> <code>fetch_sdm</code> interpolates the layer bilinearly from 10 km to 1 km and fills coastal cells without a value with the mean of their neighbours in a window of 21 by 21 cells, in two passes.</p>
+<p><strong>Crops.</strong> <code>fetch_capri</code> reads area and yield of the ten crop groups from the catalogue for 2000, 2006, 2012 and 2018 and writes one stack of each per year, with three decimals.</p>
+<p><strong>Eurostat.</strong> <code>fetch_eurostat</code> reads <code>apro_cpsh1</code> and <code>aact_eaa02</code>, groups their items into the crop groups and takes the mean of the three years around each reporting year. The price index comes from <code>prc_hicp_aind</code>, with the years before 2000 estimated as the section on valuation explains, which also reads the country weights of <code>prc_hicp_cow</code>.</p>
+<p>The fetchers write each file under a temporary name and rename it when it is complete, so an interrupted download leaves nothing half written, and <code>esa inputs</code> lists every input with its state. The Eurostat extracts come from the SDMX interface of Eurostat, and the fetcher records the date of retrieval of each one in <code>extracts.json</code> beside it, since a new release can revise past values. The report of each run lists the inputs with those dates.</p>
+</section>
+<section id="code-prepare" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="code-prepare"><code>prepare</code></h2>
+<p><a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/inputs.py">inputs.py</a>, <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/nuts.py">nuts.py</a> · <code>esa run pollination -s prepare</code></p>
+<p>Reads the NUTS 2024 regions of the EU27, numbers the NUTS3 regions in order of their code and rasterises them on the 1 km grid, where each cell takes the region at its centre. Cells on the coast whose centre falls outside every region take the most common region within 2 km, with ties going to the smallest number.</p>
+</section>
+<section id="code-model" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="code-model"><code>model</code></h2>
+<p><a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/inputs.py">inputs.py</a>, <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/model.py">model.py</a> · <code>esa run pollination -s model</code></p>
+<p>Runs the expert-based model at 100 m in tiles of 500 km, in parallel. Each tile reads Corine, the major roads and the activity index, computes the exact distance to semi-natural areas with a margin of 20 km, applies the five steps of the model and masks the result to the EU27. The same pass reduces the model to 1 km, with the mean over land and over farmland, the number of land and farmland cells and the sum on each ecosystem type, which the later stages read. It also keeps the 100 m model of each tile in <code>work/pollination/prep/ebm_100m/</code>, about 1 GB a year, for the 100 m maps.</p>
+</section>
+<section id="code-accounts" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="code-accounts"><code>accounts</code></h2>
+<p><a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/tables.py">tables.py</a>, <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/model.py">model.py</a> · <code>esa run pollination -s accounts</code></p>
+<p>Adds the 1 km layers up by NUTS3 region, scales the CAPRI crops to Eurostat production, estimates the production without a place on the map, builds the physical accounts, values them with the economic accounts for agriculture and deflates them to 2010 prices. It writes the small tables of the report and stops if a check fails.</p>
+</section>
+<section id="code-maps_1km" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="code-maps_1km"><code>maps_1km</code></h2>
+<p><a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/maps.py">maps.py</a> · <code>esa run pollination -s maps_1km</code></p>
+<p>Writes the 1 km maps of potential, its classes, demand, flow, unmet demand and value, shares the flow among ecosystem types, writes the results workbook and checks the maps, read back from disk, against the tables.</p>
+</section>
+<section id="code-maps_100m" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="code-maps_100m"><code>maps_100m</code></h2>
+<p><a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/maps.py">maps.py</a> · <code>esa run pollination -s maps_100m</code></p>
+<p>Reads the 100 m model that the model stage kept for each tile and writes eight maps per year as whole numbers, which allocate the 1 km values within each kilometre. Each tile compares its maps with the 1 km maps, and the tiles are joined into Cloud Optimised GeoTIFF files without overviews. Each tile goes through in strips of 20 km, which keeps the arrays small enough for the processor cache.</p>
+</section>
+</section>
+<section id="references" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-c3s2020" class="csl-entry" role="listitem">
+Copernicus Climate Change Service. (2020). <em>Climate and energy indicators for <span>Europe</span> from 1979 to present derived from reanalysis</em>. Copernicus Climate Change Service Climate Data Store.
+</div>
+<div id="ref-corbet1993" class="csl-entry" role="listitem">
+Corbet, S. A., Fussell, M., Ake, R., Fraser, A., Gunson, C., Savage, A., &amp; Smith, K. (1993). Temperature and the pollinating activity of social bees. <em>Ecological Entomology</em>, <em>18</em>, 17–30.
+</div>
+<div id="ref-eea2026clc" class="csl-entry" role="listitem">
+European Environment Agency. (2026). <em>Corine land cover accounting layers (raster 100 m), version 21</em>. EEA Datahub. <a href="https://doi.org/10.2909/a65428d3-bd66-4b47-bcf9-6bfd6fa5df0c">https://doi.org/10.2909/a65428d3-bd66-4b47-bcf9-6bfd6fa5df0c</a>
+</div>
+<div id="ref-gisco2024" class="csl-entry" role="listitem">
+Eurostat. (2024). <em><span>GISCO</span> territorial units for statistics (<span>NUTS</span>), 2024</em>. Retrieved from <a href="https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics">https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics</a>
+</div>
+<div id="ref-eurostatcrops" class="csl-entry" role="listitem">
+Eurostat. (2026a). <em>Crop production in <span>EU</span> standard humidity (apro_cpsh1)</em>. Retrieved from <a href="https://ec.europa.eu/eurostat/databrowser/product/page/apro_cpsh1">https://ec.europa.eu/eurostat/databrowser/product/page/apro_cpsh1</a>
+</div>
+<div id="ref-eurostateaa" class="csl-entry" role="listitem">
+Eurostat. (2026b). <em>Economic accounts for agriculture, values at n-1 prices (aact_eaa02)</em>. Retrieved from <a href="https://ec.europa.eu/eurostat/databrowser/product/page/aact_eaa02">https://ec.europa.eu/eurostat/databrowser/product/page/aact_eaa02</a>
+</div>
+<div id="ref-eurostathicp" class="csl-entry" role="listitem">
+Eurostat. (2026c). <em>Harmonised index of consumer prices, annual data (prc_hicp_aind)</em>. Retrieved from <a href="https://ec.europa.eu/eurostat/databrowser/product/page/prc_hicp_aind">https://ec.europa.eu/eurostat/databrowser/product/page/prc_hicp_aind</a>
+</div>
+<div id="ref-garibaldi2011" class="csl-entry" role="listitem">
+Garibaldi, L. A., Steffan-Dewenter, I., Kremen, C., Morales, J. M., Bommarco, R., Cunningham, S. A., … Klein, A. M. (2011). Stability of pollination services decreases with isolation from natural areas despite honey bee visits. <em>Ecology Letters</em>, <em>14</em>, 1062–1072.
+</div>
+<div id="ref-hersbach2023" class="csl-entry" role="listitem">
+Hersbach, H., Bell, B., Berrisford, P., Biavati, G., Horányi, A., Muñoz Sabater, J., … Thépaut, J.-N. (2023). <em><span>ERA5</span> monthly averaged data on single levels from 1940 to present</em>. Copernicus Climate Change Service Climate Data Store. <a href="https://doi.org/10.24381/cds.f17050d7">https://doi.org/10.24381/cds.f17050d7</a>
+</div>
+<div id="ref-klab2026" class="csl-entry" role="listitem">
+Integrated Modelling Partnership. (2026). <em>Jrc.ecosystem.accounts.pollination: K.<span>LAB</span> project for the crop pollination accounts</em>. Retrieved from <a href="https://bitbucket.org/integratedmodelling/jrc.ecosystem.accounts.pollination/src/develop/src/pollination/">https://bitbucket.org/integratedmodelling/jrc.ecosystem.accounts.pollination/src/develop/src/pollination/</a>
+</div>
+<div id="ref-klein2007" class="csl-entry" role="listitem">
+Klein, A.-M., Vaissière, B. E., Cane, J. H., Steffan-Dewenter, I., Cunningham, S. A., Kremen, C., &amp; Tscharntke, T. (2007). Importance of pollinators in changing landscapes for world crops. <em>Proceedings of the Royal Society B</em>, <em>274</em>, 303–313. <a href="https://doi.org/10.1098/rspb.2006.3721">https://doi.org/10.1098/rspb.2006.3721</a>
+</div>
+<div id="ref-koeble2024" class="csl-entry" role="listitem">
+Koeble, R., Leip, A., Kempen, M., Petersen, J.-E., Gomez, O., Leip, D., … Van der Velde, M. (2024). <em><span>EU</span> wide disaggregated <span>CAPRI</span> model data: Crops, livestock, nitrogen in- and outputs (timeseries 2000-2018)</em>. Zenodo. <a href="https://doi.org/10.5281/zenodo.13992301">https://doi.org/10.5281/zenodo.13992301</a>
+</div>
+<div id="ref-osm2026" class="csl-entry" role="listitem">
+OpenStreetMap contributors. (2026). <em><span>OpenStreetMap</span> main roads</em>. Retrieved from <a href="https://www.openstreetmap.org">https://www.openstreetmap.org</a>
+</div>
+<div id="ref-polce2018" class="csl-entry" role="listitem">
+Polce, C., Maes, J., Rotllan-Puig, X., Michez, D., Castro, L., Cederberg, B., … Rasmont, P. (2018). Distribution of bumblebees across <span>Europe</span>. <em>One Ecosystem</em>, <em>3</em>, e28143. <a href="https://doi.org/10.3897/oneeco.3.e28143">https://doi.org/10.3897/oneeco.3.e28143</a>
+</div>
+<div id="ref-ricketts2008" class="csl-entry" role="listitem">
+Ricketts, T. H., Regetz, J., Steffan-Dewenter, I., Cunningham, S. A., Kremen, C., Bogdanski, A., … Viana, B. F. (2008). Landscape effects on crop pollination services: Are there general patterns? <em>Ecology Letters</em>, <em>11</em>, 499–515.
+</div>
+<div id="ref-vallecillo2018" class="csl-entry" role="listitem">
+Vallecillo, S., La Notte, A., Polce, C., Zulian, G., Alexandris, N., Ferrini, S., &amp; Maes, J. (2018). <em>Ecosystem services accounting: Part i, outdoor recreation and crop pollination</em> (No. EUR 29024 EN). Publications Office of the European Union. <a href="https://doi.org/10.2760/619793">https://doi.org/10.2760/619793</a>
+</div>
+<div id="ref-zulian2013" class="csl-entry" role="listitem">
+Zulian, G., Maes, J., &amp; Paracchini, M. L. (2013). Linking land cover data and crop yields for mapping and assessment of pollination services in <span>Europe</span>. <em>Land</em>, <em>2</em>(3), 472–492. <a href="https://doi.org/10.3390/land2030472">https://doi.org/10.3390/land2030472</a>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

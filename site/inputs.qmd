@@ -1,0 +1,57 @@
+---
+title: "Inputs"
+bibliography:
+  - ../src/esa_toolbox/reports/pollination/references.bib
+  - ../src/esa_toolbox/reports/wood/references.bib
+  - ../src/esa_toolbox/reports/carbon/references.bib
+csl: ../src/esa_toolbox/reports/apa.csl
+---
+
+Every input goes to one folder, the store, which all services share, so a layer that two services use is downloaded once.
+`esa inputs` lists the inputs with their state, and `esa fetch` downloads what is missing. The fetchers write each file under a
+temporary name and rename it when it is complete, so an interrupted download leaves nothing half written. The code annex of each
+service page describes what its fetchers do, and the [catalogue](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/catalog.py)
+and the [fetchers](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/fetch.py) hold the code.
+
+| Dataset | Content | Source | Used by | Size (GB) |
+|:--|:---|:---|:--|--:|
+| `clc_accounting` | Corine Land Cover accounting layers, version 21, 100 m, 2000 to 2024 | @eea2026clc | pollination, wood, carbon | 0.9 |
+| `nuts` | NUTS 2024 boundaries, 1:1 million, EPSG:3035 | @gisco2024 | pollination, wood, carbon | 0.03 |
+| `gdmp_annual` | Gross Dry Matter Productivity, version 2, annual sum of 36 ten-day values, 1 km (2000 to 2018) and 300 m (2018, 2024) | @copernicus2020gdmp1km; @copernicus2020gdmp300 | wood, carbon | 1.1 |
+| `roads` | Motorways, trunk and primary roads with their links, rasterised at 100 m | @osm2026, through @klab2026 | pollination | 0.8 |
+| `activity_index` | Activity index of insects from April to September, 1 km, from ERA5 temperature and surface solar radiation | @hersbach2023; @c3s2020, through @klab2026 | pollination | 0.02 |
+| `bumblebee_sdm` | Mean probability of occurrence of 47 bumblebee species, 1 km | @polce2018, through @klab2026 | pollination | 0.01 |
+| `capri` | Disaggregated CAPRI crop area and yield of ten pollinator-dependent crop groups, 1 km, 2000 to 2018 | @koeble2024, through @klab2026 | pollination | 0.12 |
+| `eurostat_hicp` | Harmonised index of consumer prices, EU27, annual average (2015 = 100) | @eurostathicp | pollination, wood, carbon | 0 |
+| `eurostat_pollination` | Crop production and the value of crop output at basic prices | @eurostatcrops; @eurostateaa | pollination | 0 |
+| `eurostat_wood` | Forest volumes, output of forest trees and roundwood exports | @eurostat2026forvolefa; @eurostat2026forsupcp; @eurostat2026forbasic | wood, carbon | 0 |
+| `eurostat_carbon` | CO2 inventory by source sector | @eurostat2026envairgge | carbon | 0 |
+| `cbm` | Net annual increment of the carbon budget model | @pilli2021 | wood | 0.002 |
+
+: Inputs of the accounts. {#tbl-inputs}
+
+## Releases
+
+Corine, the NUTS boundaries, the productivity, the bumblebee model and the crop data are fixed releases, so a new download gives the
+same files. Eurostat revises its datasets with each release, and so the fetcher records the date of retrieval of every extract in
+the file `extracts.json` beside it. The report of each run lists its inputs with those dates. Eurostat publishes the EU27 price index
+from 2000, and the fetcher estimates the years before from the rates of the euro area and the other Member States, as the page on crop
+pollination explains.
+
+## Keys
+
+The annual productivity needs a free account of the Copernicus Data Space Ecosystem with S3 keys, in the variables
+`CDSE_S3_ACCESS_KEY` and `CDSE_S3_SECRET_KEY`. The tool never writes the keys to a file or a log. Reading the 180 files of the
+productivity takes several hours, and all other inputs take a few minutes.
+
+## Attribution
+
+The administrative boundaries carry the notice © EuroGeographics. The road network is © OpenStreetMap contributors and available
+under the Open Database License. Corine Land Cover and the productivity are products of the Copernicus Land Monitoring Service,
+© European Union, and the climate layers contain modified Copernicus Climate Change Service information. Eurostat data are
+© European Union and may be reused with acknowledgement of the source.
+
+## References {.unnumbered}
+
+::: {#refs}
+:::

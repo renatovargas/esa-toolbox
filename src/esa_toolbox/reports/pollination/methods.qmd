@@ -1,0 +1,385 @@
+
+# Methods
+
+## Overview
+
+The idea behind the accounts is that wild pollinators need flowers to feed on and places to nest, and that they forage within a
+limited distance of both, so a crop benefits from the service only where the surrounding environment can sustain them. The
+accounting procedure of @vallecillo2018, which we call the method from here on, turns this idea into a chain of four components,
+and each one builds on the one before.
+
+**Pollination potential** answers the question of how suitable a place is for wild pollinators, with a dimensionless indicator.
+Two groups of bees enter it, and they are known from different evidence, so the method models them separately and takes the mean.
+Solitary bees, which fly short distances, are described by an expert-based model that scores land cover and then corrects the score
+for roads, forest interiors, isolation and climate. Bumblebees are described by a species distribution model, which learns from records of
+where species were seen. Cells with a potential of at least 0.2 form the **service providing area**, where pollinators are assumed to be
+present. **Demand** answers the question of where the service is needed, and it is the area of crops that benefit from insect
+pollination. **Actual flow** brings the two together, as the production attributable to pollination where demand and the service
+providing area overlap, and **unmet demand** is the same quantity where they do not. Valuation then separates the share of the value of
+crop production that is due to the service.
+
+The analysis covers the European territory of the EU27, on the grid of the Corine Land Cover maps in the projection EPSG:3035, in which every
+cell has the same area on the ground. The inputs arrive at very different resolutions, and this shapes the processing. Land cover comes at
+100 m, crops at 1 km, the bumblebee model at 10 km and climate at about 25 km. Potential is therefore modelled at 100 m, where land cover
+shows its detail, and combined at 1 km, the resolution of the crop data, where it can meet demand. The results are reported by region
+and mapped at 100 m.
+
+Several inputs come from the public catalogue of the k.LAB project [@klab2026], an open web service of harmonised layers for this
+same service, which a program can read directly from an address. We call it the catalogue from here on. Where a step could use more than
+one input, the text below says which one we chose and why. The sections follow the order of the chain.
+
+## Territory and reporting regions
+
+The accounts are published by region, so before any modelling every kilometre of the grid has to belong to one region. We used the NUTS
+2024 boundaries [@gisco2024] (© EuroGeographics for the administrative boundaries), the European classification of territorial units, to report by country (NUTS0), NUTS2 region and NUTS3 region[, which gives {{< fact countries >}} countries, {{< fact nuts2 >}} NUTS2 regions and
+{{< fact nuts3 >}} NUTS3 regions]{.content-visible when-meta="results"}. Each 1 km
+cell was assigned to the NUTS3 region at its centre. Coastal and border cells can have their centre outside every region while still holding
+crops, so they took the most common region among the cells up to 2 km away, and crop area on the coast is not lost[\ (see the stage [`prepare`](#code-prepare) in the code annex)]{.content-visible unless-meta="results"}. All tables are
+built by adding up the NUTS3 regions, so the three levels match exactly. The Canary Islands, the Azores, Madeira and the
+overseas regions fall outside the climate data used in the model below, and they are left out.[\ The resulting grid holds
+{{< fact land_mha >}} million hectares of land, of which {{< fact agro_mha >}} million are agricultural in the land cover of 2018.]{.content-visible when-meta="results"}
+
+## The expert-based model
+
+The expert-based model, which @vallecillo2018 adapt from @zulian2013, scores each 100 m cell from 0 to 1 for its capacity to support wild
+solitary bees. It rests on what the literature and experts say about each type of land, and it uses no observations of these bees. The model starts from land cover, which
+indicates whether a place offers food and nesting sites. Land cover alone misses four things that also matter to a bee. A major road offers
+nothing, the deep interior of a forest offers less than its margin, farmland far from natural habitat receives fewer pollinators, and a cold,
+dull climate keeps insects in the nest. The model therefore corrects the land cover score for each of these, in the five steps
+below[\ (see the stage [`model`](#code-model) in the code annex)]{.content-visible unless-meta="results"}.
+
+### Land cover
+
+The first requirement is a land cover map that can be compared across years, because a change in the accounts should reflect a change on
+the ground and not a change in how the map was made. The Corine accounting layers are the versions of the Corine Land Cover maps that the
+European Environment Agency prepares for this kind of comparison, and they are the land cover data that the method prescribes. Two versions
+were within reach. The catalogue holds version 20 for the years up to 2018, whereas the Agency published version 21 for all five years
+in September 2026 and marked version 20 as superseded [@eea2026clc]. We therefore considered two routes[\ (see the stage [`fetch`](#code-fetch) in the code annex)]{.content-visible unless-meta="results"}.
+
+Using the harmonised catalogue layer is the shorter route, and it also offers a ready-made map of the distance to semi-natural areas, which
+a later step needs. Rebuilding from primary sources means downloading version 21 and recomputing those distance maps, and it gives one consistent product across the series,
+including 2024. To learn whether the choice affects the results, we ran the model on both routes for 2000 and 2018 and compared them at 1 km with the same climate, road and
+bumblebee layers[\ (@tbl-routes)]{.content-visible when-meta="results"}. The two agree closely on the mean and on the area served, although a few cells change
+substantially. Since only the rebuilt route reaches 2024, a decision was made to use it as the baseline for all years. The comparison was made once,
+when the route was chosen[, and @tbl-routes keeps its result]{.content-visible when-meta="results"}.
+
+::: {.content-visible when-meta="results"}
+| Year | Cells compared | Correlation | Mean, rebuilt | Mean, catalogue | Largest gap | Service area, rebuilt (Mha) | Service area, catalogue (Mha) | Class differs (%) |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 2000 | 4,172,413 | 0.985 | 0.209 | 0.209 | 0.298 | 229.0 | 229.0 | 2.2 |
+| 2018 | 4,172,410 | 0.978 | 0.213 | 0.214 | 0.310 | 237.6 | 240.5 | 3.6 |
+
+: Pollination potential at 1 km from the rebuilt and the catalogue routes. {#tbl-routes}
+:::
+
+With the land cover map in place, the next step translates each type of land into what it offers bees. Each Corine class carries a score for
+floral availability $F$ and for nesting suitability $N$, on a scale from 0 to 1, which @zulian2013 derived from the literature and an expert
+workshop. A cell takes the mean of the two, as @vallecillo2018 prescribe in place of the product that @zulian2013 used. With the mean, a class
+that offers one resource and lacks the other keeps part of its score, whereas the product would set it to zero.
+
+$$
+S = \frac{F + N}{2}
+$$ {#eq-suitability}
+
+The scores are those of Table S1 in the supplement to @zulian2013[, shown in @tbl-scores in the appendix]{.content-visible when-meta="results"}. That article refines them with
+crop maps, a high resolution forest map, high nature value farmland, riparian areas and road sides, whereas the method of
+@vallecillo2018 works from Corine alone, so a decision was made to use the values that the supplement offers for readers who rely on Corine
+data only. These include an average for olive groves, which the supplement scores as 0.2 and 0.4 when intensive and 0.6 and 0.6 when
+extensive. We took the table from the k.LAB project [@klab2026] and compared it with the supplement, and every
+class agrees[. The scores are in the parameter file [clc_pollination_scores.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/clc_pollination_scores.csv)]{.content-visible unless-meta="results"}.
+
+### Major roads
+
+Corine has too coarse a view to show most roads, yet major roads cannot provide food or nesting sites, so the method overlays a road
+network and gives cells on a major road a score of zero. It leaves local roads alone, because their margins can help pollinators or not
+depending on how they are managed, and that information is lacking. The network it names, TeleAtlas, is commercial and proprietary. A decision
+was made to use OpenStreetMap [@osm2026] instead, taking motorways, trunk roads and primary roads with their links, which correspond to the same
+categories, and marking the 100 m cells that they touch[\ (see the stage [`fetch`](#code-fetch) in the code annex)]{.content-visible unless-meta="results"}. As in the method, the road map is a single snapshot that applies to all years.
+
+### Forest edges
+
+Wild bees use forest margins more than forest interiors, but a Corine class gives one score to a whole forest patch, so the score has to be
+confined to the margin. Following @vallecillo2018, the outer ring of 100 m of each forest patch keeps its score and the interior scores zero.
+Forest means the broad-leaved, coniferous and mixed forest classes 311, 312 and 313. On a grid of 100 m the ring is one cell wide, so a forest
+cell belongs to the interior when all eight of its neighbours are also forest, which we tested with a moving window of three by three cells.
+The edge keeps the Corine score of its class from Table S1. The supplement to @zulian2013 also holds separate scores for forest edges in its Table S3, which are 0.1 higher for both
+floral availability and nesting suitability, and which it applies to an edge of 50 m. The method refers to the expert score of the edges without saying which table it means,
+and we kept Table S1.[\ The Limitations section returns to this point.]{.content-visible when-meta="results"}
+
+### Distance to semi-natural areas
+
+A field can score well and still receive few pollinators if it lies far from the natural habitat that sustains them. Pollinator richness and
+visits decline exponentially with isolation from natural habitat, at a mean rate of 0.00046 per metre across 23 studies
+[@ricketts2008; @garibaldi2011], which halves them about every 1.5 km. The method applies this decay to the score, using the distance $d$ in metres
+from each cell to the nearest semi-natural area.
+
+$$
+S_d = \exp\left(\ln(S) - 0.00046\, d\right) = S\, e^{-0.00046\, d}
+$$ {#eq-decay}
+
+The score is zero beyond 20 km, a limit that the method sets wide on purpose so that the effect is captured over a sufficient area.
+Semi-natural areas are the classes 311, 312, 313, 321, 322, 323, 324, 331 and 333, which the method selects following @garibaldi2011. They
+change as land cover changes, so the distance is computed for each of the five land cover maps. It is the exact Euclidean distance between cell
+centres, searched up to 20 km around every cell, the limit beyond which the score is zero. This is the distance that the method describes[\ (see the stage [`model`](#code-model) in the code annex)]{.content-visible unless-meta="results"}.
+
+### Activity of insects
+
+Habitat is of no use if it is too cold for insects to leave the nest, and bees become inactive when the combination of temperature and sunshine
+falls below a threshold [@zulian2013]. The activity index $A$ of @corbet1993, as adapted by @zulian2013, expresses this in percent as a function of
+air temperature $T$ in degrees Celsius and solar irradiance $R$ in watts per square metre, through the temperature of a black globe that simulates
+the body of an insect. Its parameters were estimated for honeybees, and the method uses them as an indication for insects of similar size.
+
+$$
+A = -39.3 + 4.01\, T_b, \qquad T_b = -0.62 + 1.027\, T + 0.006\, R
+$$ {#eq-activity}
+
+The index therefore needs monthly temperature and radiation across Europe for each period of the series. The method takes them from the Agri4Cast
+climate grid of about 25 km, whose radiation is a total per day, so it first has to convert that total to watts per square metre with an estimate
+of the hours of daylight at each latitude and date. A decision was made to use instead the ERA5 temperature [@hersbach2023] and the Copernicus
+radiation [@c3s2020] of the catalogue, on a grid of 0.25 degrees, which is of a similar size. The catalogue serves them at an open address as monthly means for the same three-year periods
+that the method uses, it reaches 2025, and its radiation is already expressed over day length, so no conversion is needed. A reader can also repeat this step with no
+account, because the tool reads the layers directly from that address.
+
+The method is inconsistent on one point, since its text refers to minimum temperature and its table of inputs to mean temperature. The
+two would not give the same index, because a lower temperature lowers the result. A decision was made to use mean temperature, which is the variable in @zulian2013.
+
+For each reporting year we took the three years centred on it, as the method does, with 2023 to 2025 for 2024, so that one unusual year does not
+stand for the whole period. We computed the index for each month from April to September, the months that the method chooses because they cover the
+sampling period of @corbet1993 and the time when pollinators visit crop flowers. The equation can return values below 0 in a cold month and above 100 in a warm one, which
+have no meaning as a percentage and would let one extreme month offset another, so each month was limited to the range from 0 to 100, as @zulian2013 do, before
+averaging the six months. The result is as coarse as the climate grid, while the model works at 100 m, so we interpolated it bilinearly to 1 km and then to 100 m[\ (see the stage [`fetch`](#code-fetch) in the code annex)]{.content-visible unless-meta="results"}.
+
+The four corrections come together in the expert-based model $E$, which is the product of the decayed score and the index.
+
+$$
+E = S_d \, \frac{A}{100}
+$$ {#eq-expert}
+
+The crop data that the model must meet exist at 1 km, so we reduced the result to that resolution, with the mean of the land cells
+of each kilometre, which keeps sea cells from diluting the score of a coastal kilometre. The 100 m model is kept as well, since the
+100 m maps of potential use it directly. [The grid holds almost two billion cells for each year, so the five steps run in tiles of 500 km, and the reduction comes out of the same pass as the 100 m model. The 100 m model of each tile is kept in the work folder for the 100 m maps stage.]{.content-visible unless-meta="results"}
+
+## The bumblebee model
+
+The second model estimates where bumblebees occur, and it works differently from the first. Where the expert-based model reasons from the scores of land
+cover, a species distribution model learns from observations, by relating the places where a species was recorded to the climate, land cover and terrain of those
+places, and then predicting where else it could live. The method fits such a model to records of 47 species on a grid of 10 km and
+projects it to each period, which requires the fitted models. These are unavailable, so a decision was made to use the published
+aggregated layer of @polce2018, which gives the mean probability of occurrence of the 47 species at 10 km. To combine it with the expert-based model we interpolated it
+bilinearly to 1 km. A grid this coarse does not reach every stretch of coast, so land cells left without a value there took the mean of their neighbours within 10
+km[\ (see the stage [`fetch`](#code-fetch) in the code annex)]{.content-visible unless-meta="results"}.[\ Its values run from {{< fact sdm_min >}} to
+{{< fact sdm_max >}} on land.]{.content-visible when-meta="results"} The layer does not change over time, so all change in
+potential over the series comes from land cover and climate.
+
+## Pollination potential and the service providing area
+
+With both groups of bees described on the same grid, the method combines them. The potential $P$ of a 1 km cell is the mean of the expert-based model and the bumblebee model.
+
+$$
+P = \frac{E + B}{2}
+$$ {#eq-potential}
+
+Potential is a continuous score, but the accounts need to know where the service can occur, so the method draws a line. The classes follow @vallecillo2018, namely high above 0.3, medium from 0.2 to 0.3, low from 0.1 to 0.2 and none below 0.1. Cells
+of medium and high potential form the service providing area, where pollinators are assumed to be present. Below that line the method assumes that they are absent,
+because the environment may not be enough to maintain their populations, and it presents this as a simplification for an experimental account. We added up land and
+agricultural land in each class by NUTS3 region[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}.
+
+## Demand
+
+The other side of the account is where pollination is needed. Demand is the area of the ten crop groups in[\ @tbl-dependency]{.content-visible when-meta="results"}[\ the parameter file [crop_dependency.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/crop_dependency.csv)]{.content-visible unless-meta="results"}, which benefit from insect pollination to different
+degrees. This needs a map of crops, which national statistics do not provide, so the method takes the area from the CAPRI agricultural model, whose regional data are
+disaggregated to 1 km. The method had only two years of these data, 2004 and 2008, which do not match its years of potential. We used the later series of @koeble2024, which covers 2000 to 2018
+and offers the exact reporting years. The layers were read from the catalogue, which holds the same variables for those
+years, and reduced to one compact stack of area and one of yield per year[\ (see the stage [`fetch`](#code-fetch) in the code annex)]{.content-visible unless-meta="results"}. The
+catalogue copy was used as published, and it was not compared cell by cell with the original archives. The series ends in 2018, so the stacks of that year stand in for 2024[, as
+the note in the Introduction explains]{.content-visible when-meta="results"}.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-dependency}
+{{< datatable dependency >}}
+
+Crop groups, dependency on insect pollination (Klein et al., 2007) and items of the economic accounts for agriculture (Vallecillo et al., 2018).
+:::
+:::
+
+Some kilometres hold more than the 100 hectares a square kilometre can contain[, with
+{{< fact large_cells_2018 >}} such cells in 2018 and a largest value of
+{{< fact largest_ha_2018 >}} hectares]{.content-visible when-meta="results"}. These values reflect multiple cropping and the way the
+source allocates reported land.[\ They hold {{< fact large_share_2018 >}} percent of demand
+in that year.]{.content-visible when-meta="results"} Truncating them would understate the area, so a decision was made to keep them.
+
+### Countries outside the crop data
+
+The method notes that CAPRI does not cover Croatia, Malta and Cyprus. Reading the later series gives a more nuanced picture[\ (@tbl-uncovered)]{.content-visible when-meta="results"}. Croatia is absent, with a few hectares that come from cells along its border. Cyprus and Malta, by contrast, do
+hold crop area, and in Cyprus it is close to the national statistics. A decision was made to treat the three countries in the
+same way, in line with the method, so they stay out of the crop maps and take the estimate described in @sec-estimates.[\ Cyprus
+and Malta together hold {{< fact cy_mt_flow >}} percent of the actual flow in 2024, so the choice has little effect on the totals.]{.content-visible when-meta="results"}
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-uncovered}
+{{< datatable uncovered >}}
+
+Crop area in the three countries in 2018, in hectares, and the actual flow estimated for them.
+:::
+:::
+
+## Actual flow and unmet demand
+
+Overlaying demand on the service providing area shows which crops have pollinators nearby, and the accounts then need to express this as production. Not all the production
+of a crop is due to insects, so the method uses the dependency ratio $\delta_c$ of @klein2007, the share of the production of a crop attributable to pollination, which goes from 65 percent for
+apples, pears and peaches to 5 percent for tomatoes, citrus, pulses, flax and hemp[\ (@tbl-dependency)]{.content-visible when-meta="results"}. The actual flow of crop $c$ in cell $i$ is its production times this ratio when the cell
+belongs to the service providing area $\Omega$. A cell is either inside or outside, with no gradation by level of potential. Unmet demand applies the same product to the cells outside it, so flow and unmet
+demand add up to all production that depends on pollination.
+
+$$
+F_{c,i} = a_{c,i}\, y_{c,i}\, k_{c}\, \delta_c \quad \text{if } i \in \Omega, \qquad
+U_{c,i} = a_{c,i}\, y_{c,i}\, k_{c}\, \delta_c \quad \text{if } i \notin \Omega
+$$ {#eq-flow}
+
+Here $a$ is the crop area, $y$ the yield and $k$ a scaling factor for the crop and country, explained below. A decision was made to
+measure unmet demand in tonnes by analogy with the flow, because the method defines it by area only and the monetary accounts
+need a physical quantity. We report the area of met and unmet demand as well.
+
+### Scaling to national statistics
+
+CAPRI is a model, whereas Eurostat publishes the official production of each country, and accounts are expected to agree with official
+figures. The method anchors its accounts in official statistics, so we compared the CAPRI production of each crop and country with the
+national production of Eurostat, in the three-year mean around each reporting year [@eurostatcrops].[\ See the stage [`fetch`](#code-fetch) in the code annex.]{.content-visible unless-meta="results"}[\ @tbl-capri-eurostat shows that the two sources agree well for most crops, with two exceptions
+that matter. CAPRI places about twice the Eurostat production of other fruits, and about
+{{< fact text_area_ratio_2018 >}} times the Eurostat area of flax and hemp.]{.content-visible when-meta="results"}[\ The two sources can differ widely for some crops.]{.content-visible unless-meta="results"}
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-capri-eurostat}
+{{< datatable capri_against_eurostat >}}
+
+Crop area and production in CAPRI and Eurostat in 2018, before scaling, for the crops and countries that both report.
+:::
+:::
+
+A decision was therefore made to keep the CAPRI pattern of each crop within a country and scale its production to the Eurostat
+total, with the factor $k_c = \text{Eurostat production} / \text{CAPRI production}$. Maps and tables then agree with official
+totals. In 2024 the factor compares the crop pattern of 2018 with the national production around 2024, which is how national statistics reach the
+last year of the series. The national pollination contribution, which is the actual flow divided by total production, is unaffected by this factor,
+so it remains the production-weighted share that @vallecillo2018 define. Demand stays in the hectares of CAPRI, since the crop
+pattern on the map comes from that source. Where Eurostat has no figure for a crop and country, the CAPRI production is kept and
+flagged[. There are {{< fact no_eurostat_figure >}} such cases, the largest being tomatoes in Portugal in 2000 and 2006, with about
+{{< fact pt_toma_2006_mt >}} million tonnes in 2006]{.content-visible when-meta="results"}[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}.
+
+### Cases where the sources disagree on the crop
+
+Applying the factors can expose crops and countries for which the two sources disagree on whether the crop is present at
+all.[]{.content-visible when-meta="results"}[\ CAPRI places {{< fact lu_ofru_2000_capri >}} tonnes of other fruits in Luxembourg in 2000, against
+{{< fact lu_ofru_2000_eurostat >}} tonnes in Eurostat, and about
+{{< fact el_text_2006_capri_kt >}} thousand tonnes of flax and hemp in Greece in 2006, where Eurostat
+reports none. Conversely, Eurostat reports {{< fact el_rape_2000_eurostat >}} tonnes of rapeseed in Greece in
+2000, where CAPRI has almost nothing.]{.content-visible when-meta="results"} Scaling such cases would place unrealistic amounts in a few cells, so a decision was made to
+set them aside when the factor is above 10 or below 0.1.[\ @tbl-out-of-range shows that they are numerous but small, at under one
+percent of production in every year.]{.content-visible when-meta="results"} Production that Eurostat reports for these cases moves to the estimate below, and CAPRI
+production that Eurostat does not report is dropped.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-out-of-range}
+{{< datatable out_of_range_year >}}
+
+Crops and countries set aside because CAPRI and Eurostat differ by more than a factor of ten.
+:::
+:::
+
+### Production without a place on the map {#sec-estimates}
+
+Some national production has no place on the map, either because of the countries discussed above or because of the cases just
+set aside. Leaving it out would make the tables fall short of the national statistics, so it needs an estimate, and with no crop map the best remaining
+guide is farmland. The share of the agricultural land of each region inside the service providing area stands in for the share
+of the crop inside it, and the agricultural land of each region shares out the national figure. Area follows the same shares, from
+the national area in Eurostat, and a country that reports production but no area shows flow with no hectares of demand.
+These values are flagged as estimates in the tables and do not enter the crop maps.[\ Malta reports production but no area until 2024. The estimates hold
+{{< fact estimated_pct_2006 >}} to {{< fact estimated_pct_2000 >}} percent of
+the flow, depending on the year.]{.content-visible when-meta="results"}
+
+## Monetary valuation
+
+Pollination contributes to a product that the national accounts already record, namely crops. The method therefore does not price
+the service separately. It takes the value of production in the economic accounts for agriculture and separates the part due to
+pollination, so no value is counted twice [@vallecillo2018]. We retrieved the production value at basic price, which is what producers receive for the crop, in the prices of the
+previous year from Eurostat dataset `aact_eaa02` [@eurostateaa]. The method prefers these prices to current ones so that changes reflect the biophysical side and not inflation, and it takes the mean of the three years
+around each reporting year to avoid odd fluctuations. Eurostat and CAPRI classify crops differently, so we
+linked the values to the crop groups through the correspondence in[\ @tbl-dependency]{.content-visible when-meta="results"}[\ [crop_dependency.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/crop_dependency.csv)]{.content-visible unless-meta="results"}[\ (see the stage [`fetch`](#code-fetch) in the code annex)]{.content-visible unless-meta="results"}.
+
+The physical accounts then say how much of each crop is due to pollination, and that share can be carried over to its value. The pollination contribution $C$ of a crop in a country is its actual flow over its total production $T$, and the value of the flow
+is the production value $V$ times that contribution. The value of unmet demand follows in the same way.
+
+$$
+C = \frac{F}{T}, \qquad V_F = V\, C, \qquad V_U = V\, \frac{U}{T}
+$$ {#eq-value}
+
+Each value in the prices of the previous year has a different base year, which is a small matter between two nearby years, but these values still drift with inflation across a series of 24 years. A decision was made to express
+them in constant prices of 2010, since the method does not prescribe a base for a longer series, and this is the base of the carbon sequestration and wood provision accounts of the same series. We multiplied them by the deflator
+$H_{2010} / \bar{H}_{y}$, where $H$ is the harmonised index of consumer prices of the European Union [@eurostathicp] and
+$\bar{H}_{y}$ is its mean over the three years that the prices of each reporting year refer to. Eurostat publishes the
+EU27 index from 2000, and the mean of 2000 needs the two years before. Those years are estimated from the annual rates of the
+euro area and of the other Member States, weighted with the country weights of the first published year of the EU27 index
+[@eurostathicp]. For 2001 to 2007 the same calculation gives the published EU27 rates within 0.1 percentage points.[\ The years
+{{< fact hicp_estimated >}} are estimated in this run. The deflator runs from {{< fact deflator_2000 >}} for 2000 to
+{{< fact deflator_2024 >}} for 2024]{.content-visible when-meta="results"}[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}.
+
+The two sources do not match perfectly. A production value in a country with no physical production has no contribution and
+receives no value[, which leaves out {{< fact unvalued_meur >}} million euro across all years and countries]{.content-visible when-meta="results"}. A country
+that reports production of a crop but no value for it has flow with no monetary counterpart[, which concerns
+{{< fact no_value_share >}} percent of the physical flow]{.content-visible when-meta="results"}. Regions receive the national value of each crop in proportion to
+their physical flow and unmet demand, through a value per tonne that is uniform within a crop and country.
+
+## Maps
+
+The tables say how much the service is worth in each region, and the maps show where it occurs. They have to tell the same story, so we built them from the same ingredients. We wrote the maps of potential, demand, actual flow, unmet demand and value at 1 km from the rasters and the factors and prices of
+the tables, and then read their totals back from disk to compare them with the tables[\ (see the stage [`maps_1km`](#code-maps_1km) in the code annex)]{.content-visible unless-meta="results"}. These 1 km maps are working layers of the accounts and not a product in themselves. The 100 m maps are built from them[, and they also give the map figures of this report]{.content-visible when-meta="results"}.
+
+The 100 m maps add spatial detail in two ways[\ (see the stage [`maps_100m`](#code-maps_100m) in the code annex)]{.content-visible unless-meta="results"}. Potential is computed directly as the mean of
+the 100 m expert-based model and the bumblebee model interpolated to 100 m. The other quantities exist only at 1 km, so they are
+allocated within each kilometre, and each kilometre keeps its total. Demand, unmet demand and the flow and value on agroecosystems go
+to agricultural cells, and the flow for all ecosystem types goes to all land cells in proportion to their expert-based suitability. A
+kilometre with no positive weight spreads its value evenly over its land cells. The detail within each kilometre therefore comes from
+land cover, and crops are not observed at that scale. To make the files several times smaller, values are stored as whole numbers in
+small units, namely potential multiplied by 10 000, demand in square metres, flow and unmet demand in kilograms, and value in euro.
+They are written as Cloud Optimised GeoTIFF files without overviews, which keeps them small. A GIS such as QGIS draws them quickly as they are.
+
+The accounts also ask which ecosystems support the service, and the flow on its own does not say, because it is measured on the crop while the pollinators depend on the land around it. To describe this, we shared the flow of each kilometre among ecosystem types in proportion to their
+share of its expert-based suitability, and we attributed to cropland the small amount of flow in cells with no support[\ (see the stage [`maps_1km`](#code-maps_1km) in the code annex)]{.content-visible unless-meta="results"}.
+
+## Products
+
+**Workbook.** The workbook holds one sheet for each group of quantities and NUTS level. The potential sheets give the hectares of land
+with high potential (above 0.3) and medium potential (0.2 to 0.3), on all ecosystem types and on agroecosystems. The demand sheets give
+the area of pollinator-dependent crops in hectares, split into met and unmet demand. The flow sheets give the actual flow and the unmet
+demand in tonnes, and the value sheets give both in million euro at constant prices of 2010. A last group of sheets shares the actual
+flow among ecosystem types, as described above. The reporting years are the columns, and each sheet states its unit and caveats in its
+heading.
+
+**Maps.** There are eight maps for each reporting year on the 100 m grid, built as the previous section describes. They hold the
+potential on all ecosystem types and on agroecosystems, the demand, the actual flow on all ecosystem types and on agroecosystems, the
+unmet demand, and the value of the actual flow and of the unmet demand on agroecosystems. The actual flow has the same total on all
+ecosystem types and on agroecosystems, and the two maps place it on different cells.
+
+## Checks
+
+A chain this long has many places where a quantity could be lost or counted twice as it passes from one step to the next, so the run tests the results as it goes and stops if any check on the tables or on the maps fails.[\ @tbl-checks records the largest relative gap of each check on
+the tables.]{.content-visible when-meta="results"} The value of the flow in any crop and country also never exceeds the production value times the dependency ratio.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-checks}
+{{< datatable checks >}}
+
+Consistency checks of the tables, with the largest relative gap and the tolerance that would stop the run.
+:::
+:::
+
+The maps agree with the tables once the estimates, which the maps leave out, are set aside.[\ In 2024 the flow maps add up to
+{{< fact map_flow_mt >}} million tonnes, against
+{{< fact mapped_flow_mt >}} million tonnes in the tables without estimates and
+{{< fact table_flow_mt >}} million tonnes with them.]{.content-visible when-meta="results"} The 100 m maps as written are compared with the 1 km maps for every year[\ (see the stage [`maps_100m`](#code-maps_100m) in the code annex)]{.content-visible unless-meta="results"}, and the run stops if a kilometre
+differs by more than the 50 units that rounding allows.[\ The totals of demand, flow, unmet demand and value stay within
+{{< fact largest_sum_gap >}} percent of the 1 km totals.]{.content-visible when-meta="results"}
+
+Potential can differ between the two in a kilometre, because the 100 m map interpolates the bumblebee model to 100 m rather than to
+1 km.[\ The largest difference is {{< fact potential_cell_gap >}} on the scale from 0 to 1.]{.content-visible when-meta="results"} The mean of the map of potential on agricultural land is about 5 percent
+below that of its 1 km map because the two averages weigh cells differently. The 100 m mean counts each agricultural cell, and the
+1 km mean counts each kilometre once however little agricultural land it holds.

@@ -1,0 +1,235 @@
+---
+title: "Crop Pollination Ecosystem Service Accounts"
+subtitle: "European Union, 2000 to 2024: methods and results"
+author:
+  - name: renatovargas
+date: "{{< fact run_date >}}"
+results: true
+bibliography: references.bib
+csl: apa.csl
+number-sections: true
+toc: true
+toc-depth: 3
+format:
+  html:
+    embed-resources: true
+    theme: cosmo
+  typst:
+    section-numbering: "1.1.1"
+    papersize: a4
+    margin:
+      x: 2.2cm
+      y: 2.2cm
+    fontsize: 10pt
+  docx: default
+---
+
+::: {.callout-note appearance="minimal"}
+Results of esa-toolbox {{< fact tool_version >}}, run on {{< fact run_date >}}, from the inputs listed in the file
+`run.json` beside this report. The workbook is in the folder `tables` and the 100 m maps are in `maps/100m` of the same run.
+:::
+
+# Summary {.unnumbered}
+
+We provide estimates of the crop pollination ecosystem service for the 27 Member States of the European Union in 2000, 2006,
+2012, 2018 and 2024, following the accounting method of @vallecillo2018. In 2024, crops that depend on insect pollination
+cover {{< fact demand_mha_2024 >}} million hectares, and {{< fact met_pct_2024 >}} percent of that area lies where the
+environment can support wild pollinators. The production attributable to the service is {{< fact flow_mt_2024 >}} million
+tonnes, against {{< fact flow_mt_2000 >}} million tonnes in 2000, and another {{< fact unmet_mt_2024 >}} million tonnes depend
+on pollination but grow outside that area. At constant 2010 prices, the actual flow is worth {{< fact value_flow_bn_2024 >}}
+billion euro and the unmet demand {{< fact value_unmet_bn_2024 >}} billion euro. Spatial crop data end in 2018, so the crop
+pattern of 2018 stands in for 2024.
+
+# Introduction
+
+Many crops produce more when insects carry pollen between their flowers [@klein2007]. Crop pollination, seen as an ecosystem
+service, is this fertilisation of crops by wild insects, which maintains or increases crop production. Ecosystem accounting
+treats it as a service that ecosystems supply and farmers use. The direct way to measure it would be to count the insects that
+pollinate the flowers of each crop, which cannot be done across a continent, so the accounts rely on models [@vallecillo2018].
+They need a measure of what the environment can supply, a measure of where crops need it, and an estimate of what results when
+the two overlap. This report describes how we estimated those three quantities and valued the result, why we took each decision
+along the way and what the estimates show.
+
+::: {.callout-important}
+## How to read the results for 2024
+Spatial crop data end in 2018, so a decision was made to use the crop area and yield of 2018 to represent 2024. Data sources
+with different methods and crop categories are not mixed within the series. Changes between 2018 and 2024 in demand, flow and
+unmet demand therefore reflect pollination potential and national statistics, and they do not reflect any relocation of crops.
+:::
+
+::: {.callout-note}
+## Sources of orientation
+Two earlier implementations of this service provided orientation. The k.LAB project for this service [@klab2026] informed the
+list of inputs, the table of land cover scores, the correspondence between major road categories and OpenStreetMap classes,
+the grouping of Eurostat crops and the public catalogue of harmonised layers that some inputs come from. The INCA plugin
+[@inca2026] informed the sequence of preprocessing steps and the form of the activity index. The calculations in this report
+are carried out by esa-toolbox.
+:::
+
+{{< include methods.qmd >}}
+
+# Results
+
+## Pollination potential
+
+@tbl-potential shows the land in each class of potential, and @tbl-potential-agro the agricultural land. In 2024,
+{{< fact land_high_mha_2024 >}} million hectares of land have high potential and {{< fact land_medium_mha_2024 >}} million
+medium potential, against {{< fact land_high_mha_2000 >}} and {{< fact land_medium_mha_2000 >}} million hectares in 2000
+(@fig-potential). @tbl-layers gives the mean and range of each layer on land.
+
+::: {#tbl-potential}
+{{< datatable potential_by_class >}}
+
+Land by class of potential, in million hectares.
+:::
+
+::: {#tbl-potential-agro}
+{{< datatable potential_by_class_agro >}}
+
+Agricultural land by class of potential, in million hectares.
+:::
+
+::: {#tbl-layers}
+{{< datatable layer_summary >}}
+
+Mean and range on land of the activity index, the expert-based model, the bumblebee model and potential, by year.
+:::
+
+![Pollination potential by class, first and last reporting years.](figures/pollination_potential_class.png){#fig-potential width=100%}
+
+## Demand, actual flow and unmet demand
+
+Demand covers {{< fact demand_mha_2024 >}} million hectares in 2024, of which {{< fact met_pct_2024 >}} percent is met
+(@tbl-eu-series). The actual flow is {{< fact flow_mt_2024 >}} million tonnes and the unmet demand {{< fact unmet_mt_2024 >}}
+million tonnes. @fig-maps maps the three quantities at 1 km.
+
+::: {#tbl-eu-series}
+{{< datatable eu_series >}}
+
+Demand, actual flow and unmet demand in the EU27. Demand and flow of 2024 use the crop area and yield of 2018.
+:::
+
+![Demand, actual flow and unmet demand at 1 km in 2024, which uses the crop area and yield of 2018.](figures/pollination_demand_flow_unmet.png){#fig-maps width=100%}
+
+## Crops
+
+::: {#tbl-crops}
+{{< datatable eu_by_crop >}}
+
+Accounts by crop in the EU27 in 2024, which use the crop area and yield of 2018.
+:::
+
+::: {#tbl-crops-value}
+{{< datatable value_by_crop >}}
+
+Value by crop in the EU27 in 2024, in million euro at constant 2010 prices.
+:::
+
+## Countries
+
+::: {#tbl-countries}
+{{< datatable flow_by_country >}}
+
+Accounts by country in 2024, which use the crop area and yield of 2018. Countries marked as estimated hold values estimated without a crop map.
+:::
+
+::: {#tbl-countries-value}
+{{< datatable value_by_country >}}
+
+Value by country in 2024, in million euro at constant 2010 prices.
+:::
+
+![Value of the actual flow and of unmet demand by country, 2024, which uses the crop area and yield of 2018.](figures/pollination_value_country.png){#fig-value width=85%}
+
+## Value over time
+
+The actual flow is worth {{< fact value_flow_bn_2024 >}} billion euro in 2024 at constant 2010 prices, against
+{{< fact value_flow_bn_2000 >}} billion euro in 2000 (@tbl-value).
+
+::: {#tbl-value}
+{{< datatable value_eu_series >}}
+
+Value of dependent crops, of the actual flow and of unmet demand in the EU27. Values of 2024 use the crop area and yield of 2018.
+:::
+
+## Ecosystems that support the flow
+
+::: {#tbl-ecosystems}
+{{< datatable supply_by_ecosystem >}}
+
+Mapped actual flow by ecosystem type, in tonnes. Flow of 2024 uses the crop area and yield of 2018.
+:::
+
+## Comparison with the published accounts
+
+@vallecillo2018 publish the pollination contribution of apples and rapeseed in 2006 for six countries, and the production value
+and contribution of each crop for the EU-28 (@tbl-contribution and @tbl-published-value).
+
+::: {#tbl-contribution}
+{{< datatable contribution_published >}}
+
+Pollination contribution in 2006 in this report and in Vallecillo et al. (2018), Table 4.5.
+:::
+
+::: {#tbl-published-value}
+{{< datatable value_published_2006 >}}
+
+Production value and pollination contribution in 2006, for the EU27 in this report and the EU-28 in Vallecillo et al. (2018), Tables 4.4 and 4.5. Value is in million euro at the prices of the previous year.
+:::
+
+# Limitations
+
+**Potential.** Potential is an indicator of environmental suitability and does not count pollinators or visits to flowers. The
+model does not include pesticides or fertilisers, for which data are lacking across time and space, and it covers wild solitary
+bees and bumblebees only. The land cover scores are expert judgements, and the method does not attach uncertainty to them. Using
+the separate edge scores of Table S3 in @zulian2013 would raise the suitability of forest edges by 0.1, an effect that we have
+not measured. The service providing area is a threshold, so a small change in potential can move a cell in or out of it. The
+bumblebee layer is static and the road map is one snapshot, so neither contributes to change over time, and the change in
+potential leans on climate.
+
+**Crops.** Demand and yield come from a model that disaggregates regional data to 1 km, so the location of a crop within a region
+is an estimate. The crop area and yield of 2018 stand in for 2024, which is the largest assumption in the series. Demand is
+reported in the hectares of CAPRI, which for flax and hemp are several times those of Eurostat, although this crop group weighs
+little in the flow. Dependency ratios are fixed literature values, and more recent reviews propose different values for some
+crops.
+
+**Flow.** Actual flow treats a crop as pollinated when it grows in the service providing area, with no measure of how much
+pollination it receives. Changes in flow also reflect changes in production for reasons other than pollination, so change in the
+area of met demand is the better guide to change in the service. Values for Croatia, Malta and Cyprus, and for the few other crops
+without a place on the map, are estimates that assume the crop is spread across the agricultural land of the country. Cyprus and
+Malta could enter the crop maps in future, since the later CAPRI series holds area for them.
+
+**Value.** The valuation attributes to pollination a share of the value of production at basic price, without removing the costs
+of farmers, so it measures a contribution to value and does not measure a rent. A consumer price index converts the values to 2010
+prices, so the constant series removes general inflation and leaves changes in relative crop prices in place. Value per tonne is
+uniform within a crop and country, so maps of value inherit the physical pattern. Other valuation methods exist
+[@vallecillo2018], and they would give different figures.
+
+**Maps at 100 m.** These maps keep the total of each kilometre, and they are not meant to be read cell by cell. Where the crop
+data place crops in a kilometre in which Corine shows few agricultural cells, those cells receive the whole value, so a single 1
+hectare cell can show more area or tonnes than a hectare could hold. Sums over areas of a kilometre or more are the reliable
+reading.
+
+# Appendix: land cover scores {.unnumbered}
+
+::: {#tbl-scores}
+{{< datatable scores >}}
+
+Floral availability and nesting suitability by Corine class, from Table S1 in the supplement to Zulian et al. (2013). Olive groves take the average of the intensive and extensive scores.
+:::
+
+# Appendix: inputs {.unnumbered}
+
+The inputs of this run, with the date on which each was retrieved. Eurostat revises its datasets with each
+release, so a run with a later retrieval can give slightly different values.
+
+::: {#tbl-inputs}
+{{< datatable inputs >}}
+
+Inputs of the run.
+:::
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

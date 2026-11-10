@@ -1,0 +1,339 @@
+
+# Methods
+
+## Overview
+
+The accounts deliver four groups of quantities for every reporting year. The **actual flow** is the net annual increment (NAI) of the
+forest available for wood supply. The **sustainable flow** is the part of the wood removed from that forest that stays within the
+increment, and **overuse** is the part that exceeds it. Each of these is reported in cubic metres and in euro, in current prices and in
+constant prices of 2010. The quantities come in two forms, as tables by country (NUTS0) and by NUTS2 and NUTS3 region in an Excel
+workbook, and as maps on a grid of 100 m cells. The section on products at the end describes both.
+
+Forest statistics report these quantities by country, and they do not say where in the country the wood grows. The work therefore runs
+in four steps, which the sections below follow in order.
+
+1. Eurostat statistics give the NAI and the removals of each country and year, and the gaps in them are filled by rules that the
+   section on the actual flow explains.
+2. Comparing removals with the NAI gives the sustainable flow and the overuse of each country.
+3. A unit value in euro per cubic metre, built from timber and export prices, turns the physical quantities into values.
+4. A spatial key, which combines where forest grows with how productive the vegetation is, shares each national value among the regions
+   and the 100 m cells of the country. Regions and cells therefore add up to the national values.
+
+The accounts cover the EU27 with the NUTS 2024 boundaries, at the country level, NUTS2 and NUTS3[, with {{< fact regions_nuts0 >}}, {{< fact regions_nuts2 >}}
+and {{< fact regions_nuts3 >}} regions,]{.content-visible when-meta="results"} [@gisco2024nuts].[\ See the stage [`prepare`](#code-prepare) in the code annex.]{.content-visible unless-meta="results"} The boundaries carry the notice © EuroGeographics for the administrative boundaries. All grids use the
+projection EPSG:3035, in which every cell covers the same area on the ground. Malta has no forest available for wood supply and no
+forestry activity [@vallecillo2019], so its values are zero throughout.
+
+## Actual flow
+
+The source of the actual flow is the table `for_vol_efa` of Eurostat, which collects the European Forest Accounts in thousand cubic
+metres over bark [@eurostat2026forvolefa]. It holds the NAI and the removals of each country, both for the forest available for wood
+supply (FAWS) and for total forest (FOR)[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}. It needs completing, since
+few Member States report the NAI of forest available for wood supply in the early years[\ (@tbl-coverage)]{.content-visible when-meta="results"}.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-coverage}
+{{< datatable reporting_coverage >}}
+
+Member States out of 27 that report each series in `for_vol_efa`. FAWS is forest available for wood supply and FOR is total forest.
+:::
+:::
+
+### Filling the gaps
+
+INCA Part III fills the gaps with the estimates of the carbon budget model of the JRC, which simulates the growth of the forests of each
+country from their inventories [@lanotte2021; @pilli2021]. These estimates are published
+in a workbook that combines the model with the forest accounts and gives the total NAI of each country from 2000 to 2019, with the
+values after 2016 held at their level of 2015[\ (see the stage [`prepare`](#code-prepare) in the code annex)]{.content-visible unless-meta="results"}. The series refers to total forest, and
+the workbook also gives the share of available forest in the growing stock, so two versions of the fill are possible. The INCA tool
+uses a third, the NAI of total forest reported to Eurostat. Each run compares all three with the values by Member State printed
+in the annexes of Part III, which are the published reference for the method[\ (@tbl-rules)]{.content-visible when-meta="results"}[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-rules}
+{{< datatable gap_rule_comparison >}}
+
+Rules to fill the gaps in the NAI of available forest, against the values of Annexes AA37, AA41 and AA45 of INCA Part III. The differences add up the absolute gap of each Member State, without the United Kingdom.
+:::
+:::
+
+[The total forest fallback has the closest EU totals, but only because errors offset, as its country differences are the largest,
+at {{< fact rule_error_total_forest >}} million cubic metres in the three years. The total forest estimate of the carbon budget model gives
+{{< fact rule_error_cbm_total >}} million cubic metres.]{.content-visible when-meta="results"} The total forest estimate of the carbon budget model follows the method that Part III states and reproduces its
+Member State values best, so a decision was made to use it. The NAI is therefore taken in this order. A value reported for available forest comes first.
+The carbon budget estimate comes next. Any remaining gap takes the mean of the nearest earlier and later values of the same country,
+and gaps at the end of the series repeat the last value.[\ @tbl-sources shows what each reporting year rests on.]{.content-visible when-meta="results"}
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-sources}
+{{< datatable nai_sources >}}
+
+Origin of the NAI of the 27 Member States in the reporting years. Malta is the entry with no supply.
+:::
+:::
+
+The carbon budget estimate covers total forest and fills a statistic of available forest, so it probably overstates the flow in the
+countries that take it. Each run measures this effect against the EU27 aggregates that Eurostat publishes, which it
+estimates itself.[\ @tbl-aggregates shows the result. The accounts sit above the aggregate for available forest by
+{{< fact nai_vs_eurostat_faws_2012 >}} percent in 2012.]{.content-visible when-meta="results"}
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-aggregates}
+{{< datatable nai_against_aggregates >}}
+
+EU27 NAI in the accounts, the Eurostat aggregates and the sum of the published Member State values without the United Kingdom, in million cubic metres.
+:::
+:::
+
+Eurostat holds few values for the last reporting year, and the method says nothing about how far a value may be carried.[\ @tbl-latest gives the last year with an original value for each Member State, so the column
+of 2024 mostly repeats earlier years.]{.content-visible when-meta="results"} A decision was made to carry
+the last value, since the increment changes slowly and any trend applied to it would add an assumption that the data cannot support.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-latest}
+{{< datatable nai_latest_year >}}
+
+Last year with a value reported or estimated for the NAI, as a count of Member States.
+:::
+:::
+
+### Changes of source within the series {#sec-breaks}
+
+A Member State that starts reporting available forest moves from the estimate of the model to its own figure, and the two can differ
+widely.[\ @tbl-breaks lists the Member States where this happens between two reporting years. France falls by
+{{< fact break_FR_pct >}} percent between 2006 and 2012 and Sweden by {{< fact break_SE_pct >}} percent between
+2012 and 2018, and in both cases the model estimate of the later year is far from the reported figure. Part III has the same feature,
+since its value for France goes from {{< fact published_fr_2000 >}} million cubic metres in 2000 to {{< fact published_fr_2012 >}} million in 2012.]{.content-visible when-meta="results"} We kept the series as the method builds
+it and did not adjust the model estimates to the reported levels, so changes over time within these countries should be read
+together with the list of these changes in the report of each run.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-breaks}
+{{< datatable source_breaks >}}
+
+Member States whose NAI changes from the model estimate to a reported value between two reporting years, in thousand cubic metres.
+:::
+:::
+
+## Sustainable flow and overuse
+
+The accounting reports class wood among the services with a regeneration rate that use can exceed [@lanotte2021], and the handbook of
+ecosystem accounts describes overharvesting as removals above the NAI [@eurostat2026handbook]. Neither gives a formula for wood, so we
+adapted the one of Part III for water purification, in which overuse is the difference between the actual and the sustainable flow
+and the threshold defines the sustainable flow. Regeneration is the threshold for wood, which gives these two equations for each
+country and year.
+
+$$
+\text{Overuse} = \max(\text{Removals} - \text{NAI},\ 0)
+$$ {#eq-overuse}
+
+$$
+\text{Sustainable flow} = \min(\text{Removals},\ \text{NAI})
+$$ {#eq-sustainable}
+
+Removals are the removals of available forest in `for_vol_efa`, which Member States report more widely than the NAI[, as
+@tbl-coverage shows]{.content-visible when-meta="results"}. They take the same rule for gaps, with reported removals of total forest in place of the model estimate. The two
+quantities add up to the removals in every country and year[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}. A single year above the
+threshold can be a temporary peak, for example after a storm, and the handbook treats overharvesting as a matter of an extended period,
+so the results also show the ratio of removals to NAI of every country and year.
+
+## Monetary valuation
+
+The value is the physical quantity times a unit value in euro per cubic metre. INCA Part III derives the unit value in three steps
+[@lanotte2021]. The output of forest trees in `for_sup_cp` [@eurostat2026forsupcp] divided by the NAI gives the unit value of the NAI,
+which few Member States report in the early years[, as @tbl-monetary-coverage shows]{.content-visible when-meta="results"}. The roundwood exports of `for_basic`
+[@eurostat2026forbasic], in value and in volume, give a unit value for most countries and years, but this price includes the
+harvesting and transport added on the way to the market. The ratio between the two then carries the export price back to the standing
+tree.
+
+$$
+\text{Ratio}_{c,t} = \frac{\text{Unit value of exports}_{c,t}}{\text{Unit value of NAI}_{c,t}}
+$$ {#eq-ratio}
+
+$$
+\text{Completed unit value}_{c,t} = \frac{\text{Unit value of exports}_{c,t}}{\widehat{\text{Ratio}}_{c,t}}
+$$ {#eq-unit-value}
+
+Where the ratio is missing, $\widehat{\text{Ratio}}$ takes the mean ratio of the country, or the EU mean if the country has no ratio at
+all[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}. Gaps in the export price take the same means. Means run over 2000 to 2023 for a country.
+The EU mean takes the mean of the countries in each year and then the mean of those years from 2012 to 2023, where coverage is better,
+as in the INCA tool.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-monetary-coverage}
+{{< datatable monetary_coverage >}}
+
+Member States out of 27 with a reported timber value and an export unit value.
+:::
+:::
+
+### Screening the ratio {#sec-screen}
+
+The ratio is very sensitive to small denominators. An output of forest trees recorded close to zero yields a very large ratio,
+which drives up the EU mean, so every Member State that takes the EU mean would end up with a unit value close to zero.[\ Eurostat records the output of forest trees in Croatia as
+0.00 or 0.01 million euro, which yields a ratio near {{< fact uncleaned_hr_ratio >}}. With no screening, the EU mean of the
+ratio is {{< fact eu_ratio_uncleaned >}}, against a median of {{< fact median_screened >}} among the ratios kept after screening.]{.content-visible when-meta="results"}
+
+The INCA tool removes all the timber values of Croatia, Finland, Greece, Portugal and Sweden and the export points of Denmark in 2014 and
+Greece in 2006 [@incatool], and we did the same. The data used here are more recent than that list, so it does not catch everything.[\ Lithuania
+now has a median ratio of {{< fact uncleaned_lt_ratio >}}. Belgium has a median of {{< fact uncleaned_be_ratio >}}, which
+would make the standing tree worth more than the harvested roundwood, and Part III reports Belgium at a far lower value.]{.content-visible when-meta="results"} A decision was
+made to extend the rule in a way that the data support. A Member State whose median ratio falls below 1 or above 100 loses all its timber
+values, and any single observation outside that range is dropped. The lower bound follows from the meaning of the ratio, since a standing tree cannot be worth more than the harvested roundwood.[\ Among the Member States left after the list of the INCA tool, no ratio lies between 13
+and 1,000, so any upper bound in that range gives the same result. @tbl-screen shows the outcome. After screening,
+the EU mean of the ratio is {{< fact eu_ratio >}}.]{.content-visible when-meta="results"}
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-screen}
+{{< datatable ratio_screen >}}
+
+Ratio of export to timber unit values by Member State, after the removal of export errors and before the screening of the ratio.
+:::
+:::
+
+Export prices have their own errors. A decision was made to drop a point that lies more than three times above or below the median of its
+country, a rule that also catches the Greek point of the INCA tool.[\ The Danish point has no data in this release. The rule removes
+{{< fact export_points >}} points, listed in @tbl-export-points, and {{< fact export_points_reporting >}} of them fall in reporting years. Among those, Croatia in 2012 stands at
+{{< fact export_HR_2012 >}} euro per cubic metre against a median of
+{{< fact export_HR_2012_median >}}, and Romania in 2024 at
+{{< fact export_RO_2024 >}} euro against a median of
+{{< fact export_RO_2024_median >}}. @tbl-ratio-sources shows how much of the
+result rests on each kind of ratio after these steps.]{.content-visible when-meta="results"}
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-export-points}
+{{< datatable export_points_removed >}}
+
+Export unit values removed, in euro per cubic metre.
+:::
+:::
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-ratio-sources}
+{{< datatable ratio_sources >}}
+
+Origin of the ratio of the 27 Member States in the reporting years.
+:::
+:::
+
+### Constant prices
+
+Part III moves its other accounts to constant prices, so that the accounts follow changes in the service and leave aside changes in the
+market [@lanotte2021]. It does not state a deflator or a price basis for wood. The accounts therefore report both current and constant prices. Constant prices multiply the value of each year by a deflator[\ (@tbl-deflators)]{.content-visible when-meta="results"}, which is the HICP of
+the EU27 [@eurostat2026hicp] rebased to 2010. A single EU27 index and the base year 2010 are a method choice that keeps all the accounts
+of this series on one price basis, and the INCA tool uses national indices with base year 2000 instead.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-deflators}
+{{< datatable deflators >}}
+
+Deflator applied to current prices, with 2010 equal to 1.
+:::
+:::
+
+Overuse and the sustainable flow take the same unit value as the NAI of their country and year, since the method has no separate price
+for them.
+
+## The spatial key
+
+Part II spreads national flows over the forest of Corine Land Cover in proportion to Dry Matter Productivity [@vallecillo2019], and the
+Earth observation roadmap of the INCA project keeps a forest mask and that proxy [@zurbaran2025]. The weight of a 100 m cell in year $t$ is
+therefore
+
+$$
+w_{i,t} = F_{i,t} \cdot P_{i,t}
+$$ {#eq-weight}
+
+where $F_{i,t}$ is 1 for forest in the Corine accounting layer of the year [@eea2026clcacc] and 0 elsewhere, and $P_{i,t}$ is the annual
+productivity resampled to 100 m with bilinear interpolation[\ (see the stage [`prepare`](#code-prepare) in the code annex)]{.content-visible unless-meta="results"}. A cell then receives
+
+$$
+\text{Value}_{i,t} = \text{Value}_{c,t} \cdot \frac{w_{i,t}}{\sum_{j \in c} w_{j,t}}
+$$ {#eq-spread}
+
+so the cells of a country add up to its national value. The maps use these 100 m weights directly. The regional tables use the same
+weights added up to 1 km, as the section on regional tables explains[\ (see the stage [`maps_100m`](#code-maps_100m) in the code annex)]{.content-visible unless-meta="results"}.
+
+**Forest mask.** Part II limits the mask to the broad-leaved, coniferous and mixed forest classes (311, 312 and 313) and leaves out
+transitional woodland and shrub (324) [@vallecillo2019]. The INCA tool includes that class, so the two differ, and a decision was made to
+follow the report.[\ @tbl-forest-mask shows that the excluded class equals {{< fact transitional_share_2018 >}} percent of the mask in 2018.]{.content-visible when-meta="results"}
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-forest-mask}
+{{< datatable forest_mask >}}
+
+Area of the forest mask and of the excluded class in the EU27, in million hectares.
+:::
+:::
+
+**Availability.** The mask holds all forest, available or not. Part II tried to delineate available forest through slope and protected
+areas and rejected this, because thresholds differ across countries and the result can mislead [@vallecillo2019]. A map of available forest
+now exists for 2020 [@jrc2026faws], and a decision was made to leave it out. It covers one year in a series of five, the reports do not
+call for it, and the statistic that is spread already refers to available forest.
+
+**Productivity.** Part II and the roadmap name Dry Matter Productivity. This work uses Gross Dry Matter Productivity, a separate Copernicus
+product that also counts the autotrophic respiration of the plants, because it was the product at hand and the other needs a further bulk
+download.^[The annual layers are the sum of the 36 ten-day values of each year, each multiplied by its number of days[\ (see the stage [`fetch`](#code-fetch) in the code annex)]{.content-visible unless-meta="results"}.] The proxy only shares
+a national value among the cells of a country, so what matters is the relative pattern within a country and national totals do not depend on
+it. The 1 km product, version 2, serves 2000, 2006 and 2012 [@copernicus2020gdmp1km], and the 300 m product, version 2, serves 2018 and 2024
+[@copernicus2020gdmp300].
+
+A test then measured what this choice costs[\ (see the stage [`prepare`](#code-prepare) in the code annex)]{.content-visible unless-meta="results"}. It compared the Dry Matter Productivity products
+[@copernicus2020dmp1km; @copernicus2020dmp300] with half of the gross products, since the quality page of the 1 km product describes a constant fraction of 0.5. It covers
+10 of the 180 pairs of files behind the key, namely the files ending on 10 January and 10 July of each reporting year, over the whole of Europe. The tolerance
+was set before the comparison. In every pair, the absolute difference could reach 1.0 percent of the productivity total, and the cells with
+data in only one product could reach 0.1 percent of the cells.[\ @tbl-dmp shows the outcome.]{.content-visible when-meta="results"} Dry Matter Productivity equals exactly half
+of the gross value in every cell, with data in the same cells. A constant ratio leaves the share of every cell unchanged, so on this evidence the two products give the same key, and the key stays on
+Gross Dry Matter Productivity. The other 170 pairs were not compared, so the finding rests on this sample.
+
+::: {.content-visible when-meta="results"}
+| File date | Product | Cells with data (millions) | Data in one product only (%) | Absolute difference (%) | Within tolerance |
+|:---|:---|---:|---:|---:|:---|
+| 2000-01-10 | 1km | 13.7 | 0.0 | 0.0 | Yes |
+| 2000-07-10 | 1km | 19.1 | 0.0 | 0.0 | Yes |
+| 2006-01-10 | 1km | 13.2 | 0.0 | 0.0 | Yes |
+| 2006-07-10 | 1km | 19.2 | 0.0 | 0.0 | Yes |
+| 2012-01-10 | 1km | 13.7 | 0.0 | 0.0 | Yes |
+| 2012-07-10 | 1km | 19.1 | 0.0 | 0.0 | Yes |
+| 2018-01-10 | 300m | 134.4 | 0.0 | 0.0 | Yes |
+| 2018-07-10 | 300m | 173.5 | 0.0 | 0.0 | Yes |
+| 2024-01-10 | 300m | 114.5 | 0.0 | 0.0 | Yes |
+| 2024-07-10 | 300m | 173.1 | 0.0 | 0.0 | Yes |
+
+: Dry Matter Productivity against half of Gross Dry Matter Productivity, by pair of files over Europe. Cells are in millions, and the two gaps are percentages. {#tbl-dmp}
+:::
+
+## Regional tables
+
+The value of a region is the national value times the share of the region in the weight of its country in that year, so the regions add up to
+the country and follow the same key as the maps[\ (see the stages [`prepare`](#code-prepare) and [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}.
+Shares are computed on the 1 km weights, the sum of the 100 m weights in each 1 km cell. All regions of a country therefore share one unit value, and the overuse
+of a country reaches all its regions in proportion to their weight, since the data do not show where removals take place inside a country.
+
+## Products
+
+**Workbook.** The workbook holds one sheet for each group of quantities and NUTS level. The sheets of the actual flow give the NAI in
+thousand cubic metres, and those of overuse give the sustainable flow and the overuse side by side. The monetary sheets give million euro
+in current prices and in constant prices of 2010. The reporting years are the columns, and a first sheet explains the contents.
+
+**Maps.** There are six maps for each reporting year on the 100 m grid, built with the 100 m weights of @eq-weight.[\ See the stage [`maps_100m`](#code-maps_100m) in the code annex.]{.content-visible unless-meta="results"} They hold the actual flow, the sustainable flow and the overuse, each in physical terms and in constant
+prices of 2010, which gives 30 maps. Each cell holds a whole number in small units, cubic decimetres of wood or euro cents. Whole numbers
+make the files several times smaller than decimals, and every country keeps its total to within one part in a thousand. The files are Cloud Optimised GeoTIFF without overviews, which keeps them
+small, and a GIS such as QGIS draws them quickly as they are.
+
+**Working layers.** The run also spreads the actual flow and its value over the 1 km weights. These 1 km layers are not a product of the
+accounts. They give the map figures of the report, drawn at 10 km, and a check of the 1 km weights against the national values.[\ See the stage [`maps_1km`](#code-maps_1km) in the code annex.]{.content-visible unless-meta="results"}
+
+## Checks
+
+The run stops when a check fails and records the result.[\ @tbl-checks lists them with the largest relative gap found.]{.content-visible when-meta="results"} The 100 m maps are
+added up by country from the whole numbers as they are written, and compared with the national values country by country.[\ See the stage [`maps_100m`](#code-maps_100m) in the code annex.]{.content-visible unless-meta="results"} The 1 km layers are read back from disk and compared in the same way. The run also stops if the NUTS2
+and NUTS3 totals differ from the NUTS0 totals in any table, metric or year.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-checks}
+{{< datatable checks >}}
+
+Checks of the run. The run stops if a gap exceeds its tolerance.
+:::
+:::

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Inputs – ESA toolbox</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3f84763c4d936fb7d3a98aa829dff287.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">ESA toolbox</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../site/usage.html"> 
+<span class="menu-text">Using the tool</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-services" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Services</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-services">    
+        <li>
+    <a class="dropdown-item" href="../site/services/pollination.html">
+ <span class="dropdown-text">Crop pollination</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../site/services/wood.html">
+ <span class="dropdown-text">Wood provision</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../site/services/carbon.html">
+ <span class="dropdown-text">Carbon sequestration</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="../site/inputs.html" aria-current="page"> 
+<span class="menu-text">Inputs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../site/downloads.html"> 
+<span class="menu-text">Downloads</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/renatovargas/esa-toolbox"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#releases" id="toc-releases" class="nav-link active" data-scroll-target="#releases">Releases</a></li>
+  <li><a href="#keys" id="toc-keys" class="nav-link" data-scroll-target="#keys">Keys</a></li>
+  <li><a href="#attribution" id="toc-attribution" class="nav-link" data-scroll-target="#attribution">Attribution</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Inputs</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Every input goes to one folder, the store, which all services share, so a layer that two services use is downloaded once. <code>esa inputs</code> lists the inputs with their state, and <code>esa fetch</code> downloads what is missing. The fetchers write each file under a temporary name and rename it when it is complete, so an interrupted download leaves nothing half written. The code annex of each service page describes what its fetchers do, and the <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/catalog.py">catalogue</a> and the <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/fetch.py">fetchers</a> hold the code.</p>
+<div id="tbl-inputs" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-inputs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Inputs of the accounts.
+</figcaption>
+<div aria-describedby="tbl-inputs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 23%">
+<col style="width: 23%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Dataset</th>
+<th style="text-align: left;">Content</th>
+<th style="text-align: left;">Source</th>
+<th style="text-align: left;">Used by</th>
+<th style="text-align: right;">Size (GB)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>clc_accounting</code></td>
+<td style="text-align: left;">Corine Land Cover accounting layers, version 21, 100 m, 2000 to 2024</td>
+<td style="text-align: left;"><span class="citation" data-cites="eea2026clc">European Environment Agency (<a href="#ref-eea2026clc" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;">pollination, wood, carbon</td>
+<td style="text-align: right;">0.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>nuts</code></td>
+<td style="text-align: left;">NUTS 2024 boundaries, 1:1 million, EPSG:3035</td>
+<td style="text-align: left;"><span class="citation" data-cites="gisco2024">Eurostat (<a href="#ref-gisco2024" role="doc-biblioref">2024</a>)</span></td>
+<td style="text-align: left;">pollination, wood, carbon</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>gdmp_annual</code></td>
+<td style="text-align: left;">Gross Dry Matter Productivity, version 2, annual sum of 36 ten-day values, 1 km (2000 to 2018) and 300 m (2018, 2024)</td>
+<td style="text-align: left;"><span class="citation" data-cites="copernicus2020gdmp1km">Copernicus Land Monitoring Service (<a href="#ref-copernicus2020gdmp1km" role="doc-biblioref">n.d.-a</a>)</span>; <span class="citation" data-cites="copernicus2020gdmp300">Copernicus Land Monitoring Service (<a href="#ref-copernicus2020gdmp300" role="doc-biblioref">n.d.-b</a>)</span></td>
+<td style="text-align: left;">wood, carbon</td>
+<td style="text-align: right;">1.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>roads</code></td>
+<td style="text-align: left;">Motorways, trunk and primary roads with their links, rasterised at 100 m</td>
+<td style="text-align: left;"><span class="citation" data-cites="osm2026">OpenStreetMap contributors (<a href="#ref-osm2026" role="doc-biblioref">2026</a>)</span>, through <span class="citation" data-cites="klab2026">Integrated Modelling Partnership (<a href="#ref-klab2026" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;">pollination</td>
+<td style="text-align: right;">0.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>activity_index</code></td>
+<td style="text-align: left;">Activity index of insects from April to September, 1 km, from ERA5 temperature and surface solar radiation</td>
+<td style="text-align: left;"><span class="citation" data-cites="hersbach2023">Hersbach et al. (<a href="#ref-hersbach2023" role="doc-biblioref">2023</a>)</span>; <span class="citation" data-cites="c3s2020">Copernicus Climate Change Service (<a href="#ref-c3s2020" role="doc-biblioref">2020</a>)</span>, through <span class="citation" data-cites="klab2026">Integrated Modelling Partnership (<a href="#ref-klab2026" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;">pollination</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>bumblebee_sdm</code></td>
+<td style="text-align: left;">Mean probability of occurrence of 47 bumblebee species, 1 km</td>
+<td style="text-align: left;"><span class="citation" data-cites="polce2018">Polce et al. (<a href="#ref-polce2018" role="doc-biblioref">2018</a>)</span>, through <span class="citation" data-cites="klab2026">Integrated Modelling Partnership (<a href="#ref-klab2026" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;">pollination</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>capri</code></td>
+<td style="text-align: left;">Disaggregated CAPRI crop area and yield of ten pollinator-dependent crop groups, 1 km, 2000 to 2018</td>
+<td style="text-align: left;"><span class="citation" data-cites="koeble2024">Koeble et al. (<a href="#ref-koeble2024" role="doc-biblioref">2024</a>)</span>, through <span class="citation" data-cites="klab2026">Integrated Modelling Partnership (<a href="#ref-klab2026" role="doc-biblioref">2026</a>)</span></td>
+<td style="text-align: left;">pollination</td>
+<td style="text-align: right;">0.12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>eurostat_hicp</code></td>
+<td style="text-align: left;">Harmonised index of consumer prices, EU27, annual average (2015 = 100)</td>
+<td style="text-align: left;"><span class="citation" data-cites="eurostathicp">Eurostat (<a href="#ref-eurostathicp" role="doc-biblioref">2026d</a>)</span></td>
+<td style="text-align: left;">pollination, wood, carbon</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>eurostat_pollination</code></td>
+<td style="text-align: left;">Crop production and the value of crop output at basic prices</td>
+<td style="text-align: left;"><span class="citation" data-cites="eurostatcrops">Eurostat (<a href="#ref-eurostatcrops" role="doc-biblioref">2026a</a>)</span>; <span class="citation" data-cites="eurostateaa">Eurostat (<a href="#ref-eurostateaa" role="doc-biblioref">2026b</a>)</span></td>
+<td style="text-align: left;">pollination</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>eurostat_wood</code></td>
+<td style="text-align: left;">Forest volumes, output of forest trees and roundwood exports</td>
+<td style="text-align: left;"><span class="citation" data-cites="eurostat2026forvolefa">Eurostat (<a href="#ref-eurostat2026forvolefa" role="doc-biblioref">2026g</a>)</span>; <span class="citation" data-cites="eurostat2026forsupcp">Eurostat (<a href="#ref-eurostat2026forsupcp" role="doc-biblioref">2026f</a>)</span>; <span class="citation" data-cites="eurostat2026forbasic">Eurostat (<a href="#ref-eurostat2026forbasic" role="doc-biblioref">2026e</a>)</span></td>
+<td style="text-align: left;">wood, carbon</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>eurostat_carbon</code></td>
+<td style="text-align: left;">CO2 inventory by source sector</td>
+<td style="text-align: left;"><span class="citation" data-cites="eurostat2026envairgge">Eurostat (<a href="#ref-eurostat2026envairgge" role="doc-biblioref">2026c</a>)</span></td>
+<td style="text-align: left;">carbon</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>cbm</code></td>
+<td style="text-align: left;">Net annual increment of the carbon budget model</td>
+<td style="text-align: left;"><span class="citation" data-cites="pilli2021">Pilli &amp; Grassi (<a href="#ref-pilli2021" role="doc-biblioref">2021</a>)</span></td>
+<td style="text-align: left;">wood</td>
+<td style="text-align: right;">0.002</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="releases" class="level2">
+<h2 class="anchored" data-anchor-id="releases">Releases</h2>
+<p>Corine, the NUTS boundaries, the productivity, the bumblebee model and the crop data are fixed releases, so a new download gives the same files. Eurostat revises its datasets with each release, and so the fetcher records the date of retrieval of every extract in the file <code>extracts.json</code> beside it. The report of each run lists its inputs with those dates. Eurostat publishes the EU27 price index from 2000, and the fetcher estimates the years before from the rates of the euro area and the other Member States, as the page on crop pollination explains.</p>
+</section>
+<section id="keys" class="level2">
+<h2 class="anchored" data-anchor-id="keys">Keys</h2>
+<p>The annual productivity needs a free account of the Copernicus Data Space Ecosystem with S3 keys, in the variables <code>CDSE_S3_ACCESS_KEY</code> and <code>CDSE_S3_SECRET_KEY</code>. The tool never writes the keys to a file or a log. Reading the 180 files of the productivity takes several hours, and all other inputs take a few minutes.</p>
+</section>
+<section id="attribution" class="level2">
+<h2 class="anchored" data-anchor-id="attribution">Attribution</h2>
+<p>The administrative boundaries carry the notice © EuroGeographics. The road network is © OpenStreetMap contributors and available under the Open Database License. Corine Land Cover and the productivity are products of the Copernicus Land Monitoring Service, © European Union, and the climate layers contain modified Copernicus Climate Change Service information. Eurostat data are © European Union and may be reused with acknowledgement of the source.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-c3s2020" class="csl-entry" role="listitem">
+Copernicus Climate Change Service. (2020). <em>Climate and energy indicators for <span>Europe</span> from 1979 to present derived from reanalysis</em>. Copernicus Climate Change Service Climate Data Store.
+</div>
+<div id="ref-copernicus2020gdmp1km" class="csl-entry" role="listitem">
+Copernicus Land Monitoring Service. (n.d.-a). <em>Gross dry matter productivity 1999-2020 (raster 1 km), global, 10-daily, version 2</em>. Copernicus Land Monitoring Service. <a href="https://doi.org/10.2909/b54be6e3-5962-4e9a-a443-9ff7ea943dfe">https://doi.org/10.2909/b54be6e3-5962-4e9a-a443-9ff7ea943dfe</a>
+</div>
+<div id="ref-copernicus2020gdmp300" class="csl-entry" role="listitem">
+Copernicus Land Monitoring Service. (n.d.-b). <em>Gross dry matter productivity 2014-present (raster 300 m), global, 10-daily, version 2</em>. Copernicus Land Monitoring Service. <a href="https://doi.org/10.2909/fd838f95-21e9-4f37-a9b8-b438d9dc4edf">https://doi.org/10.2909/fd838f95-21e9-4f37-a9b8-b438d9dc4edf</a>
+</div>
+<div id="ref-eea2026clc" class="csl-entry" role="listitem">
+European Environment Agency. (2026). <em>Corine land cover accounting layers (raster 100 m), version 21</em>. EEA Datahub. <a href="https://doi.org/10.2909/a65428d3-bd66-4b47-bcf9-6bfd6fa5df0c">https://doi.org/10.2909/a65428d3-bd66-4b47-bcf9-6bfd6fa5df0c</a>
+</div>
+<div id="ref-gisco2024" class="csl-entry" role="listitem">
+Eurostat. (2024). <em><span>GISCO</span> territorial units for statistics (<span>NUTS</span>), 2024</em>. Retrieved from <a href="https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics">https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics</a>
+</div>
+<div id="ref-eurostatcrops" class="csl-entry" role="listitem">
+Eurostat. (2026a). <em>Crop production in <span>EU</span> standard humidity (apro_cpsh1)</em>. Retrieved from <a href="https://ec.europa.eu/eurostat/databrowser/product/page/apro_cpsh1">https://ec.europa.eu/eurostat/databrowser/product/page/apro_cpsh1</a>
+</div>
+<div id="ref-eurostateaa" class="csl-entry" role="listitem">
+Eurostat. (2026b). <em>Economic accounts for agriculture, values at n-1 prices (aact_eaa02)</em>. Retrieved from <a href="https://ec.europa.eu/eurostat/databrowser/product/page/aact_eaa02">https://ec.europa.eu/eurostat/databrowser/product/page/aact_eaa02</a>
+</div>
+<div id="ref-eurostat2026envairgge" class="csl-entry" role="listitem">
+Eurostat. (2026c). <em>Greenhouse gas emissions by source sector (source: EEA) [env_air_gge]</em>. Eurostat database. <a href="https://doi.org/10.2908/ENV_AIR_GGE">https://doi.org/10.2908/ENV_AIR_GGE</a>
+</div>
+<div id="ref-eurostathicp" class="csl-entry" role="listitem">
+Eurostat. (2026d). <em>Harmonised index of consumer prices, annual data (prc_hicp_aind)</em>. Retrieved from <a href="https://ec.europa.eu/eurostat/databrowser/product/page/prc_hicp_aind">https://ec.europa.eu/eurostat/databrowser/product/page/prc_hicp_aind</a>
+</div>
+<div id="ref-eurostat2026forbasic" class="csl-entry" role="listitem">
+Eurostat. (2026e). <em>Roundwood, fuelwood and other basic products [for_basic]</em>. Eurostat database. Retrieved from <a href="https://ec.europa.eu/eurostat/databrowser/view/for_basic">https://ec.europa.eu/eurostat/databrowser/view/for_basic</a>
+</div>
+<div id="ref-eurostat2026forsupcp" class="csl-entry" role="listitem">
+Eurostat. (2026f). <em>Supply and use of products within forestry [for_sup_cp]</em>. Eurostat database. Retrieved from <a href="https://ec.europa.eu/eurostat/databrowser/view/for_sup_cp">https://ec.europa.eu/eurostat/databrowser/view/for_sup_cp</a>
+</div>
+<div id="ref-eurostat2026forvolefa" class="csl-entry" role="listitem">
+Eurostat. (2026g). <em>Volume of timber over bark (EFA questionnaire) [for_vol_efa]</em>. Eurostat database. <a href="https://doi.org/10.2908/FOR_VOL_EFA">https://doi.org/10.2908/FOR_VOL_EFA</a>
+</div>
+<div id="ref-hersbach2023" class="csl-entry" role="listitem">
+Hersbach, H., Bell, B., Berrisford, P., Biavati, G., Horányi, A., Muñoz Sabater, J., … Thépaut, J.-N. (2023). <em><span>ERA5</span> monthly averaged data on single levels from 1940 to present</em>. Copernicus Climate Change Service Climate Data Store. <a href="https://doi.org/10.24381/cds.f17050d7">https://doi.org/10.24381/cds.f17050d7</a>
+</div>
+<div id="ref-klab2026" class="csl-entry" role="listitem">
+Integrated Modelling Partnership. (2026). <em>Jrc.ecosystem.accounts.pollination: K.<span>LAB</span> project for the crop pollination accounts</em>. Retrieved from <a href="https://bitbucket.org/integratedmodelling/jrc.ecosystem.accounts.pollination/src/develop/src/pollination/">https://bitbucket.org/integratedmodelling/jrc.ecosystem.accounts.pollination/src/develop/src/pollination/</a>
+</div>
+<div id="ref-koeble2024" class="csl-entry" role="listitem">
+Koeble, R., Leip, A., Kempen, M., Petersen, J.-E., Gomez, O., Leip, D., … Van der Velde, M. (2024). <em><span>EU</span> wide disaggregated <span>CAPRI</span> model data: Crops, livestock, nitrogen in- and outputs (timeseries 2000-2018)</em>. Zenodo. <a href="https://doi.org/10.5281/zenodo.13992301">https://doi.org/10.5281/zenodo.13992301</a>
+</div>
+<div id="ref-osm2026" class="csl-entry" role="listitem">
+OpenStreetMap contributors. (2026). <em><span>OpenStreetMap</span> main roads</em>. Retrieved from <a href="https://www.openstreetmap.org">https://www.openstreetmap.org</a>
+</div>
+<div id="ref-pilli2021" class="csl-entry" role="listitem">
+Pilli, R., &amp; Grassi, G. (2021). <em>Provision of technical and scientific support to DG ESTAT in relation to EU land footprint estimates and gap-filling techniques for european forest accounts (LAFO)</em>. Luxembourg: Publications Office of the European Union. Retrieved from Publications Office of the European Union website: <a href="https://data.jrc.ec.europa.eu/dataset/d4be2da6-54a1-4767-a262-dcebf66bf10b">https://data.jrc.ec.europa.eu/dataset/d4be2da6-54a1-4767-a262-dcebf66bf10b</a>
+</div>
+<div id="ref-polce2018" class="csl-entry" role="listitem">
+Polce, C., Maes, J., Rotllan-Puig, X., Michez, D., Castro, L., Cederberg, B., … Rasmont, P. (2018). Distribution of bumblebees across <span>Europe</span>. <em>One Ecosystem</em>, <em>3</em>, e28143. <a href="https://doi.org/10.3897/oneeco.3.e28143">https://doi.org/10.3897/oneeco.3.e28143</a>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

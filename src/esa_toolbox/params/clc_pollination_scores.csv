@@ -1,0 +1,44 @@
+clc,label,floral,nesting,forest,seminatural,agro,ecosystem
+111,Continuous urban fabric,0.05,0.1,0,0,0,Urban
+112,Discontinuous urban fabric,0.3,0.3,0,0,0,Urban
+121,Industrial or commercial units,0.05,0.1,0,0,0,Urban
+122,Road and rail networks and associated land,0.25,0.3,0,0,0,Urban
+123,Port areas,0,0.3,0,0,0,Urban
+124,Airports,0.1,0.3,0,0,0,Urban
+131,Mineral extraction sites,0.05,0.3,0,0,0,Urban
+132,Dump sites,0,0.05,0,0,0,Urban
+133,Construction sites,0,0.1,0,0,0,Urban
+141,Green urban areas,0.25,0.3,0,0,0,Urban
+142,Sport and leisure facilities,0.05,0.3,0,0,0,Urban
+211,Non-irrigated arable land,0.2,0.2,0,0,1,Cropland
+212,Permanently irrigated land,0.05,0.2,0,0,1,Cropland
+213,Rice fields,0.05,0.2,0,0,1,Cropland
+221,Vineyards,0.6,0.4,0,0,1,Cropland
+222,Fruit trees and berry plantations,0.9,0.4,0,0,1,Cropland
+223,Olive groves,0.4,0.5,0,0,1,Cropland
+231,Pastures,0.2,0.3,0,0,0,Grassland
+241,Annual crops associated with permanent crops,0.5,0.4,0,0,1,Cropland
+242,Complex cultivation patterns,0.4,0.4,0,0,1,Cropland
+243,"Land principally occupied by agriculture, with significant areas of natural vegetation",0.75,0.7,0,0,1,Cropland
+244,Agro-forestry areas,0.5,1,0,0,1,Cropland
+311,Broad-leaved forest,0.9,0.8,1,1,0,Woodland and forest
+312,Coniferous forest,0.3,0.8,1,1,0,Woodland and forest
+313,Mixed forest,0.6,0.8,1,1,0,Woodland and forest
+321,Natural grasslands,1,0.8,0,1,0,Grassland
+322,Moors and heathland,1,0.9,0,1,0,Heathland and shrub
+323,Sclerophyllous vegetation,0.75,0.9,0,1,0,Heathland and shrub
+324,Transitional woodland-shrub,0.85,1,0,1,0,Woodland and forest
+331,"Beaches, dunes, sands",0.1,0.3,0,1,0,Sparsely vegetated land
+332,Bare rocks,0,0,0,0,0,Sparsely vegetated land
+333,Sparsely vegetated areas,0.35,0.7,0,1,0,Sparsely vegetated land
+334,Burnt areas,0.2,0.3,0,0,0,Sparsely vegetated land
+335,Glaciers and perpetual snow,0,0,0,0,0,Sparsely vegetated land
+411,Inland marshes,0.75,0.3,0,0,0,Wetlands
+412,Peat bogs,0.5,0.3,0,0,0,Wetlands
+421,Salt marshes,0.55,0.3,0,0,0,Wetlands
+422,Salines,0,0,0,0,0,Wetlands
+423,Intertidal flats,0,0,0,0,0,Wetlands
+511,Water courses,0,0,0,0,0,Rivers and lakes
+512,Water bodies,0,0,0,0,0,Rivers and lakes
+521,Coastal lagoons,0,0.2,0,0,0,Rivers and lakes
+522,Estuaries,0,0,0,0,0,Rivers and lakes

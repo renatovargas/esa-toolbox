@@ -1,0 +1,24 @@
+---
+title: "Downloads"
+---
+
+The tool installs from its repository with uv, which also installs the right version of Python:
+
+```bash
+uv tool install git+https://github.com/renatovargas/esa-toolbox@v0.1.0
+```
+
+Each tagged release also carries a wheel, for machines that install from a file:
+
+| Version | Date | Wheel | Notes |
+|:--|:--|:--|:----|
+| 0.1.0 | Not released yet | `esa_toolbox-0.1.0-py3-none-any.whl` | First version, with crop pollination, wood provision and carbon sequestration |
+
+: Releases. {#tbl-releases}
+
+```bash
+uv tool install ./esa_toolbox-0.1.0-py3-none-any.whl
+```
+
+The results themselves, the workbooks, maps and reports, are not downloads of the tool. Each run writes them to its own outputs
+folder, and the report of a run names the tool version that made it.

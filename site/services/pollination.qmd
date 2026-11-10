@@ -1,0 +1,101 @@
+---
+title: "Crop pollination"
+subtitle: "Method as implemented, and the code of each step"
+bibliography: ../../src/esa_toolbox/reports/pollination/references.bib
+csl: ../../src/esa_toolbox/reports/apa.csl
+number-sections: true
+---
+
+This page describes the method of the crop pollination accounts as the tool implements it. Each step points to the stage of the
+tool that carries it out, and the code annex at the end describes each stage with links to its code. The numbers and tables that a
+run produces are in the report of that run, in `outputs/pollination/report/`, which carries the same method text together with them.
+
+{{< include ../../src/esa_toolbox/reports/pollination/methods.qmd >}}
+
+# Code annex {#code-annex .unnumbered}
+
+The stages run in this order. Each one can run on its own with the command shown, once the stages before it have run. All stages share the modules for the grid, raster input and output and parallel tiles, [grid.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/grid.py), [rio.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/rio.py) and [pool.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/pool.py).
+
+## `fetch` {#code-fetch .unnumbered}
+
+[catalog.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/catalog.py), [fetch.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/fetch.py) · `esa fetch pollination`
+
+Downloads the inputs of the service into the store, the folder that all services share.
+
+| Input | Source | Fetcher |
+|:---|:---|:---|
+| Corine Land Cover accounting layers, version 21, 100 m | @eea2026clc | `fetch_clc` |
+| NUTS 2024 regions, © EuroGeographics for the administrative boundaries | @gisco2024 | `fetch_gisco` |
+| Major roads of OpenStreetMap, © OpenStreetMap contributors, under the Open Database License | @osm2026 | `fetch_roads` |
+| Activity index, from ERA5 temperature and surface solar radiation | @hersbach2023; @c3s2020; through @klab2026 | `fetch_activity` |
+| Bumblebee species distribution model | @polce2018; through @klab2026 | `fetch_sdm` |
+| Disaggregated CAPRI crop area and yield | @koeble2024; through @klab2026 | `fetch_capri` |
+| Crop production | @eurostatcrops | `fetch_eurostat` |
+| Economic accounts for agriculture | @eurostateaa | `fetch_eurostat` |
+| Harmonised index of consumer prices | @eurostathicp | `fetch_eurostat` |
+
+: Inputs of crop pollination. {#tbl-fetch}
+
+**Land cover.** `fetch_clc` downloads the Corine accounting layers of version 21 for the five years from the record of each year
+in the datashare of the European Environment Agency.
+
+**Regions.** `fetch_gisco` downloads the NUTS 2024 file at 1:1 million in EPSG:3035 from GISCO. It removes the French
+outermost regions (FRY) and Svalbard (NO0B2), with their parts in the regions above them, and repairs the five German regions whose
+boundaries cross themselves.
+
+**Roads.** `fetch_roads` reads the motorways, trunk roads and primary roads with their links from the web feature service of the
+k.LAB project, page by page, and marks every 100 m cell that a road touches.
+
+**Activity index.** `fetch_activity` reads the monthly mean temperature and radiation of each three-year window from the catalogue,
+computes the index of @eq-activity for each month from April to September on the climate grid, limits it to the range from 0 to 100,
+averages the six months and interpolates the result bilinearly to 1 km. It keeps two decimals and the land within 5 km of the EU27.
+
+**Bumblebees.** `fetch_sdm` interpolates the layer bilinearly from 10 km to 1 km and fills coastal cells without a value with the
+mean of their neighbours in a window of 21 by 21 cells, in two passes.
+
+**Crops.** `fetch_capri` reads area and yield of the ten crop groups from the catalogue for 2000, 2006, 2012 and 2018 and writes one
+stack of each per year, with three decimals.
+
+**Eurostat.** `fetch_eurostat` reads `apro_cpsh1` and `aact_eaa02`, groups their items into the crop groups and takes the mean of the
+three years around each reporting year. The price index comes from `prc_hicp_aind`, with the years before 2000 estimated as the section
+on valuation explains, which also reads the country weights of `prc_hicp_cow`.
+
+The fetchers write each file under a temporary name and rename it when it is complete, so an interrupted download leaves nothing
+half written, and `esa inputs` lists every input with its state. The Eurostat extracts come from the SDMX interface of Eurostat, and
+the fetcher records the date of retrieval of each one in `extracts.json` beside it, since a new release can revise past values.
+The report of each run lists the inputs with those dates.
+
+## `prepare` {#code-prepare .unnumbered}
+
+[inputs.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/inputs.py), [nuts.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/nuts.py) · `esa run pollination -s prepare`
+
+Reads the NUTS 2024 regions of the EU27, numbers the NUTS3 regions in order of their code and rasterises them on the 1 km grid, where each cell takes the region at its centre. Cells on the coast whose centre falls outside every region take the most common region within 2 km, with ties going to the smallest number.
+
+## `model` {#code-model .unnumbered}
+
+[inputs.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/inputs.py), [model.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/model.py) · `esa run pollination -s model`
+
+Runs the expert-based model at 100 m in tiles of 500 km, in parallel. Each tile reads Corine, the major roads and the activity index, computes the exact distance to semi-natural areas with a margin of 20 km, applies the five steps of the model and masks the result to the EU27. The same pass reduces the model to 1 km, with the mean over land and over farmland, the number of land and farmland cells and the sum on each ecosystem type, which the later stages read. It also keeps the 100 m model of each tile in `work/pollination/prep/ebm_100m/`, about 1 GB a year, for the 100 m maps.
+
+## `accounts` {#code-accounts .unnumbered}
+
+[tables.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/tables.py), [model.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/model.py) · `esa run pollination -s accounts`
+
+Adds the 1 km layers up by NUTS3 region, scales the CAPRI crops to Eurostat production, estimates the production without a place on the map, builds the physical accounts, values them with the economic accounts for agriculture and deflates them to 2010 prices. It writes the small tables of the report and stops if a check fails.
+
+## `maps_1km` {#code-maps_1km .unnumbered}
+
+[maps.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/maps.py) · `esa run pollination -s maps_1km`
+
+Writes the 1 km maps of potential, its classes, demand, flow, unmet demand and value, shares the flow among ecosystem types, writes the results workbook and checks the maps, read back from disk, against the tables.
+
+## `maps_100m` {#code-maps_100m .unnumbered}
+
+[maps.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/maps.py) · `esa run pollination -s maps_100m`
+
+Reads the 100 m model that the model stage kept for each tile and writes eight maps per year as whole numbers, which allocate the 1 km values within each kilometre. Each tile compares its maps with the 1 km maps, and the tiles are joined into Cloud Optimised GeoTIFF files without overviews. Each tile goes through in strips of 20 km, which keeps the arrays small enough for the processor cache.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

@@ -1,0 +1,61 @@
+---
+title: "Using the tool"
+---
+
+## The guided menu
+
+`esa` with no arguments opens a menu. The top shows, for each service, whether its inputs are in the store and the state of each
+stage (done, outdated or not run), with the time it took. The menu then offers to run accounts, list and fetch inputs, open the
+outputs folder or check the installation. When it runs accounts it asks which services, which years and how much to run, and it
+prints the command that does the same, so the menu also teaches the commands below.
+
+## Commands
+
+| Command | What it does |
+|:---|:-----|
+| `esa` | Guided menu |
+| `esa status [services]` | Inputs in the store and state of each stage. `--json` for scripts |
+| `esa inputs [services]` | Every input, its source and whether the store holds it |
+| `esa fetch [datasets or services]` | Downloads what is missing into the store. `--dry-run` lists it first |
+| `esa run [services]` | Runs the stages that are not up to date, then renders the reports |
+| `esa run carbon -s accounts` | Runs one stage only (repeat `-s` for several) |
+| `esa run --years 2018,2024` | Limits a run to some reporting years |
+| `esa run --force` | Runs every stage again |
+| `esa report [services]` | Renders the reports from the last run. `--formats html,pdf` |
+| `esa doctor` | Checks the installation, folders, free disk, memory, Quarto and Copernicus keys |
+| `esa clean [services]` | Deletes the working files of a service. `--outputs` also deletes its products |
+
+: Commands. Run any command with `--help` for its options. {#tbl-commands}
+
+Exit codes are 0 for success, 1 for a failed check or an unexpected error, 2 for invalid usage and 3 for inputs or settings that
+cannot be used.
+
+## Stages
+
+Each service runs in stages, in order, and each stage reads what the earlier ones wrote. A stage reruns when its code, the tool
+version or the years change, and the stages after it rerun as well.
+
+| Service | Stages |
+|:--|:----|
+| Crop pollination | `prepare`, `model`, `accounts`, `maps_1km`, `maps_100m` |
+| Wood provision | `prepare`, `accounts`, `maps_1km`, `maps_100m` |
+| Carbon sequestration | `prepare`, `accounts`, `maps_1km`, `maps_100m` |
+
+: Stages of each service. The code annex of each service page describes them. {#tbl-stages}
+
+## Folders and settings
+
+The tool works with three folders, which `esa.toml` in the working folder can set, as can the variables `ESA_STORE`,
+`ESA_OUTPUTS` and `ESA_WORK`.
+
+```toml
+[esa]
+store = "store"       # inputs, as fetched. Shared by all services
+outputs = "outputs"   # products, one folder per service
+work = "work"         # intermediate files, safe to delete
+workers = 8           # processes for the raster steps, default from cores and memory
+formats = ["html", "pdf", "docx"]
+```
+
+The store needs about 5 GB, the outputs about 12 GB for the three services, and the work folder a few GB while the 100 m maps
+are written.
