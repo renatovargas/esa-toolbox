@@ -337,22 +337,95 @@ def fetch_activity(d: Dataset, store: Path, log) -> None:
 
 def fetch_sdm(d: Dataset, store: Path, log) -> None:
     """Bumblebee model, bilinear from 10 km to 1 km, coastal gaps filled in two passes of a 21 by 21 mean."""
-    from scipy import ndimage
+    from esa_toolbox.services.pollination.sdm import fill_coast
 
     g = POLLINATION_GRID
     out = store / "catalogue" / "bumblebee_sdm_1km.tif"
     a = rio.warp(f"/vsicurl/{STAC}bumblebee_species_distribution/bumblebee_composite_richness_eu_cog.tif", g, "bilinear")
-    for _ in range(2):
-        ok = ~np.isnan(a)
-        s = ndimage.uniform_filter(np.where(ok, a, 0).astype("float64"), 21, mode="constant") * 441
-        # The running sums leave noise of about 1e-17 where no neighbour has a value, so the count is rounded
-        # back to whole cells. Without it, cells far out at sea took noise divided by noise.
-        n = np.rint(ndimage.uniform_filter(ok.astype("float64"), 21, mode="constant") * 441)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            fill = np.where(n > 0, s / n, np.nan)
-        a = np.where(ok, a, fill).astype("float32")
-    rio.write(out, a, g, names=["bumblebee_sdm"])
+    rio.write(out, fill_coast(a), g, names=["bumblebee_sdm"])
     log(f"  wrote {out}")
+
+
+# ---------------------------------------------------------------------------------------------------------
+# E-OBS and the bioclimatic layers of the bumblebee model
+# ---------------------------------------------------------------------------------------------------------
+
+EOBS = "https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/Grid_0.25deg_reg_ensemble/{v}_ens_mean_0.25deg_reg_v32.0e.nc"
+EOBS_START = date(1950, 1, 1)
+
+
+def bioclim(tx: np.ndarray, tn: np.ndarray, rr: np.ndarray) -> np.ndarray:
+    """bio04, bio05, bio08 and bio15 from twelve monthly means of daily maximum and minimum temperature (°C)
+    and twelve monthly totals of precipitation (mm), each of shape (12, rows, cols).
+
+    The definitions are those of WorldClim. bio04 is the standard deviation of the monthly mean temperature
+    times 100, bio05 the highest monthly maximum temperature, bio08 the mean temperature of the wettest three
+    consecutive months, with December followed by January, and bio15 the coefficient of variation of monthly
+    precipitation in percent.
+    """
+    tm = (tx + tn) / 2
+    quarter = lambda a: a + np.roll(a, -1, axis=0) + np.roll(a, -2, axis=0)  # noqa: E731
+    wettest = np.where(np.isnan(rr).any(axis=0), 0, np.nan_to_num(quarter(rr), nan=-1.0).argmax(axis=0))
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return np.stack([tm.std(axis=0, ddof=1) * 100, tx.max(axis=0),
+                         np.take_along_axis(quarter(tm) / 3, wettest[None], axis=0)[0],
+                         100 * rr.std(axis=0, ddof=1) / rr.mean(axis=0)])
+
+
+def _eobs_monthly(path: Path, var: str, first: int, last: int, total: bool) -> tuple[np.ndarray, object]:
+    """Monthly means (or totals) of a daily E-OBS file for each year, as (years, 12, rows, cols)."""
+    import rasterio
+
+    out = []
+    with rasterio.open(f"netcdf:{path}:{var}") as s:
+        for y in range(first, last + 1):
+            months = []
+            for m in range(1, 13):
+                b0 = (date(y, m, 1) - EOBS_START).days + 1
+                b1 = (date(y + (m == 12), m % 12 + 1, 1) - EOBS_START).days + 1
+                a = s.read(list(range(b0, b1)), masked=True).astype("float64") * s.scales[0] + s.offsets[0]
+                months.append((a.sum(axis=0) if total else a.mean(axis=0)).filled(np.nan))
+            out.append(months)
+        return np.array(out, dtype="float32"), s.transform
+
+
+def fetch_eobs(d: Dataset, store: Path, log) -> None:
+    """The four bioclimatic layers of each reporting year on the 10 km grid, from the 22 years that end in it.
+
+    The three daily files (2.1 GB) go to a temporary folder of the store and are removed at the end.
+    """
+    from rasterio.warp import Resampling, reproject
+    from scipy import ndimage
+
+    from esa_toolbox.services.pollination.sdm import CLIMATE, CLIMATE_YEARS, GRID10, climate_file
+
+    raw = store / "eobs" / "_download"
+    first, last = min(d.years) - CLIMATE_YEARS + 1, max(d.years)
+    monthly = {}
+    for v in ("tx", "tn", "rr"):
+        f = raw / Path(EOBS.format(v=v)).name
+        if not f.exists():
+            _get(EOBS.format(v=v), f, log)
+        log(f"  monthly values of {v}, {first} to {last}")
+        monthly[v], tr = _eobs_monthly(f, v, first, last, total=v == "rr")
+    import warnings
+
+    for year in d.years:
+        i1 = year - first + 1
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)  # sea cells have no value in any year
+            clim = [np.nanmean(monthly[v][i1 - CLIMATE_YEARS:i1].astype("float64"), axis=0) for v in ("tx", "tn", "rr")]
+        src = bioclim(*clim)
+        dst = np.full((len(CLIMATE), *GRID10.shape), np.nan, dtype="float64")
+        reproject(src, dst, src_transform=tr, src_crs="EPSG:4326", dst_transform=GRID10.transform,
+                  dst_crs=rio.CRS_3035, src_nodata=np.nan, dst_nodata=np.nan, resampling=Resampling.bilinear,
+                  tolerance=0.0)
+        for k in range(len(CLIMATE)):  # E-OBS stops at the coast: cells beyond it take the nearest value
+            idx = ndimage.distance_transform_edt(np.isnan(dst[k]), return_distances=False, return_indices=True)
+            dst[k] = dst[k][tuple(idx)]
+        rio.write(climate_file(store, year), dst.astype("float32"), GRID10, names=list(CLIMATE))
+        log(f"  wrote {climate_file(store, year)}")
+    shutil.rmtree(raw)
 
 
 def fetch_capri(d: Dataset, store: Path, log) -> None:
@@ -520,5 +593,5 @@ def fetch_roads(d: Dataset, store: Path, log) -> None:
 
 
 FETCHERS = {"http": fetch_http, "eea_datashare": fetch_clc, "gisco": fetch_gisco, "eurostat": fetch_eurostat,
-            "stac_activity": fetch_activity, "stac_sdm": fetch_sdm, "stac_capri": fetch_capri,
+            "stac_activity": fetch_activity, "stac_sdm": fetch_sdm, "eobs": fetch_eobs, "stac_capri": fetch_capri,
             "copernicus_s3": fetch_gdmp, "wfs_roads": fetch_roads}

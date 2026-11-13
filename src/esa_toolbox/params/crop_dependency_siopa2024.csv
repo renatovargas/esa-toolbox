@@ -1,0 +1,33 @@
+capri_code,siopa_crop,dependency
+APPL,Apple,0.73
+APPL,Pear,0.74
+APPL,"Peach, nectarine",0.37
+CITR,Orange,0.19
+CITR,"Tangerine, mandarin and clementine",0.75
+CITR,Tangelo,1.00
+CITR,Lemon and lime,0.80
+CITR,Pomelo and grapefruit,0.63
+OFRU,Apricot,0.95
+OFRU,Blueberry,0.53
+OFRU,Cherry,0.82
+OFRU,Cranberry,0.58
+OFRU,Currant,0.42
+OFRU,Fig,0.32
+OFRU,Kiwifruit,0.59
+OFRU,Persimmon,0.60
+OFRU,Plum and sloe,0.60
+OFRU,Raspberry,0.55
+OFRU,Sour cherry,0.75
+OOIL,Cottonseed,0.20
+OOIL,Groundnut,0.22
+OOIL,Linseed,0.03
+OOIL,Sesame seed,0.25
+OOIL,Safflower,0.58
+PULS,Broad bean,0.05
+PULS,Bean,0.19
+PULS,Chickpea,0.27
+RAPE,Oilseed rape,0.27
+SOYA,Soybean,0.19
+SUNF,Sunflower,0.54
+TEXT,Linseed (flax),0.03
+TOMA,Tomato,0.27

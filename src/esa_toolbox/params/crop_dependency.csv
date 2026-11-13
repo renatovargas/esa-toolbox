@@ -1,11 +1,11 @@
-capri_code,crop,dependency,dependency_class,eaa_items,eurostat_group
-APPL,"Apples, pears and peaches",0.65,High,AM061100;AM061200;AM061300,APPL
-OFRU,Other fruits,0.40,Moderate,AM061900,OFRU
-RAPE,Rapeseed,0.25,Moderate,AM021100,RAPE
-SUNF,Sunflower,0.25,Moderate,AM021200,SUNF
-SOYA,Soya,0.25,Moderate,AM021300,SOYA
-OOIL,Other oilseeds,0.175,Moderate,AM021900,OOIL
-PULS,Pulses,0.05,Low,AM022000,PULS
-TEXT,Flax and hemp,0.05,Low,AM029100,TEXT
-TOMA,Tomatoes,0.05,Low,AM041200,TOMA
-CITR,Citrus fruits,0.05,Low,AM062000,CITR
+capri_code,crop,dependency,dependency_class,dependency_klein2007,class_klein2007,eaa_items,eurostat_group
+APPL,"Apples, pears and peaches",0.613,High,0.65,High,AM061100;AM061200;AM061300,APPL
+OFRU,Other fruits,0.61,High,0.40,Moderate,AM061900,OFRU
+RAPE,Rapeseed,0.27,Moderate,0.25,Moderate,AM021100,RAPE
+SUNF,Sunflower,0.54,High,0.25,Moderate,AM021200,SUNF
+SOYA,Soya,0.19,Moderate,0.25,Moderate,AM021300,SOYA
+OOIL,Other oilseeds,0.256,Moderate,0.175,Moderate,AM021900,OOIL
+PULS,Pulses,0.17,Moderate,0.05,Low,AM022000,PULS
+TEXT,Flax and hemp,0.03,Low,0.05,Low,AM029100,TEXT
+TOMA,Tomatoes,0.27,Moderate,0.05,Low,AM041200,TOMA
+CITR,Citrus fruits,0.674,High,0.05,Low,AM062000,CITR

@@ -27,6 +27,7 @@ import polars as pl
 from esa_toolbox import __version__
 
 SERVICES = ("pollination", "wood", "carbon")
+METHOD = "revised"  # the method of a normal run. A service lists the others it offers in `METHODS`
 YEARS = (2000, 2006, 2012, 2018, 2024)
 PARAMS = Path(__file__).parent / "params"
 
@@ -65,6 +66,7 @@ class Settings:
     workers: int = 0
     quarto: str | None = None
     formats: tuple[str, ...] = ("html", "pdf", "docx")
+    method: str = METHOD
     workers_explicit: bool = False
 
     @classmethod
@@ -88,6 +90,10 @@ class Settings:
         s.workers = int(s.workers) or default_workers()
         s.formats = tuple(s.formats)
         return s
+
+    def folder(self, service: str) -> str:
+        """The folder of a service in work/ and outputs/. Another method than the normal one has its own."""
+        return service if self.method == METHOD else f"{service}_{self.method}"
 
     def quarto_path(self) -> str | None:
         for c in (self.quarto, os.environ.get("QUARTO_PATH"), shutil.which("quarto"), *QUARTO_CANDIDATES):
@@ -143,11 +149,15 @@ class Context:
 
     @property
     def out(self) -> Path:
-        return self.settings.outputs / self.service
+        return self.settings.outputs / self.settings.folder(self.service)
 
     @property
     def work(self) -> Path:
-        return self.settings.work / self.service
+        return self.settings.work / self.settings.folder(self.service)
+
+    @property
+    def method(self) -> str:
+        return self.settings.method
 
     def path(self, *parts: str) -> Path:
         p = self.work.joinpath(*parts)
@@ -300,6 +310,12 @@ def service_module(name: str):
     return importlib.import_module(f"esa_toolbox.services.{name}")
 
 
+def check_method(service: str, settings: Settings) -> None:
+    methods = getattr(service_module(service), "METHODS", (METHOD,))
+    if settings.method not in methods:
+        raise EsaError(f"{service} has no method {settings.method!r}. It offers {', '.join(methods)}.")
+
+
 def work_key(*parts: Any) -> str:
     """A short digest of what a piece of work depends on.
 
@@ -363,6 +379,7 @@ def run_service(service: str, settings: Settings, stages: list[str] | None = Non
                 progress: Callable[[str, int, int], None] | None = None) -> list[dict]:
     """Run the stages of one service in order. With no stages named, run those not yet done."""
     mod = service_module(service)
+    check_method(service, settings)
     names = [s.name for s in mod.STAGES]
     if stages:
         unknown = set(stages) - set(names)
@@ -410,6 +427,7 @@ def write_provenance(ctx: Context) -> None:
     doc = {
         "service": ctx.service,
         "tool_version": __version__,
+        "method": ctx.method,
         "written": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "settings": {k: str(v) for k, v in asdict(ctx.settings).items() if k != "quarto"},
         "platform": platform.platform(),

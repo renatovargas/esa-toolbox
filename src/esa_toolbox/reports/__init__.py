@@ -61,9 +61,9 @@ def _inputs_table(service: str, store: Path) -> str:
 
 
 def build(service: str, settings: Settings) -> Path:
-    src = settings.work / service / "report"
+    src = settings.work / settings.folder(service) / "report"
     if not (src / "facts.json").exists():
-        raise EsaError(f"No results for {service} yet. Run `esa run {service}` first.")
+        raise EsaError(f"No results for {settings.folder(service)} yet. Run `esa run {service}` first.")
     b = src / "build"
     if b.exists():
         shutil.rmtree(b)
@@ -75,7 +75,7 @@ def build(service: str, settings: Settings) -> Path:
     shutil.copytree(HERE / "_extensions", b / "_extensions")
     (b / "_data" / "tables").mkdir(parents=True)
     facts = json.loads((src / "facts.json").read_text(encoding="utf-8"))
-    run_file = settings.outputs / service / "run.json"
+    run_file = settings.outputs / settings.folder(service) / "run.json"
     when = date.today().isoformat()
     if run_file.exists():
         stages = json.loads(run_file.read_text()).get("stages", {})
@@ -100,14 +100,15 @@ def render(service: str, settings: Settings, log: Callable[[str], None] = print)
     if not quarto:
         raise EsaError("Quarto is needed for the reports. Install it from https://quarto.org, or set QUARTO_PATH.")
     b = build(service, settings)
-    out_dir = settings.outputs / service / "report"
+    out_dir = settings.outputs / settings.folder(service) / "report"
     out_dir.mkdir(parents=True, exist_ok=True)
     written = []
     for fmt in settings.formats:
         to = "typst" if fmt == "pdf" else fmt
         name = f"{FILE_NAME[service]}.{EXT[to]}"
         log(f"  rendering {name}")
-        r = subprocess.run([quarto, "render", "report.qmd", "--to", to, "--output", name], cwd=b,
+        r = subprocess.run([quarto, "render", "report.qmd", "--to", to, "--output", name,
+                            "-M", f"method-{settings.method}:true"], cwd=b,
                            capture_output=True, text=True)
         if r.returncode != 0:
             tail = "\n".join((r.stderr or r.stdout).strip().splitlines()[-15:])

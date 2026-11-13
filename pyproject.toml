@@ -1,6 +1,6 @@
 [project]
 name = "esa-toolbox"
-version = "0.1.0.dev0"
+version = "0.2.0.dev0"
 description = "Ecosystem service accounts for the EU27: crop pollination, wood provision and carbon sequestration, from downloaded inputs to maps, workbooks and reports."
 readme = "README.md"
 requires-python = ">=3.11"
