@@ -21,6 +21,7 @@ prints the command that does the same, so the menu also teaches the commands bel
 | `esa run carbon -s accounts` | Runs one stage only (repeat `-s` for several) |
 | `esa run --years 2018,2024` | Limits a run to some reporting years |
 | `esa run --force` | Runs every stage again |
+| `esa run pollination --method original` | Runs crop pollination as it was before the revision of 2026, into `outputs/pollination_original/`. `status`, `report` and `clean` take the same option |
 | `esa report [services]` | Renders the reports from the last run. `--formats html,pdf` |
 | `esa doctor` | Checks the installation, folders, free disk, memory, Quarto and Copernicus keys |
 | `esa clean [services]` | Deletes the working files of a service. `--outputs` also deletes its products |
@@ -37,7 +38,7 @@ version or the years change, and the stages after it rerun as well.
 
 | Service | Stages |
 |:--|:----|
-| Crop pollination | `prepare`, `model`, `accounts`, `maps_1km`, `maps_100m` |
+| Crop pollination | `prepare`, `model`, `sdm`, `accounts`, `maps_1km`, `maps_100m` |
 | Wood provision | `prepare`, `accounts`, `maps_1km`, `maps_100m` |
 | Carbon sequestration | `prepare`, `accounts`, `maps_1km`, `maps_100m` |
 

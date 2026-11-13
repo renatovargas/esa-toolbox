@@ -49,8 +49,22 @@ def scores() -> Scores:
     return Scores(suit, agro, semi, eco, ecos)
 
 
-def crops() -> pl.DataFrame:
-    return read_param("crop_dependency.csv")
+def crops(method: str = "revised") -> pl.DataFrame:
+    """Crop groups and their dependency ratio: Siopa et al. (2024), or Klein et al. (2007) in the original method."""
+    t = read_param("crop_dependency.csv")
+    if method == "original":
+        t = t.with_columns(dependency=pl.col("dependency_klein2007"), dependency_class=pl.col("class_klein2007"))
+    return t.select("capri_code", "crop", "dependency", "dependency_class", "eaa_items", "eurostat_group")
+
+
+def dependency_class(ratio: float) -> str:
+    """The classes of Klein et al. (2007), with the labels of the accounts."""
+    return "Essential" if ratio >= 0.9 else "High" if ratio >= 0.4 else "Moderate" if ratio >= 0.1 else "Low"
+
+
+def crop_components() -> pl.DataFrame:
+    """The crops of Siopa et al. (2024) behind each crop group, and their dependency ratios."""
+    return read_param("crop_dependency_siopa2024.csv")
 
 
 def forest_core(clc: np.ndarray) -> np.ndarray:

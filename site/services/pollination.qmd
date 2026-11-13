@@ -28,7 +28,8 @@ Downloads the inputs of the service into the store, the folder that all services
 | NUTS 2024 regions, © EuroGeographics for the administrative boundaries | @gisco2024 | `fetch_gisco` |
 | Major roads of OpenStreetMap, © OpenStreetMap contributors, under the Open Database License | @osm2026 | `fetch_roads` |
 | Activity index, from ERA5 temperature and surface solar radiation | @hersbach2023; @c3s2020; through @klab2026 | `fetch_activity` |
-| Bumblebee species distribution model | @polce2018; through @klab2026 | `fetch_sdm` |
+| Bumblebee species distribution model, published layer of 2012 | @polce2018; through @klab2026 | `fetch_sdm` |
+| Daily E-OBS grids of temperature and precipitation, version 32.0e, 0.25 degrees | @cornes2018 | `fetch_eobs` |
 | Disaggregated CAPRI crop area and yield | @koeble2024; through @klab2026 | `fetch_capri` |
 | Crop production | @eurostatcrops | `fetch_eurostat` |
 | Economic accounts for agriculture | @eurostateaa | `fetch_eurostat` |
@@ -50,8 +51,25 @@ k.LAB project, page by page, and marks every 100 m cell that a road touches.
 computes the index of @eq-activity for each month from April to September on the climate grid, limits it to the range from 0 to 100,
 averages the six months and interpolates the result bilinearly to 1 km. It keeps two decimals and the land within 5 km of the EU27.
 
-**Bumblebees.** `fetch_sdm` interpolates the layer bilinearly from 10 km to 1 km and fills coastal cells without a value with the
-mean of their neighbours in a window of 21 by 21 cells, in two passes.
+**Bumblebees.** `fetch_sdm` interpolates the published layer of 2012 bilinearly from 10 km to 1 km and fills coastal cells without
+a value with the mean of their neighbours in a window of 21 by 21 cells, in two passes.
+
+**Climate of the bumblebee models.** `fetch_eobs` downloads the daily maximum temperature, minimum temperature and precipitation of
+E-OBS, three files of 2.1 GB together, from the server of the Royal Netherlands Meteorological Institute. It reduces them to
+monthly means and totals for each year from 1979, averages the 22 years that end in each reporting year, and computes the four
+bioclimatic variables with the definitions of WorldClim, where the standard deviations are those of a sample. It interpolates
+them bilinearly to the 10 km grid, gives cells beyond the coast of E-OBS the nearest value, writes one file of 1 MB per
+reporting year and removes the download.
+
+**Files inside the package.** Three inputs of the bumblebee models travel with the tool and need no download. The fitted models
+are the 235 Maxent files of 2012, five for each of 47 species, in
+[bumblebee_lambdas_2012.zip](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/bumblebee_lambdas_2012.zip) (0.4 MB). The mode of elevation of each 10 km cell
+is in [elevation_mode_10km.tif](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/elevation_mode_10km.tif) (0.2 MB). It does not change between years, and
+building it reads about 8 GB of tiles of the Copernicus digital elevation model at 90 m [@copernicusdem], so the package carries
+the result and [elevation.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/elevation.py) records how it was made. Each cell of the elevation model is
+rounded to a whole metre and counted in the 10 km cell that holds its centre, and cells of exactly 0 m, the sea of that model,
+are left out. The presence thresholds of the species are in
+[bumblebee_thresholds.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/bumblebee_thresholds.csv).
 
 **Crops.** `fetch_capri` reads area and yield of the ten crop groups from the catalogue for 2000, 2006, 2012 and 2018 and writes one
 stack of each per year, with three decimals.
@@ -77,6 +95,14 @@ Reads the NUTS 2024 regions of the EU27, numbers the NUTS3 regions in order of t
 
 Runs the expert-based model at 100 m in tiles of 500 km, in parallel. Each tile reads Corine, the major roads and the activity index, computes the exact distance to semi-natural areas with a margin of 20 km, applies the five steps of the model and masks the result to the EU27. The same pass reduces the model to 1 km, with the mean over land and over farmland, the number of land and farmland cells and the sum on each ecosystem type, which the later stages read. It also keeps the 100 m model of each tile in `work/pollination/prep/ebm_100m/`, about 1 GB a year, for the 100 m maps.
 
+## `sdm` {#code-sdm .unnumbered}
+
+[sdm.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/sdm.py), [maxent.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/maxent.py) · `esa run pollination -s sdm`
+
+Builds the bumblebee layer of each reporting year. For each year it computes the land cover layers of the species models on the 10 km grid, in tiles of 500 km and in parallel, namely the percentage of each cell in sixteen groups of Corine classes and the mean distance to semi-natural areas, and keeps them in `work/pollination/prep/`. It reads the climate layers of the year from the store and the elevation layer from the package, and rounds land cover, climate and elevation to whole numbers, as the layers of the fitted models were. `maxent.py` reads the model files and evaluates them with NumPy, with no Java. It accepts linear and hinge features, limits each layer to the range of the fitted model, and returns the complementary log-log output. The stage takes the mean of the five models of each species, counts a species as present at or above its threshold, and takes the mean probability of the species present.
+
+The layer of a year is the published layer of 2012 plus the change of this projection since 2012 (@eq-bumblebee), interpolated bilinearly from 10 km to 1 km and limited to the range from 0 to 1. The stage also projects the land cover of each year with the climate of 2012, and the reverse, for the table that separates the two drivers, and it compares the projection for 2012 with the published layer. Each projection is redone only when its code, its parameters or its input files change.
+
 ## `accounts` {#code-accounts .unnumbered}
 
 [tables.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/tables.py), [model.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/model.py) · `esa run pollination -s accounts`
@@ -93,7 +119,14 @@ Writes the 1 km maps of potential, its classes, demand, flow, unmet demand and v
 
 [maps.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/pollination/maps.py) · `esa run pollination -s maps_100m`
 
-Reads the 100 m model that the model stage kept for each tile and writes eight maps per year as whole numbers, which allocate the 1 km values within each kilometre. Each tile compares its maps with the 1 km maps, and the tiles are joined into Cloud Optimised GeoTIFF files without overviews. Each tile goes through in strips of 20 km, which keeps the arrays small enough for the processor cache.
+Reads the 100 m model that the model stage kept for each tile and the bumblebee layer of the year, and writes eight maps per year as whole numbers, which allocate the 1 km values within each kilometre. Each tile compares its maps with the 1 km maps, and the tiles are joined into Cloud Optimised GeoTIFF files without overviews. Each tile goes through in strips of 20 km, which keeps the arrays small enough for the processor cache.
+
+# The original method {#code-original .unnumbered}
+
+`esa run pollination --method original` calculates the accounts as they were before the revision of 2026, with the dependency
+ratios of @klein2007 and the published bumblebee layer of 2012 for every year. It writes to its own folders,
+`outputs/pollination_original/` and `work/pollination_original/`, so it never replaces the products of a normal run, and its
+report describes the original method. The option is absent from the guided menu, and a run without it uses the revised method.
 
 # References {.unnumbered}
 

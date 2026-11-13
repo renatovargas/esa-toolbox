@@ -16,7 +16,7 @@ from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn
 from rich.table import Table
 
 from esa_toolbox import __version__
-from esa_toolbox.core import SERVICES, YEARS, EsaError, Settings, available_memory_gb, run_service, service_module, stage_status
+from esa_toolbox.core import METHOD, SERVICES, YEARS, EsaError, Settings, available_memory_gb, run_service, service_module, stage_status
 
 app = typer.Typer(name="esa", help="Ecosystem service accounts for the EU27, from inputs to maps, workbooks and reports.",
                   no_args_is_help=False, add_completion=False, pretty_exceptions_enable=False, rich_markup_mode="rich")
@@ -26,18 +26,23 @@ out = Console()
 ServicesArg = Annotated[Optional[list[str]], typer.Argument(help="Services: pollination, wood, carbon. All when omitted.")]
 ConfigOpt = Annotated[Optional[Path], typer.Option("--config", "-c", help="Settings file (default esa.toml).")]
 JsonOpt = Annotated[bool, typer.Option("--json", help="Print results as JSON on stdout.")]
+MethodOpt = Annotated[Optional[str], typer.Option(
+    "--method", help="`original` runs crop pollination as before the revision of 2026, into its own folders.")]
 
 
 def _settings(config: Path | None, **kw) -> Settings:
     return Settings.load(config, **kw)
 
 
-def _services(names: list[str] | None) -> list[str]:
-    names = names or list(SERVICES)
-    for n in names:
+def _services(names: list[str] | None, settings: Settings | None = None) -> list[str]:
+    """The services named, or all of them. With another method than the normal one, all means those that offer it."""
+    chosen = names or list(SERVICES)
+    for n in chosen:
         if n not in SERVICES:
             raise EsaError(f"Unknown service {n!r}. Choose among {', '.join(SERVICES)}.")
-    return names
+    if settings is not None and not names:
+        chosen = [n for n in chosen if settings.method in getattr(service_module(n), "METHODS", (METHOD,))]
+    return chosen
 
 
 def _fail(exc: Exception) -> None:
@@ -83,7 +88,7 @@ def status_tables(settings: Settings, services: list[str]) -> list[Table]:
             colour = {"done": "green", "outdated": "yellow", "not run": "dim"}[r["state"]]
             t.add_row(f"{r['stage']}", f"[{colour}]{r['state']}[/]", (r["when"] or "")[5:16].replace("T", " "),
                       f"{r['seconds']:.0f} s" if r["seconds"] else "")
-        rep = settings.outputs / s / "report"
+        rep = settings.outputs / settings.folder(s) / "report"
         files = sorted(p.suffix[1:] for p in rep.glob(f"{s}*.*")) if rep.exists() else []
         t.add_row("report", f"[green]{', '.join(files)}[/]" if files else "[dim]not rendered[/]", "", "")
         tables.append(t)
@@ -91,11 +96,12 @@ def status_tables(settings: Settings, services: list[str]) -> list[Table]:
 
 
 @app.command()
-def status(services: ServicesArg = None, config: ConfigOpt = None, as_json: JsonOpt = False) -> None:
+def status(services: ServicesArg = None, method: MethodOpt = None, config: ConfigOpt = None,
+           as_json: JsonOpt = False) -> None:
     """Show which inputs are in the store and which steps are done, for each service."""
     try:
-        st = _settings(config)
-        names = _services(services)
+        st = _settings(config, method=method)
+        names = _services(services, st)
         if as_json:
             out.print_json(json.dumps({s: stage_status(s, st) for s in names}))
             return
@@ -161,7 +167,7 @@ def run_with_progress(settings: Settings, services: list[str], stages: list[str]
                 render(s, settings, log=log)
             dt = time.perf_counter() - t0
             names = ", ".join(r["stage"] for r in ran) or "nothing to do"
-            progress.console.print(f"[green]✓[/] {s}: {names} ({dt:,.0f} s). Outputs in {settings.outputs / s}")
+            progress.console.print(f"[green]✓[/] {s}: {names} ({dt:,.0f} s). Outputs in {settings.outputs / settings.folder(s)}")
 
 
 @app.command()
@@ -172,16 +178,17 @@ def run(
     force: Annotated[bool, typer.Option("--force", help="Run every stage again, even those up to date.")] = False,
     workers: Annotated[Optional[int], typer.Option(help="Processes for the raster steps.")] = None,
     no_report: Annotated[bool, typer.Option("--no-report", help="Skip the report.")] = False,
+    method: MethodOpt = None,
     config: ConfigOpt = None,
 ) -> None:
     """Calculate the accounts of one or more services, resuming where a run stopped, then render their reports."""
     try:
-        st = _settings(config, workers=workers)
+        st = _settings(config, workers=workers, method=method)
         ys = tuple(int(y) for y in years.split(",")) if years else YEARS
         bad = set(ys) - set(YEARS)
         if bad:
             raise EsaError(f"Reporting years are {', '.join(map(str, YEARS))}, not {', '.join(map(str, sorted(bad)))}")
-        run_with_progress(st, _services(services), stage, ys, force, report=not no_report)
+        run_with_progress(st, _services(services, st), stage, ys, force, report=not no_report)
     except Exception as e:  # noqa: BLE001
         _fail(e)
 
@@ -189,13 +196,13 @@ def run(
 @app.command()
 def report(services: ServicesArg = None,
            formats: Annotated[Optional[str], typer.Option(help="Comma-separated: html, pdf, docx.")] = None,
-           config: ConfigOpt = None) -> None:
+           method: MethodOpt = None, config: ConfigOpt = None) -> None:
     """Render the results report of each service from its last run, in HTML, PDF and Word."""
     from esa_toolbox.reports import render
 
     try:
-        st = _settings(config, formats=tuple(formats.split(",")) if formats else None)
-        for s in _services(services):
+        st = _settings(config, formats=tuple(formats.split(",")) if formats else None, method=method)
+        for s in _services(services, st):
             for f in render(s, st, log=console.print):
                 out.print(f"[green]✓[/] {f}")
     except Exception as e:  # noqa: BLE001
@@ -260,11 +267,11 @@ def fetch(
 def clean(services: ServicesArg = None,
           outputs: Annotated[bool, typer.Option("--outputs", help="Also delete the outputs folder of the service.")] = False,
           yes: Annotated[bool, typer.Option("--yes", "-y", help="Do not ask.")] = False,
-          config: ConfigOpt = None) -> None:
+          method: MethodOpt = None, config: ConfigOpt = None) -> None:
     """Delete the working files of a service, so the next run starts from the store."""
-    st = _settings(config)
-    for s in _services(services):
-        targets = [st.work / s] + ([st.outputs / s] if outputs else [])
+    st = _settings(config, method=method)
+    for s in _services(services, st):
+        targets = [st.work / st.folder(s)] + ([st.outputs / st.folder(s)] if outputs else [])
         targets = [t for t in targets if t.exists()]
         if not targets:
             continue

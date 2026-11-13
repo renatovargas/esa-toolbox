@@ -12,7 +12,7 @@ and each one builds on the one before.
 Two groups of bees enter it, and they are known from different evidence, so the method models them separately and takes the mean.
 Solitary bees, which fly short distances, are described by an expert-based model that scores land cover and then corrects the score
 for roads, forest interiors, isolation and climate. Bumblebees are described by a species distribution model, which learns from records of
-where species were seen. Cells with a potential of at least 0.2 form the **service providing area**, where pollinators are assumed to be
+where species were seen[ and is projected to the land cover and climate of each year]{.content-visible unless-meta="method-original"}. Cells with a potential of at least 0.2 form the **service providing area**, where pollinators are assumed to be
 present. **Demand** answers the question of where the service is needed, and it is the area of crops that benefit from insect
 pollination. **Actual flow** brings the two together, as the production attributable to pollination where demand and the service
 providing area overlap, and **unmet demand** is the same quantity where they do not. Valuation then separates the share of the value of
@@ -27,6 +27,44 @@ and mapped at 100 m.
 Several inputs come from the public catalogue of the k.LAB project [@klab2026], an open web service of harmonised layers for this
 same service, which a program can read directly from an address. We call it the catalogue from here on. Where a step could use more than
 one input, the text below says which one we chose and why. The sections follow the order of the chain.
+
+::: {.content-visible unless-meta="method-original"}
+A revision of the method was conducted in 2026 to bring two of its components up to date with newer evidence. The dependency
+ratios of the crops, which the method took from @klein2007, now come from the quantitative review of @siopa2024, which required a
+crosswalk between the crops of that review and the crop groups of the accounts. The bumblebee model, which was one layer for all
+years, is now projected to the land cover and climate of each reporting year from the fitted species models of 2012, which required
+rebuilding the layers that those models read. The sections on the bumblebee model and on the actual flow describe both changes. The
+accounts as they were before the revision remain available as the original method.
+
+::: {.content-visible when-meta="results"}
+@tbl-revision compares the accounts of the EU27 before and after the revision. The comparison was made once, when the revision
+was adopted, and the table keeps its result. The area of demand is the same in both, because it depends on neither change. The
+ratios alone explain the difference in 2012, a year in which both methods use the same bumblebee layer. Unmet demand rises more
+than the actual flow, because three of the crops whose ratios rise the most, citrus fruits, sunflower and tomatoes, grow mostly
+outside the service providing area. With the projected bumblebee layer the service providing area no longer expands over the series, since the
+decline of the bumblebee layer under a warmer climate offsets the rise of the activity index in the expert-based model.
+
+| Year | Method | Service providing area (Mha) | Demand (Mha) | Met demand (%) | Actual flow (Mt) | Unmet demand (Mt) | Value of flow (M EUR 2010) | Value of unmet demand (M EUR 2010) |
+|---:|:---|---:|---:|---:|---:|---:|---:|---:|
+| 2000 | Original | 225.9 | 13.78 | 48.2 | 12.14 | 9.00 | 5,417 | 4,473 |
+| 2000 | Revised | 231.3 | 13.78 | 49.9 | 18.56 | 15.58 | 8,409 | 7,352 |
+| 2006 | Original | 230.1 | 14.67 | 51.7 | 12.19 | 9.24 | 5,248 | 4,149 |
+| 2006 | Revised | 232.3 | 14.67 | 52.9 | 18.14 | 16.94 | 7,726 | 7,120 |
+| 2012 | Original | 229.5 | 14.67 | 52.7 | 12.79 | 9.20 | 5,978 | 4,310 |
+| 2012 | Revised | 229.5 | 14.67 | 52.7 | 18.55 | 17.36 | 8,677 | 7,335 |
+| 2018 | Original | 234.5 | 17.49 | 52.3 | 14.09 | 10.71 | 6,323 | 4,655 |
+| 2018 | Revised | 229.3 | 17.49 | 50.2 | 19.74 | 20.52 | 9,058 | 8,285 |
+| 2024 | Original | 239.8 | 17.57 | 53.0 | 14.36 | 9.86 | 6,773 | 4,829 |
+| 2024 | Revised | 228.7 | 17.57 | 51.4 | 19.94 | 19.19 | 9,682 | 8,746 |
+
+: Accounts of the EU27 with the original and the revised method. {#tbl-revision}
+:::
+:::
+
+::: {.content-visible when-meta="method-original"}
+This run uses the original method of the accounts, which precedes the revision of 2026. It takes the dependency ratios of the
+crops from @klein2007 and uses the published bumblebee layer of 2012 for every year.
+:::
 
 ## Territory and reporting regions
 
@@ -163,13 +201,111 @@ of each kilometre, which keeps sea cells from diluting the score of a coastal ki
 
 The second model estimates where bumblebees occur, and it works differently from the first. Where the expert-based model reasons from the scores of land
 cover, a species distribution model learns from observations, by relating the places where a species was recorded to the climate, land cover and terrain of those
-places, and then predicting where else it could live. The method fits such a model to records of 47 species on a grid of 10 km and
-projects it to each period, which requires the fitted models. These are unavailable, so a decision was made to use the published
-aggregated layer of @polce2018, which gives the mean probability of occurrence of the 47 species at 10 km. To combine it with the expert-based model we interpolated it
+places, and then predicting where else it could live. The method fits such a model with Maxent to the records of each of 47 species on a grid of 10 km,
+and @polce2018 publish the result for 2012 as one layer, the mean probability of occurrence of the species present in each cell.
+
+::: {.content-visible when-meta="method-original"}
+The original method uses this published layer for every year. To combine it with the expert-based model we interpolated it
 bilinearly to 1 km. A grid this coarse does not reach every stretch of coast, so land cells left without a value there took the mean of their neighbours within 10
-km[\ (see the stage [`fetch`](#code-fetch) in the code annex)]{.content-visible unless-meta="results"}.[\ Its values run from {{< fact sdm_min >}} to
-{{< fact sdm_max >}} on land.]{.content-visible when-meta="results"} The layer does not change over time, so all change in
-potential over the series comes from land cover and climate.
+km.[\ Its values run from {{< fact sdm_min >}} to {{< fact sdm_max >}} on land.]{.content-visible when-meta="results"} The layer does not change over time, so all change in
+potential over the series comes from land cover and climate through the expert-based model.
+:::
+
+::: {.content-visible unless-meta="method-original"}
+The published layer describes 2012, and used for every year it would leave bumblebees out of any change in the accounts. The
+revision of 2026 therefore projects the fitted models of the 47 species, which the Joint Research Centre keeps as Maxent files
+of 2012, to the land cover and climate of each reporting year. @prestele2021 project the same models to scenarios of climate and
+land use in a similar way. A projection keeps each model as it was fitted and changes only the layers that it reads, so it
+answers the question of where the conditions that suited a species in 2012 are found in another year[\ (see the stage
+[`sdm`](#code-sdm) in the code annex)]{.content-visible unless-meta="results"}.
+
+### Layers of each year
+
+The models read 22 layers on the 10 km grid, and a projection needs the same layers for the year in question. The original
+layers are not published, so we rebuilt them from primary sources, following their description in @vallecillo2018.
+
+**Land cover.** Sixteen layers give the percentage of each 10 km cell that a group of Corine classes covers, such as arable land,
+pastures or coniferous forest. We computed them from the Corine accounting layers of each year, the same maps that the
+expert-based model reads, with the groups of the method[\ (parameter file
+[sdm_land_classes.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/sdm_land_classes.csv))]{.content-visible unless-meta="results"}.
+One more layer is the mean distance to semi-natural areas within the cell, in kilometres. It is the mean of the 100 m distance of
+the expert-based model, limited to 20 km.
+
+**Climate.** Four layers describe climate, namely temperature seasonality, the maximum temperature of the warmest month, the mean
+temperature of the wettest quarter and precipitation seasonality. The method derives them from the daily E-OBS grids of minimum
+and maximum temperature and precipitation over the 22 years from 1991 to 2012 [@cornes2018]. We computed them in the same way for
+the 22 years that end in each reporting year, so 1979 to 2000 stands for 2000 and 2003 to 2024 for 2024. A window this long
+describes climate and not the weather of one year, and it moves slowly, since two consecutive reporting years share 16 of their
+22 years. We used version 32.0e of E-OBS on its grid of 0.25 degrees, the resolution of the releases that existed when the
+models were fitted, and interpolated the four variables bilinearly to the 10 km grid[\ (see the stage [`fetch`](#code-fetch) in
+the code annex)]{.content-visible unless-meta="results"}.
+
+**Elevation.** The last layer is the most frequent elevation in each cell, which the method took from a digital elevation model
+of about 90 m. We computed it from the Copernicus digital elevation model of the same resolution [@copernicusdem]. Elevation
+does not change between years, so one layer serves all of them.
+
+### Projection
+
+Maxent stores a fitted model as a list of features of the layers, each with a weight, and the models of the method hold hinge
+features only. A hinge feature is zero up to a knot and rises linearly beyond it, or the reverse. The weighted sum of the
+features gives the relative suitability of a cell, and the complementary log-log transformation turns it into a value between
+0 and 1 that the method reads as a probability of occurrence [@phillips2017]. We evaluated these equations directly from the
+model files. Every layer is first limited to the range it had when the models were fitted, the default of Maxent, so that a
+model is never asked about conditions it did not see. Each species has five models, from five rounds of cross-validation, and
+takes their mean.
+
+The method then combines the species. A species counts as present in a cell where its probability reaches a threshold, and the
+value of the cell is the mean probability of the species present there. The method takes as threshold the lowest probability at
+any place where the species was recorded, which depends on the records and is not part of the model files. We used one
+threshold for all species, 0.03, the value at which the projection for 2012 comes closest to the published
+layer.
+
+Open question. The thresholds of the fitted models would replace the common threshold if they become available.
+
+### From the projection to the layer of each year
+
+The projection for 2012 can be compared with the published layer of 2012, which the same models gave from the original
+layers.[\ Over the {{< fact sdm_base_cells >}} land cells of the EU27 at 1 km the two have a correlation of
+{{< fact sdm_base_r >}}, means of {{< fact sdm_base_mean >}} and {{< fact sdm_published_mean >}}, and a mean absolute
+difference of {{< fact sdm_base_mae >}}.]{.content-visible when-meta="results"} The agreement confirms the reading of the models and the rebuilt
+layers. The difference that remains comes from what could not be reproduced exactly, namely the release of the climate grids,
+the elevation model and the thresholds, and it is as large as the changes of the projection between years. Replacing
+the published layer with the projection would therefore move the accounts of every year for reasons unrelated to bumblebees.
+
+A decision was made to take from the projection only its change over time. The bumblebee layer $B_y$ of year $y$ is the
+published layer of 2012 plus the change of the projection $\hat{B}$ between 2012 and that year, limited to the range from 0 to 1.
+
+$$
+B_y = B^{pub}_{2012} + \left(\hat{B}_y - \hat{B}_{2012}\right)
+$$ {#eq-bumblebee}
+
+Both terms of the change come from the same models and the same sources, so what the rebuilt layers miss cancels out, and 2012
+keeps the published layer. The change is computed on the 10 km grid and interpolated bilinearly to 1 km, as the published layer
+is. A grid this coarse does not reach every stretch of coast, so land cells left without a value there took the mean of their
+neighbours within 10 km.
+
+::: {.content-visible when-meta="results"}
+@tbl-sdm-projection shows the projection of each year on the land of the EU27. Its mean goes from
+{{< fact sdm_projected_first >}} in {{< fact sdm_first_year >}} to {{< fact sdm_projected_last >}} in
+{{< fact sdm_last_year >}}. Projecting the land cover of each year with the climate of 2012, and the reverse, separates the two
+drivers. Of the change of {{< fact sdm_change_last >}} between 2012 and {{< fact sdm_last_year >}}, climate alone gives
+{{< fact sdm_last_from_climate >}} and land cover alone {{< fact sdm_last_from_land >}}. The maximum temperature of the warmest
+month rises from {{< fact sdm_bio05_first >}} to {{< fact sdm_bio05_last >}} °C between the two ends of the series
+(@tbl-sdm-layers).
+
+::: {#tbl-sdm-projection}
+{{< datatable sdm_projection >}}
+
+Projection of the bumblebee models on the land of the EU27, at 10 km. The columns of land cover and climate change one driver and hold the other at 2012.
+:::
+
+::: {#tbl-sdm-layers}
+{{< datatable sdm_layers >}}
+
+Mean on the land of the EU27 of the climate layers and of the distance to semi-natural areas that the bumblebee models read.
+:::
+:::
+:::
 
 ## Pollination potential and the service providing area
 
@@ -198,7 +334,7 @@ the note in the Introduction explains]{.content-visible when-meta="results"}.
 ::: {#tbl-dependency}
 {{< datatable dependency >}}
 
-Crop groups, dependency on insect pollination (Klein et al., 2007) and items of the economic accounts for agriculture (Vallecillo et al., 2018).
+Crop groups, their dependency on insect pollination and the items of the economic accounts for agriculture (Vallecillo et al., 2018).
 :::
 :::
 
@@ -226,8 +362,8 @@ Crop area in the three countries in 2018, in hectares, and the actual flow estim
 ## Actual flow and unmet demand
 
 Overlaying demand on the service providing area shows which crops have pollinators nearby, and the accounts then need to express this as production. Not all the production
-of a crop is due to insects, so the method uses the dependency ratio $\delta_c$ of @klein2007, the share of the production of a crop attributable to pollination, which goes from 65 percent for
-apples, pears and peaches to 5 percent for tomatoes, citrus, pulses, flax and hemp[\ (@tbl-dependency)]{.content-visible when-meta="results"}. The actual flow of crop $c$ in cell $i$ is its production times this ratio when the cell
+of a crop is due to insects, so the method uses a dependency ratio $\delta_c$, the share of the production of a crop attributable to pollination[, taken from @klein2007. It goes from 65 percent for
+apples, pears and peaches to 5 percent for tomatoes, citrus, pulses, flax and hemp]{.content-visible when-meta="method-original"}[\ (@tbl-dependency)]{.content-visible when-meta="results"}. The actual flow of crop $c$ in cell $i$ is its production times this ratio when the cell
 belongs to the service providing area $\Omega$. A cell is either inside or outside, with no gradation by level of potential. Unmet demand applies the same product to the cells outside it, so flow and unmet
 demand add up to all production that depends on pollination.
 
@@ -239,6 +375,40 @@ $$ {#eq-flow}
 Here $a$ is the crop area, $y$ the yield and $k$ a scaling factor for the crop and country, explained below. A decision was made to
 measure unmet demand in tonnes by analogy with the flow, because the method defines it by area only and the monetary accounts
 need a physical quantity. We report the area of met and unmet demand as well.
+
+::: {.content-visible unless-meta="method-original"}
+### Dependency ratios
+
+The method took the ratios from @klein2007, who assign each crop to a class of dependence and give the range of production loss of
+the class. The revision of 2026 replaced them with the values of @siopa2024, a quantitative review that derives a mean ratio for
+each of 141 crops from field experiments that compare flowers with and without access for pollinators. The review reports single
+crops, whereas the accounts work with the ten crop groups of CAPRI, so the two had to be linked with a crosswalk. A group that
+corresponds to one crop of the review takes its ratio, which is the case of rapeseed, soya, sunflower and tomatoes. Flax and hemp
+take the ratio of flax, since the review holds no value for hemp. A group of several crops takes the simple mean of the ratios of
+its crops that the review covers[\ (@tbl-dependency-revision)]{.content-visible when-meta="results"}[. The parameter file
+[crop_dependency_siopa2024.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/crop_dependency_siopa2024.csv)
+lists the crops of each group, and [crop_dependency.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/crop_dependency.csv)
+holds the resulting ratios beside those of @klein2007]{.content-visible unless-meta="results"}.
+
+The ratios now go from 3 percent for flax and hemp to 67 percent for citrus fruits. Most groups move up, in line with the
+review, which finds more crops in the classes of high dependence than @klein2007 did. Citrus fruits, tomatoes, sunflower, pulses
+and other fruits rise the most, and apples, pears and peaches, soya, and flax and hemp fall slightly. The ratio enters the actual
+flow, the unmet demand and their values in direct proportion, and it leaves potential, the service providing area and the area of
+demand unchanged.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-dependency-revision}
+{{< datatable dependency_revision >}}
+
+Crosswalk between the crop groups of the accounts and the crops of Siopa et al. (2024), with the ratio of each group and the earlier ratio of Klein et al. (2007).
+:::
+:::
+
+The mean of a group counts each of its crops once, whatever its production in the European Union.
+
+Open question. Weighting the crops of a group by their production would lower the ratio of citrus fruits, because oranges, the
+main citrus crop of the European Union, have the lowest ratio of the group.
+:::
 
 ### Scaling to national statistics
 
@@ -334,7 +504,7 @@ The tables say how much the service is worth in each region, and the maps show w
 the tables, and then read their totals back from disk to compare them with the tables[\ (see the stage [`maps_1km`](#code-maps_1km) in the code annex)]{.content-visible unless-meta="results"}. These 1 km maps are working layers of the accounts and not a product in themselves. The 100 m maps are built from them[, and they also give the map figures of this report]{.content-visible when-meta="results"}.
 
 The 100 m maps add spatial detail in two ways[\ (see the stage [`maps_100m`](#code-maps_100m) in the code annex)]{.content-visible unless-meta="results"}. Potential is computed directly as the mean of
-the 100 m expert-based model and the bumblebee model interpolated to 100 m. The other quantities exist only at 1 km, so they are
+the 100 m expert-based model and the bumblebee model of the same year interpolated to 100 m. The other quantities exist only at 1 km, so they are
 allocated within each kilometre, and each kilometre keeps its total. Demand, unmet demand and the flow and value on agroecosystems go
 to agricultural cells, and the flow for all ecosystem types goes to all land cells in proportion to their expert-based suitability. A
 kilometre with no positive weight spreads its value evenly over its land cells. The detail within each kilometre therefore comes from

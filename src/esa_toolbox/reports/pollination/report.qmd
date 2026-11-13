@@ -32,7 +32,8 @@ Results of esa-toolbox {{< fact tool_version >}}, run on {{< fact run_date >}}, 
 # Summary {.unnumbered}
 
 We provide estimates of the crop pollination ecosystem service for the 27 Member States of the European Union in 2000, 2006,
-2012, 2018 and 2024, following the accounting method of @vallecillo2018. In 2024, crops that depend on insect pollination
+2012, 2018 and 2024, following the accounting method of @vallecillo2018[, with the dependency ratios of @siopa2024 and the
+bumblebee model projected to each year]{.content-visible unless-meta="method-original"}[, in its original form]{.content-visible when-meta="method-original"}. In 2024, crops that depend on insect pollination
 cover {{< fact demand_mha_2024 >}} million hectares, and {{< fact met_pct_2024 >}} percent of that area lies where the
 environment can support wild pollinators. The production attributable to the service is {{< fact flow_mt_2024 >}} million
 tonnes, against {{< fact flow_mt_2000 >}} million tonnes in 2000, and another {{< fact unmet_mt_2024 >}} million tonnes depend
@@ -184,14 +185,29 @@ model does not include pesticides or fertilisers, for which data are lacking acr
 bees and bumblebees only. The land cover scores are expert judgements, and the method does not attach uncertainty to them. Using
 the separate edge scores of Table S3 in @zulian2013 would raise the suitability of forest edges by 0.1, an effect that we have
 not measured. The service providing area is a threshold, so a small change in potential can move a cell in or out of it. The
-bumblebee layer is static and the road map is one snapshot, so neither contributes to change over time, and the change in
-potential leans on climate.
+road map is one snapshot, so it does not contribute to change over time.
+
+::: {.content-visible when-meta="method-original"}
+The bumblebee layer is static, so it does not contribute to change over time either, and the change in potential leans on the
+climate of the expert-based model.
+:::
+
+::: {.content-visible unless-meta="method-original"}
+**Bumblebees.** The species models are those fitted to the records and layers of 2012, and a projection assumes that each species
+keeps the same relation to its environment. The layers of each year are rebuilt from current releases of their sources, and the
+accounts use the projection for change only, so the level of the bumblebee layer remains that of the published layer of 2012. One
+presence threshold serves all species in place of the thresholds of the fitted models. The climate layers describe 22 years, so
+the bumblebee layer responds to climate gradually, and it does not show the effect of a single hot or dry year. Every layer is
+limited to the range of the fitted models, so a climate warmer than any of 2012 counts as the warmest then observed.
+:::
 
 **Crops.** Demand and yield come from a model that disaggregates regional data to 1 km, so the location of a crop within a region
 is an estimate. The crop area and yield of 2018 stand in for 2024, which is the largest assumption in the series. Demand is
 reported in the hectares of CAPRI, which for flax and hemp are several times those of Eurostat, although this crop group weighs
-little in the flow. Dependency ratios are fixed literature values, and more recent reviews propose different values for some
-crops.
+little in the flow.[\ Dependency ratios are fixed literature values, and more recent reviews propose different values for some
+crops.]{.content-visible when-meta="method-original"}[\ Dependency ratios are means of field experiments from many regions and cultivars, and the ratio of a
+crop group is the simple mean of its crops, so it does not reflect which crops and cultivars of the group are grown in each
+country.]{.content-visible unless-meta="method-original"}
 
 **Flow.** Actual flow treats a crop as pollinated when it grows in the service providing area, with no measure of how much
 pollination it receives. Changes in flow also reflect changes in production for reasons other than pollination, so change in the

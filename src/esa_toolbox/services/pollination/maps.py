@@ -13,7 +13,7 @@ import polars as pl
 from esa_toolbox import figures, forestmaps, nuts, rio
 from esa_toolbox.core import Context, work_key
 from esa_toolbox.pool import run as pool_run
-from esa_toolbox.services.pollination import model
+from esa_toolbox.services.pollination import model, sdm
 from esa_toolbox.services.pollination.inputs import (GRID, GRID100, cached_model_tile, model_cache, model_key,
                                                      regions_table, supply_bands, tiles, zones)
 from esa_toolbox.services.pollination.tables import CROP_NOTE, capri, potential, to_nuts_levels
@@ -30,7 +30,7 @@ def write_1km(ctx: Context, a: np.ndarray, name: str, year: int, digits: int = 3
 
 def account_maps(ctx: Context, year: int, factors: pl.DataFrame, prices: pl.DataFrame) -> dict[str, np.ndarray]:
     regions = regions_table(ctx)
-    crops = model.crops()
+    crops = model.crops(ctx.method)
     zc = zones(ctx, crop_data_only=True)
     area, yld = capri(ctx, year)
     pot = potential(ctx, year)
@@ -213,7 +213,7 @@ QUANTITIES = {  # name: (1 km map it allocates, weight, units per 1 km unit)
 STRIP = 200  # rows of 100 m processed at once: 20 km, a whole number of 1 km rows
 
 
-def _maps_job(store: str, out_1km: str, year: int, tile, tile_dir: str, cache: str):
+def _maps_job(store: str, out_1km: str, year: int, tile, tile_dir: str, cache: str, sdm_1km: str):
     """The 100 m maps of one tile and their comparison with the 1 km maps.
 
     Every step works within a 1 km cell, so the tile goes through in strips of 1 km rows. Small arrays stay in
@@ -222,7 +222,7 @@ def _maps_job(store: str, out_1km: str, year: int, tile, tile_dir: str, cache: s
     """
     m = cached_model_tile(Path(store), year, tile, Path(cache))
     ebm_t, clc_t = m["ebm"], m["clc"]
-    sdm_t = rio.warp(Path(store) / "catalogue" / "bumblebee_sdm_1km.tif", tile, "bilinear")
+    sdm_t = rio.warp(sdm_1km, tile, "bilinear")
     t1 = tile.with_res(1000)
     read1 = lambda name: rio.read(Path(out_1km) / f"pollination_{name}_1km_{year}.tif", t1,  # noqa: E731
                                   as_float=True).astype("float64")
@@ -285,14 +285,15 @@ def maps_100m(ctx: Context) -> None:
         used = sorted({m1(ctx, src, y) for src, _, _ in QUANTITIES.values() if src} |
                       {m1(ctx, q.replace("_x10000", ""), y) for q, (src, _, _) in QUANTITIES.items() if not src})
         key = work_key(sys.modules[__name__], model, forestmaps, rio, y, mkey,
-                       ctx.store / "catalogue" / "bumblebee_sdm_1km.tif", *(p.read_bytes() for p in used))
+                       sdm.file_1km(ctx, y), *(p.read_bytes() for p in used))
         if ctx.year_done("maps_100m", y, key, done, *(ctx.out / "maps" / "100m" / n for n in names.values())):
             rows.append(pl.read_parquet(done))
             continue
         cache = model_cache(ctx.work, y, mkey)
         ctx.log(f"  {y}: {len(QUANTITIES)} maps on {len(ts)} tiles")
         tile_dir = ctx.path("maps_100m", "tiles")
-        res = pool_run(_maps_job, [(str(ctx.store), str(out_1km), y, t, str(tile_dir), str(cache)) for t in ts],
+        res = pool_run(_maps_job, [(str(ctx.store), str(out_1km), y, t, str(tile_dir), str(cache), str(sdm.file_1km(ctx, y)))
+                                   for t in ts],
                        ctx.settings.workers, on_done=lambda d, n: ctx.tick(f"{y} maps", d, n))
         for q, (_, _, units) in QUANTITIES.items():
             vrt = tile_dir / q / f"{y}.vrt"

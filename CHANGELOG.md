@@ -2,6 +2,22 @@
 
 Every version that can change a published number names the services it affects.
 
+## 0.2.0 (unreleased)
+
+Results affected: pollination. Wood and carbon keep their numbers, and their stages run again with the new version.
+
+- Pollination, revision of the method. The dependency ratios of the crop groups come from Siopa et al. (2024) in place of Klein
+  et al. (2007), through a crosswalk between the crops of that review and the ten crop groups. Actual flow, unmet demand and their
+  values change in every year. Potential, the service providing area and the area of demand do not depend on the ratios.
+- Pollination, revision of the method. The bumblebee model is projected to the land cover and climate of each reporting year
+  from the 47 fitted Maxent models of 2012, and the layer of a year is the published layer of 2012 plus the projected change.
+  Potential, the service providing area and every quantity after them change in 2000, 2006, 2018 and 2024. The values of 2012
+  keep the published layer.
+- Pollination has a new stage, `sdm`, and a new input, `eobs_bioclim`, which `esa fetch` builds from the daily E-OBS grids. The
+  fitted models, their presence thresholds and the mode of elevation at 10 km travel inside the package (0.6 MB).
+- `esa run pollination --method original` calculates the accounts as before the revision, into `outputs/pollination_original/`
+  and `work/pollination_original/`. A run without the option uses the revised method.
+
 ## 0.1.0 (unreleased)
 
 Results affected: pollination, wood, carbon (first version).

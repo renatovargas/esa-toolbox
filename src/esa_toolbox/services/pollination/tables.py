@@ -8,7 +8,7 @@ import polars as pl
 
 from esa_toolbox import figures, rio
 from esa_toolbox.core import Context
-from esa_toolbox.services.pollination import model
+from esa_toolbox.services.pollination import model, sdm
 from esa_toolbox.services.pollination.inputs import GRID, NO_CROP_DATA, read_reduction, regions_table, zones
 
 CROP_YEAR = {2000: 2000, 2006: 2006, 2012: 2012, 2018: 2018, 2024: 2018}
@@ -22,14 +22,10 @@ CROP_NOTE = ("Values of 2024 use the crop area and yield of 2018, so changes bet
 # ---------------------------------------------------------------------------------------------------------
 
 
-def sdm(ctx: Context) -> np.ndarray:
-    return rio.read(ctx.need("catalogue", "bumblebee_sdm_1km.tif"), GRID, as_float=True)
-
-
 def potential(ctx: Context, year: int, band: str = "ebm") -> np.ndarray:
     """Pollination potential, the mean of the expert-based model and the bumblebee model, in double precision."""
     e = read_reduction(ctx, year, band).astype("float64")
-    return (e + sdm(ctx).astype("float64")) / 2  # NaN wherever the model has no value, as mask() did
+    return (e + sdm.read(ctx, year).astype("float64")) / 2  # NaN wherever the model has no value, as mask() did
 
 
 def capri(ctx: Context, year: int) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray]]:
@@ -127,8 +123,8 @@ def zone_tables(ctx: Context) -> None:
               agro_mha=(np.nansum(read_reduction(ctx, ref, "agro_cells"), dtype="float64") / 1e6, 1),
               cells_1km=f"{int((~np.isnan(read_reduction(ctx, ref, 'ebm'))).sum()):,}")
     rows = []
-    s = sdm(ctx)
     for y in ctx.years:
+        s = sdm.read(ctx, y)
         ebm = read_reduction(ctx, y, "ebm")
         has = ~np.isnan(ebm)
         ai = rio.read(ctx.need("catalogue", f"activity_index_{y}_1km.tif"), GRID, as_float=True)
@@ -143,9 +139,15 @@ def zone_tables(ctx: Context) -> None:
     t = model.read_param("clc_pollination_scores.csv").select(
         Code="clc", Class="label", Floral="floral", Nesting="nesting", Ecosystem="ecosystem")
     ctx.table(t, "scores", 2)
-    ctx.table(model.crops().select(Code="capri_code", Crop="crop", **{"Dependency ratio": "dependency",
+    ctx.table(model.crops(ctx.method).select(Code="capri_code", Crop="crop", **{"Dependency ratio": "dependency",
                                    "Class": "dependency_class", "Eurostat items": pl.col("eaa_items").str.replace_all(";", ", ")}),
               "dependency", 3)
+    comp = (model.crop_components().with_columns(text=pl.format("{} {}", "siopa_crop", pl.col("dependency").map_elements(lambda v: f"{v:.2f}", return_dtype=pl.String)))
+            .group_by("capri_code", maintain_order=True).agg(pl.col("text").str.join("; "), mean=pl.col("dependency").mean()))
+    both = model.crops("revised").join(model.crops("original").select("capri_code", earlier="dependency"), on="capri_code")
+    ctx.table(both.join(comp, on="capri_code").select(
+        Crop="crop", **{"Crops and ratios of Siopa et al. (2024)": "text", "Ratio": "dependency",
+                        "Ratio of Klein et al. (2007)": "earlier"}), "dependency_revision", 3)
 
     large, by_class, uncovered = [], [], []
     for y in ctx.years:
@@ -185,7 +187,7 @@ def zone_tables(ctx: Context) -> None:
 
 def physical(ctx: Context) -> None:
     regions = regions_table(ctx)
-    crops = model.crops().select(crop="capri_code", dependency="dependency")
+    crops = model.crops(ctx.method).select(crop="capri_code", dependency="dependency")
     geo_of = regions.filter(pl.col("level") == "NUTS3").select("id", "geo")
     production = (pl.read_parquet(ctx.need("eurostat", "pollination", "production_crop.parquet"))
                   .with_columns(pl.col("year").cast(pl.Int64)))
@@ -318,7 +320,7 @@ def physical(ctx: Context) -> None:
                                         capri_t=pl.col("capri_t").filter(pl.col("production_t").is_not_null()).sum(),
                                         eurostat_t=pl.col("production_t").sum()))
     c18 = ce.filter(pl.col("year") == 2018).sort("crop")
-    cnames = dict(zip(*model.crops().select("capri_code", "crop")))
+    cnames = dict(zip(*model.crops(ctx.method).select("capri_code", "crop")))
     ctx.table(c18.select(Crop=pl.col("crop").replace_strict(cnames), **{
         "CAPRI (kha)": pl.col("capri_ha") / 1e3, "Eurostat (kha)": pl.col("eurostat_ha") / 1e3,
         "Area ratio": pl.col("capri_ha") / pl.col("eurostat_ha"), "CAPRI (kt)": pl.col("capri_t") / 1e3,
@@ -349,7 +351,7 @@ def physical(ctx: Context) -> None:
     ebc = (contribution.group_by("crop", "year").agg(pl.col("area_ha", "area_met_ha", "total_t", "flow_t", "unmet_t").sum())
            .with_columns(contribution=pl.col("flow_t") / pl.col("total_t")))
     last = max(ctx.years)
-    names = dict(zip(*model.crops().select("capri_code", "crop")))
+    names = dict(zip(*model.crops(ctx.method).select("capri_code", "crop")))
     ctx.table(ebc.filter(pl.col("year") == last).sort("flow_t", descending=True).select(
         Crop=pl.col("crop").replace_strict(names), **{"Demand (ha)": "area_ha", "Production (t)": "total_t",
                                                        "Actual flow (t)": "flow_t", "Unmet demand (t)": "unmet_t",
@@ -430,7 +432,7 @@ def monetary(ctx: Context) -> None:
     ctx.facts(hicp_first_published=str(min(y for y in h if y not in est)),
               hicp_estimated=f"{est[0]} to {est[-1]}" if est else "none")
     ctx.table(defl.select(Year="year", **{"Price level (2015 = 100)": "price_level", "Deflator": "deflator"}), "deflators", 3)
-    names = dict(zip(*model.crops().select("capri_code", "crop")))
+    names = dict(zip(*model.crops(ctx.method).select("capri_code", "crop")))
     last = max(ctx.years)
     vbc = (nv.group_by("crop", "year").agg(value=(pl.col("value_meur") * pl.col("deflator")).sum(),
                                            flow=pl.col("flow_meur2010").sum(), unmet=pl.col("unmet_meur2010").sum()))

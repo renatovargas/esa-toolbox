@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-3f84763c4d936fb7d3a98aa829dff287.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-cc1f70688991b42621aeadf2bffd53d1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -273,14 +273,18 @@ Table&nbsp;1: Commands. Run any command with <code>--help</code> for its options
 <td style="text-align: left;">Runs every stage again</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;"><code>esa run pollination --method original</code></td>
+<td style="text-align: left;">Runs crop pollination as it was before the revision of 2026, into <code>outputs/pollination_original/</code>. <code>status</code>, <code>report</code> and <code>clean</code> take the same option</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;"><code>esa report [services]</code></td>
 <td style="text-align: left;">Renders the reports from the last run. <code>--formats html,pdf</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;"><code>esa doctor</code></td>
 <td style="text-align: left;">Checks the installation, folders, free disk, memory, Quarto and Copernicus keys</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;"><code>esa clean [services]</code></td>
 <td style="text-align: left;">Deletes the working files of a service. <code>--outputs</code> also deletes its products</td>
 </tr>
@@ -314,7 +318,7 @@ Table&nbsp;2: Stages of each service. The code annex of each service page descri
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Crop pollination</td>
-<td style="text-align: left;"><code>prepare</code>, <code>model</code>, <code>accounts</code>, <code>maps_1km</code>, <code>maps_100m</code></td>
+<td style="text-align: left;"><code>prepare</code>, <code>model</code>, <code>sdm</code>, <code>accounts</code>, <code>maps_1km</code>, <code>maps_100m</code></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Wood provision</td>
