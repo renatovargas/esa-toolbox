@@ -49,8 +49,35 @@ uv sync --frozen
 uv run esa doctor
 ```
 
+A release can also be installed by its tag, and each tagged release on GitHub carries a wheel for machines that install from a
+file:
+
+```bash
+uv tool install git+https://github.com/renatovargas/esa-toolbox@v0.2.0
+uv tool install ./esa_toolbox-0.2.0-py3-none-any.whl
+```
+
 GDAL comes inside the packages, so no system libraries are needed. The reports need [Quarto](https://quarto.org), which also
 ships with Positron and RStudio. The tool finds those copies, and `QUARTO_PATH` points to any other.
+
+## Working folder
+
+The tool works in the folder from which it is called. It keeps three folders there, `store/` for the inputs, `outputs/` for the
+products and `work/` for the intermediate files, and it creates them when they are missing. Before the first run, open a terminal
+and use `cd` to move into an empty folder made for the accounts, where the tool fetches every input itself. A run can also start
+from a folder where the store from the [Downloads](site/downloads.qmd) page was unzipped, so that `store/` sits at its top level,
+and it then skips the downloads.
+
+```bash
+mkdir esa-accounts && cd esa-accounts
+esa
+```
+
+Fetching is the better route. The tool takes each input from its publisher, checks it and records the date of retrieval, so a new
+store carries the latest releases of the statistics. The downloaded store saves several hours of downloads, and it repeats the
+inputs of the published results exactly. Later runs start from the same folder, since the tool finds there what it has already
+done. The file `esa.toml` and the variables `ESA_STORE`, `ESA_OUTPUTS` and `ESA_WORK` can place the three folders elsewhere, as
+[Using the tool](site/usage.qmd) explains.
 
 ## Quick start
 

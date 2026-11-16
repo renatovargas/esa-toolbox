@@ -189,6 +189,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#what-a-run-produces" id="toc-what-a-run-produces" class="nav-link active" data-scroll-target="#what-a-run-produces">What a run produces</a></li>
   <li><a href="#install" id="toc-install" class="nav-link" data-scroll-target="#install">Install</a></li>
+  <li><a href="#working-folder" id="toc-working-folder" class="nav-link" data-scroll-target="#working-folder">Working folder</a></li>
   <li><a href="#quick-start" id="toc-quick-start" class="nav-link" data-scroll-target="#quick-start">Quick start</a></li>
   </ul>
 </nav>
@@ -273,17 +274,27 @@ Table&nbsp;1: Products of each service.
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/renatovargas/esa-toolbox <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> esa-toolbox</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync <span class="at">--frozen</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run esa doctor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A release can also be installed by its tag, and each tagged release on GitHub carries a wheel for machines that install from a file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> tool install git+https://github.com/renatovargas/esa-toolbox@v0.2.0</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> tool install ./esa_toolbox-0.2.0-py3-none-any.whl</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>GDAL comes inside the packages, so no system libraries are needed. The reports need <a href="https://quarto.org">Quarto</a>, which also ships with Positron and RStudio. The tool finds those copies, and <code>QUARTO_PATH</code> points to any other.</p>
+</section>
+<section id="working-folder" class="level2">
+<h2 class="anchored" data-anchor-id="working-folder">Working folder</h2>
+<p>The tool works in the folder from which it is called. It keeps three folders there, <code>store/</code> for the inputs, <code>outputs/</code> for the products and <code>work/</code> for the intermediate files, and it creates them when they are missing. Before the first run, open a terminal and use <code>cd</code> to move into an empty folder made for the accounts, where the tool fetches every input itself. A run can also start from a folder where the store from the <a href="./site/downloads.html">Downloads</a> page was unzipped, so that <code>store/</code> sits at its top level, and it then skips the downloads.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> esa-accounts <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> esa-accounts</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fetching is the better route. The tool takes each input from its publisher, checks it and records the date of retrieval, so a new store carries the latest releases of the statistics. The downloaded store saves several hours of downloads, and it repeats the inputs of the published results exactly. Later runs start from the same folder, since the tool finds there what it has already done. The file <code>esa.toml</code> and the variables <code>ESA_STORE</code>, <code>ESA_OUTPUTS</code> and <code>ESA_WORK</code> can place the three folders elsewhere, as <a href="./site/usage.html">Using the tool</a> explains.</p>
 </section>
 <section id="quick-start" class="level2">
 <h2 class="anchored" data-anchor-id="quick-start">Quick start</h2>
 <p>Run <code>esa</code> with no arguments for a guided menu. It shows which inputs are in the store and which steps of each service are done, and it asks what to run. Every choice prints the equivalent command.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span>                       <span class="co"># guided menu</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> doctor                <span class="co"># check the installation, disk, memory and Quarto</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> fetch carbon          <span class="co"># download the inputs of one service into the store</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> run carbon            <span class="co"># calculate, write maps, workbook and report</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> run pollination wood  <span class="co"># several services in one go</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> status                <span class="co"># what is done and what is out of date</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span>                       <span class="co"># guided menu</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> doctor                <span class="co"># check the installation, disk, memory and Quarto</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> fetch carbon          <span class="co"># download the inputs of one service into the store</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> run carbon            <span class="co"># calculate, write maps, workbook and report</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> run pollination wood  <span class="co"># several services in one go</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">esa</span> status                <span class="co"># what is done and what is out of date</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A run resumes where it stopped, and it repeats only the steps whose code or settings changed. The full chain of the three services takes about an hour on a desktop with 12 cores, most of it for the 100 m maps. See <a href="./site/usage.html">Using the tool</a> for every command and setting.</p>
 
 

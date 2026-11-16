@@ -2,34 +2,14 @@
 title: "Downloads"
 ---
 
-The tool installs from its repository with uv, which also installs the right version of Python:
+The tool downloads its own inputs from their publishers and calculates its own results, so a run needs nothing from this page,
+and the [Home](../index.qmd) page explains how to install it. The files below serve readers who want the results without running
+the tool, and those who want to start a run from the same inputs. They hold the products of a complete run of the latest version
+of the tool and the store of inputs that made them.
 
-```bash
-uv tool install git+https://github.com/renatovargas/esa-toolbox@v0.2.0
-```
+| Download | Contents | Link |
+|:--|:------|:--|
+| Results | The outputs folder of each service, with its workbook, its 100 m maps and its report, which names the tool version and the inputs of the run. Each file can be downloaded on its own, which helps with the maps, since they are large. | [<i class="bi bi-download"></i> Download the results](https://www.dropbox.com/scl/fo/lte2qpmg4vty43l430nxv/AFIbiyPqZzoKQhmzn_YNSuE?rlkey=hkf3cqpbxyhcqhuwzozat174z&st=sfwi7168&dl=0){.btn .btn-primary target="_blank" rel="noopener"} |
+| Store | The inputs of the three services as the tool fetched them, in one compressed archive. Unzipped into a working folder, it lets a run start without the downloads, as the [Home](../index.qmd#working-folder) page explains. | [<i class="bi bi-download"></i> Download the store](https://www.dropbox.com/scl/fi/1ap04u6w2wxdh5bqp7jcp/store.zip?rlkey=45xlo4fehvu9cjjg3j5sclnwv&st=k7kw1isg&dl=0){.btn .btn-primary target="_blank" rel="noopener"} |
 
-Each tagged release also carries a wheel, for machines that install from a file:
-
-| Version | Date | Wheel | Notes |
-|:--|:--|:--|:----|
-| 0.2.0 | 2026-11-16 | `esa_toolbox-0.2.0-py3-none-any.whl` | Revision of the pollination method, with the dependency ratios of Siopa et al. (2024) and the bumblebee model projected to each reporting year |
-
-: Releases. {#tbl-releases}
-
-```bash
-uv tool install ./esa_toolbox-0.2.0-py3-none-any.whl
-```
-
-The results themselves, the workbooks, maps and reports, are not downloads of the tool. Each run writes them to its own outputs
-folder, and the report of a run names the tool version that made it. However, the results of a complete run of the latest version
-can be downloaded below.
-
-::: {.callout-note appearance="simple" icon=false}
-## Results of the latest version
-
-The shared folder holds the outputs folder of each service, with its workbook, its 100 m maps and its report, which names the
-tool version and the inputs of the run. The folder opens in a new tab, and each file in it can be downloaded on its own, which
-helps with the maps, since they are large.
-
-[<i class="bi bi-download"></i> Download the results](https://www.dropbox.com/scl/fo/lte2qpmg4vty43l430nxv/AFIbiyPqZzoKQhmzn_YNSuE?rlkey=hkf3cqpbxyhcqhuwzozat174z&st=sfwi7168&dl=0){.btn .btn-primary target="_blank" rel="noopener"}
-:::
+: Downloads of the latest version. Both links open in a new tab. {#tbl-downloads}
