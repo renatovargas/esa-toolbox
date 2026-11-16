@@ -32,6 +32,14 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run:
 uv tool install git+https://github.com/renatovargas/esa-toolbox
 ```
 
+If an earlier version of the tool is installed, uv can keep it and report that the tool is already installed. The option
+`--force` replaces it, and `uv tool list` then shows the installed version:
+
+```bash
+uv tool install --force git+https://github.com/renatovargas/esa-toolbox
+uv tool list
+```
+
 To work with exactly the versions of the libraries that made the published results, clone the repository and run the tool from
 it, which installs the environment recorded in `uv.lock`:
 

@@ -256,7 +256,7 @@
     "href": "index.html#install",
     "title": "ESA toolbox",
     "section": "Install",
-    "text": "Install\nInstall uv, then run:\nuv tool install git+https://github.com/renatovargas/esa-toolbox\nTo work with exactly the versions of the libraries that made the published results, clone the repository and run the tool from it, which installs the environment recorded in uv.lock:\ngit clone https://github.com/renatovargas/esa-toolbox && cd esa-toolbox\nuv sync --frozen\nuv run esa doctor\nGDAL comes inside the packages, so no system libraries are needed. The reports need Quarto, which also ships with Positron and RStudio. The tool finds those copies, and QUARTO_PATH points to any other."
+    "text": "Install\nInstall uv, then run:\nuv tool install git+https://github.com/renatovargas/esa-toolbox\nIf an earlier version of the tool is installed, uv can keep it and report that the tool is already installed. The option --force replaces it, and uv tool list then shows the installed version:\nuv tool install --force git+https://github.com/renatovargas/esa-toolbox\nuv tool list\nTo work with exactly the versions of the libraries that made the published results, clone the repository and run the tool from it, which installs the environment recorded in uv.lock:\ngit clone https://github.com/renatovargas/esa-toolbox && cd esa-toolbox\nuv sync --frozen\nuv run esa doctor\nGDAL comes inside the packages, so no system libraries are needed. The reports need Quarto, which also ships with Positron and RStudio. The tool finds those copies, and QUARTO_PATH points to any other."
   },
   {
     "objectID": "index.html#quick-start",
