@@ -21,4 +21,15 @@ uv tool install ./esa_toolbox-0.2.0-py3-none-any.whl
 ```
 
 The results themselves, the workbooks, maps and reports, are not downloads of the tool. Each run writes them to its own outputs
-folder, and the report of a run names the tool version that made it.
+folder, and the report of a run names the tool version that made it. However, the results of a complete run of the latest version
+can be downloaded below.
+
+::: {.callout-note appearance="simple" icon=false}
+## Results of the latest version
+
+The shared folder holds the outputs folder of each service, with its workbook, its 100 m maps and its report, which names the
+tool version and the inputs of the run. The folder opens in a new tab, and each file in it can be downloaded on its own, which
+helps with the maps, since they are large.
+
+[<i class="bi bi-download"></i> Download the results](https://www.dropbox.com/scl/fo/lte2qpmg4vty43l430nxv/AFIbiyPqZzoKQhmzn_YNSuE?rlkey=hkf3cqpbxyhcqhuwzozat174z&st=sfwi7168&dl=0){.btn .btn-primary target="_blank" rel="noopener"}
+:::

@@ -54,18 +54,6 @@ Services with a regeneration rate can be used faster than they renew, so the acc
 is the part of the use that exceeds regeneration, and the sustainable flow is the part that stays within it. This report describes
 how we estimated those quantities and valued them, why we took each decision along the way and what the estimates show.
 
-## Sources of orientation
-
-The method comes from Chapter 4 of INCA Part II and Section 6.2 of INCA Part III, and these reports settle any question they
-address. Section 6.2 of Part III replaces two steps of Part II. It reports the whole NAI as the flow, because the forest asset
-accounts already record natural growth as an addition to the stock, and because forest management does not change stand volume
-growth much within a range of thinning grades [@lanotte2021]. The ecosystem contribution coefficient of Part II is therefore
-dropped. It also replaces the valuation through the output of forestry with a valuation through export prices.
-
-The INCA tool applies the same method and adds details that the reports do not state, such as the list of outliers described in
-@sec-screen [@incatool]. We took those details from it. The reports give no method for overuse of wood or for the sustainable
-flow, so those steps are decisions of this work, explained below.
-
 {{< include methods.qmd >}}
 
 # Results

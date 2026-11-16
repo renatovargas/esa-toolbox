@@ -29,12 +29,13 @@ same service, which a program can read directly from an address. We call it the 
 one input, the text below says which one we chose and why. The sections follow the order of the chain.
 
 ::: {.content-visible unless-meta="method-original"}
-A revision of the method was conducted in 2026 to bring two of its components up to date with newer evidence. The dependency
-ratios of the crops, which the method took from @klein2007, now come from the quantitative review of @siopa2024, which required a
-crosswalk between the crops of that review and the crop groups of the accounts. The bumblebee model, which was one layer for all
-years, is now projected to the land cover and climate of each reporting year from the fitted species models of 2012, which required
-rebuilding the layers that those models read. The sections on the bumblebee model and on the actual flow describe both changes. The
-accounts as they were before the revision remain available as the original method.
+For the implementation of this toolbox, a revision of the method was conducted to update two of its components with newer
+evidence. The first is the dependency ratios of the crops, the share of production that each crop owes to pollinators. The method
+takes them from @klein2007, and the revision takes them from the quantitative review of @siopa2024, which required a crosswalk
+between the crops of that review and the crop groups of the accounts. The second is the bumblebee model. The method uses one
+published layer of 2012 for every year, and the revision projects the species models fitted for 2012 to the land cover and climate
+of each reporting year, which required rebuilding the layers that those models read. The sections on the bumblebee model and on
+the dependency ratios describe both changes. The tool can also run the accounts without them, as the original method.
 
 ::: {.content-visible when-meta="results"}
 @tbl-revision compares the accounts of the EU27 before and after the revision. The comparison was made once, when the revision
@@ -62,8 +63,9 @@ decline of the bumblebee layer under a warmer climate offsets the rise of the ac
 :::
 
 ::: {.content-visible when-meta="method-original"}
-This run uses the original method of the accounts, which precedes the revision of 2026. It takes the dependency ratios of the
-crops from @klein2007 and uses the published bumblebee layer of 2012 for every year.
+This run uses the original method of the accounts. It takes the dependency ratios of the crops from @klein2007 and uses the
+published bumblebee layer of 2012 for every year. The tool also offers a revised method, which updates these two components with
+newer evidence.
 :::
 
 ## Territory and reporting regions
@@ -212,9 +214,9 @@ potential over the series comes from land cover and climate through the expert-b
 :::
 
 ::: {.content-visible unless-meta="method-original"}
-The published layer describes 2012, and used for every year it would leave bumblebees out of any change in the accounts. The
-revision of 2026 therefore projects the fitted models of the 47 species, which the Joint Research Centre keeps as Maxent files
-of 2012, to the land cover and climate of each reporting year. @prestele2021 project the same models to scenarios of climate and
+The published layer describes 2012, and used for every year it would leave bumblebees out of any change in the accounts. For
+the implementation of this toolbox, the method was therefore revised to project the fitted models of the 47 species, which the
+Joint Research Centre keeps as Maxent files of 2012, to the land cover and climate of each reporting year. @prestele2021 project the same models to scenarios of climate and
 land use in a similar way. A projection keeps each model as it was fitted and changes only the layers that it reads, so it
 answers the question of where the conditions that suited a species in 2012 are found in another year[\ (see the stage
 [`sdm`](#code-sdm) in the code annex)]{.content-visible unless-meta="results"}.
@@ -258,9 +260,8 @@ The method then combines the species. A species counts as present in a cell wher
 value of the cell is the mean probability of the species present there. The method takes as threshold the lowest probability at
 any place where the species was recorded, which depends on the records and is not part of the model files. We used one
 threshold for all species, 0.03, the value at which the projection for 2012 comes closest to the published
-layer.
-
-Open question. The thresholds of the fitted models would replace the common threshold if they become available.
+layer. A separate threshold for each species, fitted to the published layer in the same way, improves the agreement only
+slightly and adds 47 parameters, so the common threshold was kept.
 
 ### From the projection to the layer of each year
 
@@ -379,19 +380,34 @@ need a physical quantity. We report the area of met and unmet demand as well.
 ::: {.content-visible unless-meta="method-original"}
 ### Dependency ratios
 
-The method took the ratios from @klein2007, who assign each crop to a class of dependence and give the range of production loss of
-the class. The revision of 2026 replaced them with the values of @siopa2024, a quantitative review that derives a mean ratio for
-each of 141 crops from field experiments that compare flowers with and without access for pollinators. The review reports single
-crops, whereas the accounts work with the ten crop groups of CAPRI, so the two had to be linked with a crosswalk. A group that
-corresponds to one crop of the review takes its ratio, which is the case of rapeseed, soya, sunflower and tomatoes. Flax and hemp
-take the ratio of flax, since the review holds no value for hemp. A group of several crops takes the simple mean of the ratios of
-its crops that the review covers[\ (@tbl-dependency-revision)]{.content-visible when-meta="results"}[. The parameter file
+The dependency ratio of a crop is the share of its production that would be lost without animal pollination, so it decides how
+much of the production in the service providing area the accounts attribute to the service. The method of @vallecillo2018 takes
+the ratios from @klein2007, a global compilation that places each crop in a class of dependence and gives each class a range of
+production loss, so that all the crops of a class share one value. For the implementation of this toolbox, the ratios were updated
+with the findings of @siopa2024. That review derives a continuous ratio for each of 141 crops from pollination experiments
+worldwide, which compare the yield of flowers that pollinators can reach with the yield of flowers they cannot. The authors show
+that compilations by class neglect the differences between related crops and between cultivars. They also show that experiments
+which do not add pollen by hand underestimate how much a crop depends on pollinators, and they keep the values of the experiments
+that allow for this. Their values therefore give a closer measure of the contribution of pollinators to production
+[@siopa2024].
+
+The update required a crosswalk, because the review reports single crops whereas the accounts work with the ten crop groups of
+CAPRI. A group that corresponds to one crop of the review takes the ratio of that crop, which is the case of rapeseed, soya,
+sunflower and tomatoes. Flax and hemp take the ratio of flax, since the review holds no value for hemp. A group of several crops
+takes the simple mean of the ratios of its crops that the review covers, so apples, pears and peaches take the mean of apple, pear
+and peach[\ (@tbl-dependency-revision)]{.content-visible when-meta="results"}. Every ratio of the crosswalk reproduces from Table
+S2 of the review[. The parameter file
 [crop_dependency_siopa2024.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/crop_dependency_siopa2024.csv)
 lists the crops of each group, and [crop_dependency.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/crop_dependency.csv)
 holds the resulting ratios beside those of @klein2007]{.content-visible unless-meta="results"}.
 
-The ratios now go from 3 percent for flax and hemp to 67 percent for citrus fruits. Most groups move up, in line with the
-review, which finds more crops in the classes of high dependence than @klein2007 did. Citrus fruits, tomatoes, sunflower, pulses
+The mean of a group is not weighted by production, so each of its crops counts once, whatever its share of the production of
+the group in the European Union. This matters most for citrus fruits. Oranges are the main citrus crop of the European Union and
+have the lowest ratio of the group, at 19 percent, against 63 to 100 percent for the other citrus crops of the review. A mean
+weighted by production would therefore give citrus fruits a lower ratio than the simple mean.
+
+The updated ratios go from 3 percent for flax and hemp to 67 percent for citrus fruits. Most groups move up, in line with the
+finding of the review that most animal-pollinated crops depend highly on pollinators. Citrus fruits, tomatoes, sunflower, pulses
 and other fruits rise the most, and apples, pears and peaches, soya, and flax and hemp fall slightly. The ratio enters the actual
 flow, the unmet demand and their values in direct proportion, and it leaves potential, the service providing area and the area of
 demand unchanged.
@@ -403,11 +419,6 @@ demand unchanged.
 Crosswalk between the crop groups of the accounts and the crops of Siopa et al. (2024), with the ratio of each group and the earlier ratio of Klein et al. (2007).
 :::
 :::
-
-The mean of a group counts each of its crops once, whatever its production in the European Union.
-
-Open question. Weighting the crops of a group by their production would lower the ratio of citrus fruits, because oranges, the
-main citrus crop of the European Union, have the lowest ratio of the group.
 :::
 
 ### Scaling to national statistics

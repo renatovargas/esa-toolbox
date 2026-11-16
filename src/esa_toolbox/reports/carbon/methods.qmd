@@ -3,14 +3,30 @@
 
 ## Overview
 
-The accounts deliver five quantities for every reporting year. The **flow without offset** is the CO2 that land removes from the
-atmosphere. The **actual flow** is what remains of those removals once the emissions of land are compensated, and it is the service
-that reaches society. The **missed flow** is the difference between the two, which is the part of the removals used up by emissions.
-The actual flow and the missed flow are also valued in euro. Each quantity is reported in two forms, as tables by country (NUTS0) and
-by NUTS2 and NUTS3 region in an Excel workbook, and as maps on a grid of 100 m cells. The section on products at the end describes both.
+The idea behind the accounts is that vegetation takes CO2 out of the atmosphere as it grows and stores the carbon in biomass and
+soil, which slows climate change and benefits society as a whole. Land also releases CO2, for example when forests are harvested
+or burn, when peatland is drained or when grassland is ploughed, so society receives only what remains of the uptake once those
+releases are compensated. The accounting procedure of @vallecillo2019, with its update in @lanotte2021, which we call the method
+from here on, turns this idea into accounts. It measures global climate regulation through carbon sequestration, the uptake of CO2
+by plants on land through photosynthesis, which is the proxy that the literature uses most often. It leaves aside the other
+greenhouse gases and the uptake by seas, rivers and lakes [@vallecillo2019].
 
-National greenhouse gas inventories report CO2 by country and land category, and they do not say where on the land it is taken up.
-The work therefore runs in four steps, which the sections below follow in order.
+The method separates three physical quantities, and each one answers a different question. The **flow without offset** answers
+how much CO2 land removes from the atmosphere, before its own emissions are counted. The **actual flow** answers how much of those
+removals is left once the emissions of land are compensated, and it is the service that reaches society. The **missed flow** is
+the difference between the two, which is the part of the removals used up by those emissions. Valuation then gives the actual
+flow and the missed flow a value in euro.
+
+Unlike crop pollination, which has to be modelled from land cover, this service is already measured by countries. The European
+Union and its Member States report every year to the climate conventions a greenhouse gas inventory, whose part on land use, land
+use change and forestry gives the CO2 that each land category takes up or releases. The method therefore builds the accounts from
+these official statistics and uses maps only to show where the national values are likely to occur. Each Member State compiles its
+inventory with its own methods within the guidelines of the Intergovernmental Panel on Climate Change, for example in the minimum
+height of the trees that defines forest land. Comparisons between countries therefore call for care, whereas each national
+series uses one method throughout, so its changes over time are consistent [@vallecillo2019].
+
+The inventories report CO2 by country and land category, and they do not say where on the land it is taken up. The work therefore
+runs in four steps, which the sections below follow in order.
 
 1. The inventory gives the removals and the emissions of each land category in each country and year.
 2. The offset nets all emissions against all removals across the European Union, and the result is shared among countries. This
@@ -23,17 +39,22 @@ The work therefore runs in four steps, which the sections below follow in order.
 The analysis covers the EU27, by country, NUTS2 region and NUTS3 region under the NUTS 2024
 boundaries[, which give {{< fact nuts2 >}} NUTS2 regions and {{< fact nuts3 >}} NUTS3 regions,]{.content-visible when-meta="results"} [@gisco2024nuts]. The boundaries carry the notice © EuroGeographics for the administrative boundaries. All grids use the
 projection EPSG:3035, in which every cell covers the same area on the ground[\ (see the stage [`prepare`](#code-prepare) in the code annex)]{.content-visible unless-meta="results"}.
+The country is the level at which the service is measured, so the national values are the result of the accounts and the regions
+and maps only distribute them. Each quantity is reported in two forms, as tables by country (NUTS0) and by NUTS2 and NUTS3 region
+in an Excel workbook, and as maps on a grid of 100 m cells, which the section on products at the end describes.
 
 ## Removals and emissions
 
-We took CO2 by source sector from the Eurostat dataset `env_air_gge`[, in the release retrieved on
+The first step establishes how much CO2 each type of land takes up and releases in each country and year. We took CO2 by source sector from the Eurostat dataset `env_air_gge`[, in the release retrieved on
 {{< fact inventory_retrieved >}},]{.content-visible when-meta="results"} [@eurostat2026envairgge] for the 27 Member States and the EU27 aggregate[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}. This dataset
 carries the national inventories that countries report under the climate conventions, and its part on land use, land use change and
 forestry (LULUCF) gives the CO2 that each land category exchanges with the atmosphere. Following @vallecillo2019, the land categories
 are forest land, cropland, grassland, wetlands, settlements and other land, which are the codes `CRF4A` to `CRF4F`.
 
-The inventory uses the point of view of the atmosphere, so a negative value is CO2 removed and a positive value is CO2 released. The
-accounts reverse the sign, so that a positive balance $b$ of category $k$ in country $c$ is uptake. The removals $R$ and emissions $E$
+The inventory reports for each land category a single balance, the net result of all that it takes up and releases in the year, so
+it does not give the uptake and the emissions of an ecosystem separately [@vallecillo2019]. The method reads a category with a net
+uptake as a removal and a category with a net release as an emission. The inventory uses the point of view of the atmosphere, so a
+negative value is CO2 removed and a positive value is CO2 released. The accounts reverse the sign, so that a positive balance $b$ of category $k$ in country $c$ is uptake. The removals $R$ and emissions $E$
 are the two parts of that balance.
 
 $$
@@ -65,8 +86,10 @@ in 2024]{.content-visible when-meta="results"}.
 
 ## The offset and the actual flow
 
-@lanotte2021 define the service that reaches society as the balance of removals and emissions over all ecosystem types at the level
-of the European Union, so an ecosystem type with more emissions than removals provides no service. The EU net flow $N$ is computed
+Removals alone overstate what society receives, because the CO2 that land releases cancels part of what land takes up. @vallecillo2019
+report the emissions of ecosystems beside the removals, and @lanotte2021 go one step further and net them. They define
+the service that reaches society as the balance of removals and emissions over all ecosystem types at the level of the European
+Union, so an ecosystem type with more emissions than removals provides no service. The EU net flow $N$ is computed
 once, over all land categories and countries.
 
 $$
@@ -125,8 +148,9 @@ under transport.
 
 ## Monetary valuation
 
-The value of a flow is the flow in tonnes of CO2 multiplied by a price per tonne. The accounts need a price for the damage avoided by a
-tonne of CO2 that stays out of the atmosphere. @vallecillo2019 use the benchmark of EUR 30 per tonne of CO2 from @oecd2016, which they
+CO2 that stays out of the atmosphere is not sold on a market, so its value comes from the damage of climate change that it avoids.
+The value of a flow is the flow in tonnes of CO2 multiplied by a price per tonne, and the accounts need a price for the damage avoided
+by a tonne of CO2 that stays out of the atmosphere. @vallecillo2019 use the benchmark of EUR 30 per tonne of CO2 from @oecd2016, which they
 describe as a reference point and as a lower-end estimate. A decision was made to use a social cost of carbon instead, which is the
 value of the damage that one additional tonne causes, because it reflects the long-term damage of climate change and does not depend on
 the conditions of a carbon market in a given year.
@@ -154,8 +178,10 @@ value this service [@eurostat2026handbook].
 
 ## The spatial key
 
-The steps so far give national values. Regions and map cells receive a part of them through a spatial key, which gives each place a
-weight, and each place takes the national value times its share of the weight of its country.
+The steps so far give national values, whereas the accounts are also read by region and set beside maps of other services, which
+need to know where within a country the service is likely to occur. Regions and map cells therefore receive a part of the national
+values through a spatial key, which gives each place a weight, and each place takes the national value times its share of the
+weight of its country.
 
 $$
 F_i = F_c\, \frac{w_i}{\sum_{j \in c} w_j}

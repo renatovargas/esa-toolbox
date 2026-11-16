@@ -123,8 +123,8 @@ Reads the 100 m model that the model stage kept for each tile and the bumblebee 
 
 # The original method {#code-original .unnumbered}
 
-`esa run pollination --method original` calculates the accounts as they were before the revision of 2026, with the dependency
-ratios of @klein2007 and the published bumblebee layer of 2012 for every year. It writes to its own folders,
+`esa run pollination --method original` calculates the accounts with the method as published, without the revision described in the
+method text. It uses the dependency ratios of @klein2007 and the published bumblebee layer of 2012 for every year. It writes to its own folders,
 `outputs/pollination_original/` and `work/pollination_original/`, so it never replaces the products of a normal run, and its
 report describes the original method. The option is absent from the guided menu, and a run without it uses the revised method.
 

@@ -3,14 +3,32 @@
 
 ## Overview
 
-The accounts deliver four groups of quantities for every reporting year. The **actual flow** is the net annual increment (NAI) of the
-forest available for wood supply. The **sustainable flow** is the part of the wood removed from that forest that stays within the
-increment, and **overuse** is the part that exceeds it. Each of these is reported in cubic metres and in euro, in current prices and in
-constant prices of 2010. The quantities come in two forms, as tables by country (NUTS0) and by NUTS2 and NUTS3 region in an Excel
-workbook, and as maps on a grid of 100 m cells. The section on products at the end describes both.
+The idea behind the accounts is that forests grow wood that people harvest and use as a raw material, and that this growth is in
+large part the work of the ecosystem, from sunlight, water and the nutrients of the soil. Most forests of Europe are managed, so
+planting, thinning, fertilisation and machinery also shape the wood that reaches the forestry sector. Chapter 4 of Part II of the
+ecosystem services accounts of the INCA project defines wood provision as the ecological contribution to the production of timber that can be
+harvested and used as a raw material. It separates that contribution from the human inputs with a coefficient drawn from the
+national accounts, which takes the costs of planting material, chemicals, fuel and forestry services out of the output of forestry
+[@vallecillo2019].
 
-Forest statistics report these quantities by country, and they do not say where in the country the wood grows. The work therefore runs
-in four steps, which the sections below follow in order.
+Section 6.2 of Part III revises two steps of Part II [@lanotte2021]. It reports the whole net annual increment (NAI) as the flow and drops the
+coefficient, because the forest asset accounts already record natural growth as an addition to the stock, and because forest
+management changes the growth of stand volume little within a range of thinning grades. It also values the flow through export
+prices in place of the output of forestry. We call the procedure of Part III, with the steps of Part II that it keeps, the method
+from here on.
+
+The method gives three physical quantities, and each one answers a different question. The **actual flow** answers how much wood the
+ecosystem grows in a year. It is the NAI, the annual growth in volume of living trees less the losses from natural mortality, in the
+forest available for wood supply (FAWS), which is forest without environmental, social or economic restrictions with a significant
+impact on the supply of wood. The method keeps to that forest because the service refers to the wood that the forestry sector can
+harvest. Wood is also a service that use can exceed, since a forest can be cut faster than it grows. The **sustainable flow**
+answers how much of the wood removed from that forest stays within the increment, and **overuse** answers how much exceeds it.
+Valuation then gives each of the three a value in euro, in current prices and in constant prices of 2010.
+
+Like carbon sequestration, and unlike crop pollination, this service is measured by official statistics. The European Forest
+Accounts report the NAI and the removals of each country, so the method builds the accounts from these statistics and uses maps only
+to show where the national values are likely to occur. The statistics do not say where in a country the wood grows, and they have
+gaps in the early years. The work therefore runs in four steps, which the sections below follow in order.
 
 1. Eurostat statistics give the NAI and the removals of each country and year, and the gaps in them are filled by rules that the
    section on the actual flow explains.
@@ -21,12 +39,22 @@ in four steps, which the sections below follow in order.
 
 The accounts cover the EU27 with the NUTS 2024 boundaries, at the country level, NUTS2 and NUTS3[, with {{< fact regions_nuts0 >}}, {{< fact regions_nuts2 >}}
 and {{< fact regions_nuts3 >}} regions,]{.content-visible when-meta="results"} [@gisco2024nuts].[\ See the stage [`prepare`](#code-prepare) in the code annex.]{.content-visible unless-meta="results"} The boundaries carry the notice © EuroGeographics for the administrative boundaries. All grids use the
-projection EPSG:3035, in which every cell covers the same area on the ground. Malta has no forest available for wood supply and no
-forestry activity [@vallecillo2019], so its values are zero throughout.
+projection EPSG:3035, in which every cell covers the same area on the ground. The country is the level at which the service is
+measured, so the national values are the result of the accounts and the regions and maps only distribute them. Each quantity is
+reported in two forms, as tables by country (NUTS0) and by NUTS2 and NUTS3 region in an Excel workbook, and as maps on a grid of
+100 m cells, which the section on products at the end describes. Malta has no forest available for wood supply and no forestry
+activity [@vallecillo2019], so its values are zero throughout.
+
+The INCA tool, the plugin for QGIS that implements the accounts of the INCA project, applies the same method and adds details that
+the reports do not state, such as a list of outliers in the prices described below [@incatool]. We took those details from it. The
+reports give no method for the overuse of wood or for the sustainable flow, so those steps are decisions of this work, and the text
+below explains them.
 
 ## Actual flow
 
-The source of the actual flow is the table `for_vol_efa` of Eurostat, which collects the European Forest Accounts in thousand cubic
+The NAI is the volume that the trees of a forest add in a year once natural losses are deducted, so it measures how much wood the
+ecosystem regenerates. Part II takes it from the forest statistics of Eurostat and applies its coefficient, and Part III takes it as
+it is [@vallecillo2019; @lanotte2021]. The source of the actual flow is the table `for_vol_efa` of Eurostat, which collects the European Forest Accounts in thousand cubic
 metres over bark [@eurostat2026forvolefa]. It holds the NAI and the removals of each country, both for the forest available for wood
 supply (FAWS) and for total forest (FOR)[\ (see the stage [`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}. It needs completing, since
 few Member States report the NAI of forest available for wood supply in the early years[\ (@tbl-coverage)]{.content-visible when-meta="results"}.
@@ -117,7 +145,8 @@ Member States whose NAI changes from the model estimate to a reported value betw
 
 ## Sustainable flow and overuse
 
-The accounting reports class wood among the services with a regeneration rate that use can exceed [@lanotte2021], and the handbook of
+The actual flow says how much wood the forest grows, and it says nothing about how much is cut. A country can remove more than the
+increment for some years, and the stock of standing timber then shrinks. The accounting reports class wood among the services with a regeneration rate that use can exceed [@lanotte2021], and the handbook of
 ecosystem accounts describes overharvesting as removals above the NAI [@eurostat2026handbook]. Neither gives a formula for wood, so we
 adapted the one of Part III for water purification, in which overuse is the difference between the actual and the sustainable flow
 and the threshold defines the sustainable flow. Regeneration is the threshold for wood, which gives these two equations for each
@@ -139,7 +168,9 @@ so the results also show the ratio of removals to NAI of every country and year.
 
 ## Monetary valuation
 
-The value is the physical quantity times a unit value in euro per cubic metre. INCA Part III derives the unit value in three steps
+Wood is sold on markets, so its value can come from prices. The price of harvested wood, however, includes the work of felling and
+transport, whereas the service is the growth of the standing tree, so the method needs a value for wood before it is cut. The value
+is the physical quantity times a unit value in euro per cubic metre. INCA Part III derives the unit value in three steps
 [@lanotte2021]. The output of forest trees in `for_sup_cp` [@eurostat2026forsupcp] divided by the NAI gives the unit value of the NAI,
 which few Member States report in the early years[, as @tbl-monetary-coverage shows]{.content-visible when-meta="results"}. The roundwood exports of `for_basic`
 [@eurostat2026forbasic], in value and in volume, give a unit value for most countries and years, but this price includes the
@@ -236,7 +267,8 @@ for them.
 
 ## The spatial key
 
-Part II spreads national flows over the forest of Corine Land Cover in proportion to Dry Matter Productivity [@vallecillo2019], and the
+The steps so far give national values, whereas the accounts are also read by region and set beside maps of other services, which
+need to know where within a country the wood is likely to grow. Part II spreads national flows over the forest of Corine Land Cover in proportion to Dry Matter Productivity [@vallecillo2019], and the
 Earth observation roadmap of the INCA project keeps a forest mask and that proxy [@zurbaran2025]. The weight of a 100 m cell in year $t$ is
 therefore
 
