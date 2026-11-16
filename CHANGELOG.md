@@ -2,7 +2,7 @@
 
 Every version that can change a published number names the services it affects.
 
-## 0.2.0 (unreleased)
+## 0.2.0 (2026-11-16)
 
 Results affected: pollination. Wood and carbon keep their numbers, and their stages run again with the new version.
 
