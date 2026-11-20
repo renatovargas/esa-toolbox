@@ -16,14 +16,14 @@ from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn
 from rich.table import Table
 
 from esa_toolbox import __version__
-from esa_toolbox.core import METHOD, SERVICES, YEARS, EsaError, Settings, available_memory_gb, run_service, service_module, stage_status
+from esa_toolbox.core import KNOWN_SERVICES, METHOD, SERVICES, YEARS, EsaError, Settings, available_memory_gb, run_service, service_module, stage_status
 
 app = typer.Typer(name="esa", help="Ecosystem service accounts for the EU27, from inputs to maps, workbooks and reports.",
                   no_args_is_help=False, add_completion=False, pretty_exceptions_enable=False, rich_markup_mode="rich")
 console = Console(stderr=True)
 out = Console()
 
-ServicesArg = Annotated[Optional[list[str]], typer.Argument(help="Services: pollination, wood, carbon, carbon_cscc. All when omitted.")]
+ServicesArg = Annotated[Optional[list[str]], typer.Argument(help="Services: pollination, wood, carbon, all three when omitted. carbon_cscc runs only when named.")]
 ConfigOpt = Annotated[Optional[Path], typer.Option("--config", "-c", help="Settings file (default esa.toml).")]
 JsonOpt = Annotated[bool, typer.Option("--json", help="Print results as JSON on stdout.")]
 MethodOpt = Annotated[Optional[str], typer.Option(
@@ -35,11 +35,12 @@ def _settings(config: Path | None, **kw) -> Settings:
 
 
 def _services(names: list[str] | None, settings: Settings | None = None) -> list[str]:
-    """The services named, or all of them. With another method than the normal one, all means those that offer it."""
+    """The services named, or the three core services. An opt-in service runs only when named. With another method
+    than the normal one, all means those that offer it."""
     chosen = names or list(SERVICES)
     for n in chosen:
-        if n not in SERVICES:
-            raise EsaError(f"Unknown service {n!r}. Choose among {', '.join(SERVICES)}.")
+        if n not in KNOWN_SERVICES:
+            raise EsaError(f"Unknown service {n!r}. Choose among {', '.join(KNOWN_SERVICES)}.")
     if settings is not None and not names:
         chosen = [n for n in chosen if settings.method in getattr(service_module(n), "METHODS", (METHOD,))]
     return chosen
@@ -235,7 +236,7 @@ def inputs(services: ServicesArg = None, config: ConfigOpt = None) -> None:
 
 @app.command()
 def fetch(
-    datasets: Annotated[Optional[list[str]], typer.Argument(help="Dataset ids or services. All missing when omitted.")] = None,
+    datasets: Annotated[Optional[list[str]], typer.Argument(help="Dataset ids or services. When omitted, all missing inputs of pollination, wood and carbon.")] = None,
     dry_run: Annotated[bool, typer.Option("--dry-run", help="Show what would be fetched.")] = False,
     force: Annotated[bool, typer.Option("--force", help="Fetch again even when the files exist.")] = False,
     config: ConfigOpt = None,
@@ -247,9 +248,9 @@ def fetch(
     try:
         st = _settings(config)
         chosen = []
-        for name in datasets or [d.id for d in DATASETS if d.used_by]:
-            chosen += for_service(name) if name in SERVICES else [BY_ID[name]] if name in BY_ID else []
-            if name not in SERVICES and name not in BY_ID:
+        for name in datasets or [d.id for d in DATASETS if set(d.used_by) & set(SERVICES)]:
+            chosen += for_service(name) if name in KNOWN_SERVICES else [BY_ID[name]] if name in BY_ID else []
+            if name not in KNOWN_SERVICES and name not in BY_ID:
                 raise EsaError(f"Unknown dataset {name!r}. Run `esa inputs` to list them.")
         for d in dict.fromkeys(chosen):
             miss = d.paths(st.store) if force else d.missing(st.store)

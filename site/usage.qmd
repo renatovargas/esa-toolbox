@@ -45,6 +45,9 @@ version or the years change, and the stages after it rerun as well.
 
 : Stages of each service. The code annex of each service page describes them. {#tbl-stages}
 
+The valuation at country-level social costs of carbon is opt-in. A command with no services covers crop pollination, wood
+provision and carbon sequestration, and `carbon_cscc` runs, fetches or renders only when a command names it.
+
 ## Folders and settings
 
 The tool works with three folders, which `esa.toml` in the working folder can set, as can the variables `ESA_STORE`,

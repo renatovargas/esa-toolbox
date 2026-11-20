@@ -16,8 +16,9 @@ run produces are in its report, which carries the same method text together with
 # Code annex {#code-annex .unnumbered}
 
 The service has one stage, which reads the national tables that `esa run carbon` writes to `work/carbon/tables/`, so the carbon
-sequestration accounts run first. `esa run` runs the services in the order pollination, wood, carbon and carbon_cscc. After a new
-run of the carbon sequestration accounts, `esa run carbon_cscc --force` values the new flows.
+sequestration accounts run first. The service is opt-in, so `esa fetch`, `esa run`, `esa report`, `esa status` and the menu
+leave it out unless a command names it, as in `esa fetch carbon_cscc` and `esa run carbon_cscc`. After a new run of the carbon
+sequestration accounts, `esa run carbon_cscc --force` values the new flows.
 
 ## `fetch` {#code-fetch .unnumbered}
 

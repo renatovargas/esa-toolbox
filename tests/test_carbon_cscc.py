@@ -3,15 +3,32 @@ import openpyxl
 import polars as pl
 import pytest
 
-from esa_toolbox.core import SERVICES, Context, Settings, read_param
+from typer.testing import CliRunner
+
+from esa_toolbox.cli import _services
+from esa_toolbox.core import KNOWN_SERVICES, OPT_IN, SERVICES, Context, Settings, read_param, service_module
 from esa_toolbox.data import fetch
 from esa_toolbox.data.catalog import Dataset
 from esa_toolbox.services.carbon_cscc import tables
 from esa_toolbox.workbook import Workbook
 
 
-def test_service_registered_after_carbon():
-    assert SERVICES.index("carbon_cscc") > SERVICES.index("carbon")
+def test_service_is_opt_in():
+    assert "carbon_cscc" in OPT_IN and "carbon_cscc" not in SERVICES
+    assert KNOWN_SERVICES.index("carbon_cscc") > KNOWN_SERVICES.index("carbon")
+    assert _services(None) == ["pollination", "wood", "carbon"]
+    assert _services(["carbon_cscc"]) == ["carbon_cscc"]
+    assert service_module("carbon_cscc").TITLE.startswith("Carbon sequestration")
+
+
+def test_fetch_with_no_names_leaves_the_opt_in_input_out(tmp_path, monkeypatch):
+    from esa_toolbox.cli import app
+
+    monkeypatch.chdir(tmp_path)
+    default = CliRunner().invoke(app, ["fetch", "--dry-run"]).output
+    named = CliRunner().invoke(app, ["fetch", "carbon_cscc", "--dry-run"]).output
+    assert "cscc:" not in default and "eurostat_hicp" in default
+    assert "cscc:" in named
 
 
 def test_every_member_state_has_an_iso3_code():

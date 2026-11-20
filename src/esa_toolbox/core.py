@@ -26,7 +26,9 @@ import polars as pl
 
 from esa_toolbox import __version__
 
-SERVICES = ("pollination", "wood", "carbon", "carbon_cscc")
+SERVICES = ("pollination", "wood", "carbon")  # what a command covers when it names no service
+OPT_IN = ("carbon_cscc",)  # services that run, fetch or render only when a command names them
+KNOWN_SERVICES = SERVICES + OPT_IN
 METHOD = "revised"  # the method of a normal run. A service lists the others it offers in `METHODS`
 YEARS = (2000, 2006, 2012, 2018, 2024)
 PARAMS = Path(__file__).parent / "params"
@@ -305,8 +307,8 @@ class Stage:
 
 
 def service_module(name: str):
-    if name not in SERVICES:
-        raise EsaError(f"Unknown service {name!r}. Choose among {', '.join(SERVICES)}.")
+    if name not in KNOWN_SERVICES:
+        raise EsaError(f"Unknown service {name!r}. Choose among {', '.join(KNOWN_SERVICES)}.")
     return importlib.import_module(f"esa_toolbox.services.{name}")
 
 

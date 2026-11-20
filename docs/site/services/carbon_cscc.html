@@ -280,7 +280,7 @@ V^{\text{constant}}_{c,t} = V^{\text{current}}_{c,t}\, \frac{H_{2010}}{H_t}
 </section>
 <section id="code-annex" class="level1 unnumbered">
 <h1 class="unnumbered">Code annex</h1>
-<p>The service has one stage, which reads the national tables that <code>esa run carbon</code> writes to <code>work/carbon/tables/</code>, so the carbon sequestration accounts run first. <code>esa run</code> runs the services in the order pollination, wood, carbon and carbon_cscc. After a new run of the carbon sequestration accounts, <code>esa run carbon_cscc --force</code> values the new flows.</p>
+<p>The service has one stage, which reads the national tables that <code>esa run carbon</code> writes to <code>work/carbon/tables/</code>, so the carbon sequestration accounts run first. The service is opt-in, so <code>esa fetch</code>, <code>esa run</code>, <code>esa report</code>, <code>esa status</code> and the menu leave it out unless a command names it, as in <code>esa fetch carbon_cscc</code> and <code>esa run carbon_cscc</code>. After a new run of the carbon sequestration accounts, <code>esa run carbon_cscc --force</code> values the new flows.</p>
 <section id="code-fetch" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="code-fetch"><code>fetch</code></h2>
 <p><a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/catalog.py">catalog.py</a>, <a href="https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/fetch.py">fetch.py</a> · <code>esa fetch carbon_cscc</code></p>

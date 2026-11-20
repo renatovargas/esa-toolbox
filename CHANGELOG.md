@@ -9,7 +9,8 @@ Results affected: none. Pollination, wood and carbon keep their numbers and thei
 - New service `carbon_cscc`, a separate valuation of the national actual and missed flows of carbon sequestration at the
   country-level social cost of carbon of Ricke et al. (2018), reference case, with low, central and high values. It reads the
   national tables of `esa run carbon` and writes its own workbook and report to `outputs/carbon_cscc/`, with no regional tables
-  and no maps. Malta has no value in the source.
+  and no maps. Malta has no value in the source. The service is opt-in: commands with no services leave it out, and
+  `esa fetch carbon_cscc` and `esa run carbon_cscc` run it.
 - New input `cscc`, which `esa fetch` builds from version 2 of the database of the authors.
 - `params/eu27_countries.csv` gains the ISO3 code of each Member State.
 
