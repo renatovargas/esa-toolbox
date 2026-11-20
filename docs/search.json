@@ -105,11 +105,179 @@
     "text": "Footnotes\n\n\nThe annual layers are the sum of the 36 ten-day values of each year, each multiplied by its number of days (see the stage fetch in the code annex).↩︎"
   },
   {
+    "objectID": "site/services/carbon_cscc.html",
+    "href": "site/services/carbon_cscc.html",
+    "title": "Carbon sequestration at country-level social costs of carbon",
+    "section": "",
+    "text": "This page describes a valuation of the national flows of the carbon sequestration accounts at the social cost of carbon of each country. It is a separate service of the tool, carbon_cscc, with its own workbook and report in outputs/carbon_cscc/, and it leaves the carbon sequestration accounts and their products unchanged. The numbers and tables that a run produces are in its report, which carries the same method text together with them."
+  },
+  {
+    "objectID": "site/services/carbon_cscc.html#overview",
+    "href": "site/services/carbon_cscc.html#overview",
+    "title": "Carbon sequestration at country-level social costs of carbon",
+    "section": "1.1 Overview",
+    "text": "1.1 Overview\nThe carbon sequestration accounts value the CO2 that ecosystems take out of the atmosphere at a global social cost of carbon, which is the damage that one more tonne of CO2 causes anywhere in the world. That price fits a service that benefits society as a whole. A second question is how much of that benefit stays in the country where the sequestration happens. The country-level social cost of carbon of Ricke, Drouet, Caldeira, & Tavoni (2018) answers it, since it is the damage that one more tonne of CO2 causes in one country alone. This valuation applies it to the same physical flows as the carbon sequestration accounts.\nThe valuation changes only the price. The actual flow and the missed flow of each country and year are those of the carbon sequestration accounts of the same version of the tool, described in their own documentation and report, and the steps that lead to them are not repeated here. The valuation is national, because the country-level social cost of carbon is one value for each country, so it has no regional tables and no maps. It is kept apart from the carbon sequestration accounts, which keep their global price, and it answers a different question. A country-level price also serves accounts of countries outside the European Union, where the same database holds a value for most countries of the world."
+  },
+  {
+    "objectID": "site/services/carbon_cscc.html#the-country-level-social-cost-of-carbon",
+    "href": "site/services/carbon_cscc.html#the-country-level-social-cost-of-carbon",
+    "title": "Carbon sequestration at country-level social costs of carbon",
+    "section": "1.2 The country-level social cost of carbon",
+    "text": "1.2 The country-level social cost of carbon\nRicke et al. (2018) estimate the social cost of carbon of each country as the present value of the change in its output that a pulse of CO2 emitted in 2020 causes up to 2200. They project output with the shared socio-economic pathways and warming with 26 climate models and 15 carbon cycle models, and they translate the warming of each country into a change of its growth rate with the empirical damage functions of Burke, Hsiang, & Miguel (2015), which relate economic growth to temperature. The global social cost of carbon is the sum of the values of all countries.\nThe database of the authors (Ricke, Drouet, Caldeira, & Tavoni, 2019) holds the values of several damage functions, scenarios and discount rates. A decision was made to use their reference case, which is the case that the article presents. It combines the short-run damage function of Burke et al. (2015), the pathway SSP2 with the forcing RCP 6.0, and growth-adjusted discounting with a pure rate of time preference of 2 percent and an elasticity of the marginal utility of consumption of 1.5. The database gives the median and the 16.7 and 83.3 percent quantiles of each value, which together cover two thirds of the estimates of the uncertainty analysis. The valuation uses the median for its central values and the two quantiles for its low and high values (see the stage fetch in the code annex).\nThe values can be negative. A country whose climate is cooler than the temperature at which output peaks in the damage function gains output from moderate warming, so one more tonne of CO2 raises its output, and Ricke et al. (2018) find this for many rich northern countries in 2020. Sequestration in those countries then has a negative value in this valuation. The authors add that trade, migration and other links between countries can bring costs to a country whose own value is negative, and that most values turn positive as warming continues (Ricke et al., 2018). Malta is not in the database, so it has no value.\nTol (2019) also estimates a social cost of carbon for most countries, with impact functions imputed from global estimates. That work treats the European Union as one unit, since climate policy is set at that level, so it gives no value for the Member States and cannot value their flows."
+  },
+  {
+    "objectID": "site/services/carbon_cscc.html#from-us-dollars-to-euros",
+    "href": "site/services/carbon_cscc.html#from-us-dollars-to-euros",
+    "title": "Carbon sequestration at country-level social costs of carbon",
+    "section": "1.3 From US dollars to euros",
+    "text": "1.3 From US dollars to euros\nThe database expresses the values in US dollars of 2005 per tonne of CO2. The valuation moves them to the euros of 2023 in the same way as the carbon sequestration accounts move their global price, with the consumer price index of the United States from 2005 to 2023 (U.S. Bureau of Labor Statistics, 2023), a factor of 304.70/195.30, and the exchange rate of 2023, 1.0813 US dollars per euro (European Central Bank, 2023). The database does not state whether its dollars are at market exchange rates or at purchasing power parity. Open question. The conversion treats them as US dollars.\nThe price \\(P_{c}\\) of country \\(c\\) in 2023 euros is then a real value that stays the same in every year. As in the carbon sequestration accounts, the harmonised index of consumer prices \\(H\\) of the European Union (Eurostat, 2026) moves it to the euros of each year \\(t\\), and the deflator to the prices of 2010.\n\\[\nP_{c,t} = P_{c}\\, \\frac{H_t}{H_{2023}}, \\qquad V^{\\text{current}}_{c,t} = F_{c,t}\\, P_{c,t}, \\qquad\nV^{\\text{constant}}_{c,t} = V^{\\text{current}}_{c,t}\\, \\frac{H_{2010}}{H_t}\n\\tag{1}\\]\nHere \\(F_{c,t}\\) is the actual flow of the country in tonnes of CO2. The missed flow is valued in the same way. The total of the European Union adds up the values of its countries, each at its own price, and leaves out Malta (see the stage accounts in the code annex)."
+  },
+  {
+    "objectID": "site/services/carbon_cscc.html#products",
+    "href": "site/services/carbon_cscc.html#products",
+    "title": "Carbon sequestration at country-level social costs of carbon",
+    "section": "1.4 Products",
+    "text": "1.4 Products\nWorkbook. The workbook holds a sheet of prices, with the low, median and high value of each country in US dollars of 2005 and in euros of 2023, and sheets of the value of the actual flow and of the missed flow by country, in million euro at constant prices of 2010 and at current prices. Each sheet gives the low, central and high value of every reporting year, and its total row adds up the countries with a value. The physical flows are in the workbook of the carbon sequestration accounts."
+  },
+  {
+    "objectID": "site/services/carbon_cscc.html#checks",
+    "href": "site/services/carbon_cscc.html#checks",
+    "title": "Carbon sequestration at country-level social costs of carbon",
+    "section": "1.5 Checks",
+    "text": "1.5 Checks\nThe run stops if the national flows do not cover the 27 Member States, if the database has no global value, if a median lies outside its two quantiles, or if a value differs from the flow times its price and deflator."
+  },
+  {
+    "objectID": "site/services/carbon_cscc.html#code-fetch",
+    "href": "site/services/carbon_cscc.html#code-fetch",
+    "title": "Carbon sequestration at country-level social costs of carbon",
+    "section": "fetch",
+    "text": "fetch\ncatalog.py, fetch.py · esa fetch carbon_cscc\n\n\n\nTable 1: Inputs of the valuation at country-level social costs of carbon.\n\n\n\n\n\n\n\n\n\n\nInput\nSource\nFetcher\n\n\n\n\nCountry-level social cost of carbon, database version 2\nRicke et al. (2019)\nfetch_cscc\n\n\nHarmonised index of consumer prices\nEurostat (2026)\nfetch_eurostat\n\n\n\n\n\n\nfetch_cscc downloads the file cscc_db_v2.csv (27 MB) from the repository of the authors and keeps the rows of the reference case, one for each country and one for the world (WLD), with the 16.7 percent quantile, the median and the 83.3 percent quantile. It writes them to store/cscc/cscc_reference_case.parquet, records the date of retrieval, the address and the filter in extracts.json, and removes the download. The fetcher stops if the reference case does not give exactly one row for each country."
+  },
+  {
+    "objectID": "site/services/carbon_cscc.html#code-accounts",
+    "href": "site/services/carbon_cscc.html#code-accounts",
+    "title": "Carbon sequestration at country-level social costs of carbon",
+    "section": "accounts",
+    "text": "accounts\ntables.py, accounts.py, workbook.py · esa run carbon_cscc -s accounts\nJoins the values of the database to the Member States through their ISO3 codes in eu27_countries.csv, converts them to euros of 2023, and values the actual flow and the missed flow of carbon_value_country_year.parquet for each reporting year at the three quantiles. It writes carbon_sequestration_cscc_results.xlsx to outputs/carbon_cscc/tables/, runs the checks, and writes the facts and tables of the report."
+  },
+  {
+    "objectID": "site/usage.html",
+    "href": "site/usage.html",
+    "title": "Using the tool",
+    "section": "",
+    "text": "esa with no arguments opens a menu. The top shows, for each service, whether its inputs are in the store and the state of each stage (done, outdated or not run), with the time it took. The menu then offers to run accounts, list and fetch inputs, open the outputs folder or check the installation. When it runs accounts it asks which services, which years and how much to run, and it prints the command that does the same, so the menu also teaches the commands below."
+  },
+  {
+    "objectID": "site/usage.html#the-guided-menu",
+    "href": "site/usage.html#the-guided-menu",
+    "title": "Using the tool",
+    "section": "",
+    "text": "esa with no arguments opens a menu. The top shows, for each service, whether its inputs are in the store and the state of each stage (done, outdated or not run), with the time it took. The menu then offers to run accounts, list and fetch inputs, open the outputs folder or check the installation. When it runs accounts it asks which services, which years and how much to run, and it prints the command that does the same, so the menu also teaches the commands below."
+  },
+  {
+    "objectID": "site/usage.html#commands",
+    "href": "site/usage.html#commands",
+    "title": "Using the tool",
+    "section": "Commands",
+    "text": "Commands\n\n\n\nTable 1: Commands. Run any command with --help for its options.\n\n\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nesa\nGuided menu\n\n\nesa status [services]\nInputs in the store and state of each stage. --json for scripts\n\n\nesa inputs [services]\nEvery input, its source and whether the store holds it\n\n\nesa fetch [datasets or services]\nDownloads what is missing into the store. --dry-run lists it first\n\n\nesa run [services]\nRuns the stages that are not up to date, then renders the reports\n\n\nesa run carbon -s accounts\nRuns one stage only (repeat -s for several)\n\n\nesa run --years 2018,2024\nLimits a run to some reporting years\n\n\nesa run --force\nRuns every stage again\n\n\nesa run pollination --method original\nRuns crop pollination with the dependency ratios of Klein et al. (2007) and the bumblebee layer of 2012 for every year, into outputs/pollination_original/. status, report and clean take the same option\n\n\nesa report [services]\nRenders the reports from the last run. --formats html,pdf\n\n\nesa doctor\nChecks the installation, folders, free disk, memory, Quarto and Copernicus keys\n\n\nesa clean [services]\nDeletes the working files of a service. --outputs also deletes its products\n\n\n\n\n\n\nExit codes are 0 for success, 1 for a failed check or an unexpected error, 2 for invalid usage and 3 for inputs or settings that cannot be used."
+  },
+  {
+    "objectID": "site/usage.html#stages",
+    "href": "site/usage.html#stages",
+    "title": "Using the tool",
+    "section": "Stages",
+    "text": "Stages\nEach service runs in stages, in order, and each stage reads what the earlier ones wrote. A stage reruns when its code, the tool version or the years change, and the stages after it rerun as well.\n\n\n\nTable 2: Stages of each service. The code annex of each service page describes them.\n\n\n\n\n\n\n\n\n\nService\nStages\n\n\n\n\nCrop pollination\nprepare, model, sdm, accounts, maps_1km, maps_100m\n\n\nWood provision\nprepare, accounts, maps_1km, maps_100m\n\n\nCarbon sequestration\nprepare, accounts, maps_1km, maps_100m\n\n\nCarbon sequestration at country-level social costs of carbon (carbon_cscc)\naccounts, after the stage accounts of carbon sequestration"
+  },
+  {
+    "objectID": "site/usage.html#folders-and-settings",
+    "href": "site/usage.html#folders-and-settings",
+    "title": "Using the tool",
+    "section": "Folders and settings",
+    "text": "Folders and settings\nThe tool works with three folders, which esa.toml in the working folder can set, as can the variables ESA_STORE, ESA_OUTPUTS and ESA_WORK.\n[esa]\nstore = \"store\"       # inputs, as fetched. Shared by all services\noutputs = \"outputs\"   # products, one folder per service\nwork = \"work\"         # intermediate files, safe to delete\nworkers = 8           # processes for the raster steps, default from cores and memory\nformats = [\"html\", \"pdf\", \"docx\"]\nThe store needs about 5 GB, the outputs about 12 GB for the three services, and the work folder a few GB while the 100 m maps are written."
+  },
+  {
+    "objectID": "site/downloads.html",
+    "href": "site/downloads.html",
+    "title": "Downloads",
+    "section": "",
+    "text": "The tool downloads its own inputs from their publishers and calculates its own results, so a run needs nothing from this page, and the Home page explains how to install it. The files below serve readers who want the results without running the tool, and those who want to start a run from the same inputs. They hold the products of a complete run of the latest version of the tool and the store of inputs that made them.\n\n\n\nTable 1: Downloads of the latest version. Both links open in a new tab.\n\n\n\n\n\nDownload\nContents\nLink\n\n\n\n\nResults\nThe outputs folder of each service, with its workbook, its 100 m maps and its report, which names the tool version and the inputs of the run. Each file can be downloaded on its own, which helps with the maps, since they are large.\n Download the results\n\n\nStore\nThe inputs of the three services as the tool fetched them, in one compressed archive. Unzipped into a working folder, it lets a run start without the downloads, as the Home page explains.\n Download the store"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ESA toolbox",
+    "section": "",
+    "text": "The ESA toolbox is a desktop tool that builds the ecosystem service accounts of the European Union for crop pollination, wood provision and carbon sequestration, for the reporting years 2000, 2006, 2012, 2018 and 2024. It downloads its inputs from their publishers, calculates the physical and monetary accounts, writes the maps and the results workbooks, and renders one report per service that explains the method and presents the results of that run. Each service runs on its own, so a run can cover one, two or all of them."
+  },
+  {
+    "objectID": "index.html#what-a-run-produces",
+    "href": "index.html#what-a-run-produces",
+    "title": "ESA toolbox",
+    "section": "What a run produces",
+    "text": "What a run produces\nEach service writes its products to its own folder, outputs/&lt;service&gt;/, with the workbook by NUTS level in tables/, the maps in maps/, the report in HTML, PDF and Word in report/, and a record of the tool version, settings and timings in run.json.\n\n\n\nTable 1: Products of each service.\n\n\n\n\n\n\n\n\n\n\nService\nMaps (100 m and 1 km)\nWorkbook (NUTS0, NUTS2, NUTS3)\n\n\n\n\nCrop pollination\nPotential on all ecosystem types and on agroecosystems, demand, actual flow on all ecosystem types and on agroecosystems, unmet demand, value of the flow and of unmet demand\nPotential, demand, actual flow and unmet demand in physical and monetary terms, and flow by ecosystem type\n\n\nCarbon sequestration\nFlow without offset, actual flow, missed flow, and the value of the actual and missed flows\nThe same quantities in physical and monetary terms\n\n\nWood provision\nActual flow, sustainable flow and overuse, in physical and monetary terms\nThe same quantities\n\n\nCarbon sequestration at country-level social costs of carbon\nNone\nValue of the actual and missed flows of carbon sequestration at the social cost of carbon of each country, NUTS0 only\n\n\n\n\n\n\nThe reports carry no code. The method as implemented, with references to the code, is on the page of each service on this site."
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "ESA toolbox",
+    "section": "Install",
+    "text": "Install\nInstall uv, then run:\nuv tool install git+https://github.com/renatovargas/esa-toolbox\nIf an earlier version of the tool is installed, uv can keep it and report that the tool is already installed. The option --force replaces it, and uv tool list then shows the installed version:\nuv tool install --force git+https://github.com/renatovargas/esa-toolbox\nuv tool list\nTo work with exactly the versions of the libraries that made the published results, clone the repository and run the tool from it, which installs the environment recorded in uv.lock:\ngit clone https://github.com/renatovargas/esa-toolbox && cd esa-toolbox\nuv sync --frozen\nuv run esa doctor\nA release can also be installed by its tag, and each tagged release on GitHub carries a wheel for machines that install from a file:\nuv tool install git+https://github.com/renatovargas/esa-toolbox@v0.2.0\nuv tool install ./esa_toolbox-0.2.0-py3-none-any.whl\nGDAL comes inside the packages, so no system libraries are needed. The reports need Quarto, which also ships with Positron and RStudio. The tool finds those copies, and QUARTO_PATH points to any other."
+  },
+  {
+    "objectID": "index.html#working-folder",
+    "href": "index.html#working-folder",
+    "title": "ESA toolbox",
+    "section": "Working folder",
+    "text": "Working folder\nThe tool works in the folder from which it is called. It keeps three folders there, store/ for the inputs, outputs/ for the products and work/ for the intermediate files, and it creates them when they are missing. Before the first run, open a terminal and use cd to move into an empty folder made for the accounts, where the tool fetches every input itself. A run can also start from a folder where the store from the Downloads page was unzipped, so that store/ sits at its top level, and it then skips the downloads.\nmkdir esa-accounts && cd esa-accounts\nesa\nFetching is the better route. The tool takes each input from its publisher, checks it and records the date of retrieval, so a new store carries the latest releases of the statistics. The downloaded store saves several hours of downloads, and it repeats the inputs of the published results exactly. Later runs start from the same folder, since the tool finds there what it has already done. The file esa.toml and the variables ESA_STORE, ESA_OUTPUTS and ESA_WORK can place the three folders elsewhere, as Using the tool explains."
+  },
+  {
+    "objectID": "index.html#quick-start",
+    "href": "index.html#quick-start",
+    "title": "ESA toolbox",
+    "section": "Quick start",
+    "text": "Quick start\nRun esa with no arguments for a guided menu. It shows which inputs are in the store and which steps of each service are done, and it asks what to run. Every choice prints the equivalent command.\nesa                       # guided menu\nesa doctor                # check the installation, disk, memory and Quarto\nesa fetch carbon          # download the inputs of one service into the store\nesa run carbon            # calculate, write maps, workbook and report\nesa run pollination wood  # several services in one go\nesa status                # what is done and what is out of date\nA run resumes where it stopped, and it repeats only the steps whose code or settings changed. The full chain of the three services takes about an hour on a desktop with 12 cores, most of it for the 100 m maps. See Using the tool for every command and setting."
+  },
+  {
+    "objectID": "site/inputs.html",
+    "href": "site/inputs.html",
+    "title": "Inputs",
+    "section": "",
+    "text": "Every input goes to one folder, the store, which all services share, so a layer that two services use is downloaded once. esa inputs lists the inputs with their state, and esa fetch downloads what is missing. The fetchers write each file under a temporary name and rename it when it is complete, so an interrupted download leaves nothing half written. The code annex of each service page describes what its fetchers do, and the catalogue and the fetchers hold the code."
+  },
+  {
+    "objectID": "site/inputs.html#releases",
+    "href": "site/inputs.html#releases",
+    "title": "Inputs",
+    "section": "Releases",
+    "text": "Releases\nCorine, the NUTS boundaries, the productivity, the bumblebee model, the crop data and version 32.0e of E-OBS are fixed releases, so a new download gives the same files. The E-OBS layers need a download of 2.1 GB, which the fetcher removes once it has written the five small files that the tool keeps. The fitted bumblebee models and the elevation layer that they read travel inside the package, as the page on crop pollination explains. Eurostat revises its datasets with each release, and so the fetcher records the date of retrieval of every extract in the file extracts.json beside it. The report of each run lists its inputs with those dates. Eurostat publishes the EU27 price index from 2000, and the fetcher estimates the years before from the rates of the euro area and the other Member States, as the page on crop pollination explains."
+  },
+  {
+    "objectID": "site/inputs.html#keys",
+    "href": "site/inputs.html#keys",
+    "title": "Inputs",
+    "section": "Keys",
+    "text": "Keys\nThe annual productivity needs a free account of the Copernicus Data Space Ecosystem with S3 keys, in the variables CDSE_S3_ACCESS_KEY and CDSE_S3_SECRET_KEY. The tool never writes the keys to a file or a log. Reading the 180 files of the productivity takes several hours, and all other inputs take a few minutes."
+  },
+  {
+    "objectID": "site/inputs.html#attribution",
+    "href": "site/inputs.html#attribution",
+    "title": "Inputs",
+    "section": "Attribution",
+    "text": "Attribution\nThe administrative boundaries carry the notice © EuroGeographics. The road network is © OpenStreetMap contributors and available under the Open Database License. Corine Land Cover and the productivity are products of the Copernicus Land Monitoring Service, © European Union, and the climate layers contain modified Copernicus Climate Change Service information. Eurostat data are © European Union and may be reused with acknowledgement of the source. We acknowledge the E-OBS dataset and the data providers in the ECA&D project (https://www.ecad.eu). The elevation layer is produced using Copernicus WorldDEM-90 © DLR e.V. 2010 to 2014 and © Airbus Defence and Space GmbH 2014 to 2018, provided under COPERNICUS by the European Union and ESA, all rights reserved."
+  },
+  {
+    "objectID": "site/inputs.html#references",
+    "href": "site/inputs.html#references",
+    "title": "Inputs",
+    "section": "References",
+    "text": "References\n\n\nCopernicus Climate Change Service. (2020). Climate and energy indicators for Europe from 1979 to present derived from reanalysis. Copernicus Climate Change Service Climate Data Store.\n\n\nCopernicus Land Monitoring Service. (n.d.-a). Gross dry matter productivity 1999-2020 (raster 1 km), global, 10-daily, version 2. Copernicus Land Monitoring Service. https://doi.org/10.2909/b54be6e3-5962-4e9a-a443-9ff7ea943dfe\n\n\nCopernicus Land Monitoring Service. (n.d.-b). Gross dry matter productivity 2014-present (raster 300 m), global, 10-daily, version 2. Copernicus Land Monitoring Service. https://doi.org/10.2909/fd838f95-21e9-4f37-a9b8-b438d9dc4edf\n\n\nCornes, R. C., Schrier, G. van der, Besselaar, E. J. M. van den, & Jones, P. D. (2018). An ensemble version of the E-OBS temperature and precipitation data sets. Journal of Geophysical Research: Atmospheres, 123(17), 9391–9409. https://doi.org/10.1029/2017JD028200\n\n\nEuropean Environment Agency. (2026). Corine land cover accounting layers (raster 100 m), version 21. EEA Datahub. https://doi.org/10.2909/a65428d3-bd66-4b47-bcf9-6bfd6fa5df0c\n\n\nEurostat. (2024). GISCO territorial units for statistics (NUTS), 2024. Retrieved from https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics\n\n\nEurostat. (2026a). Crop production in EU standard humidity (apro_cpsh1). Retrieved from https://ec.europa.eu/eurostat/databrowser/product/page/apro_cpsh1\n\n\nEurostat. (2026b). Economic accounts for agriculture, values at n-1 prices (aact_eaa02). Retrieved from https://ec.europa.eu/eurostat/databrowser/product/page/aact_eaa02\n\n\nEurostat. (2026c). Greenhouse gas emissions by source sector (source: EEA) [env_air_gge]. Eurostat database. https://doi.org/10.2908/ENV_AIR_GGE\n\n\nEurostat. (2026d). Harmonised index of consumer prices, annual data (prc_hicp_aind). Retrieved from https://ec.europa.eu/eurostat/databrowser/product/page/prc_hicp_aind\n\n\nEurostat. (2026e). Roundwood, fuelwood and other basic products [for_basic]. Eurostat database. Retrieved from https://ec.europa.eu/eurostat/databrowser/view/for_basic\n\n\nEurostat. (2026f). Supply and use of products within forestry [for_sup_cp]. Eurostat database. Retrieved from https://ec.europa.eu/eurostat/databrowser/view/for_sup_cp\n\n\nEurostat. (2026g). Volume of timber over bark (EFA questionnaire) [for_vol_efa]. Eurostat database. https://doi.org/10.2908/FOR_VOL_EFA\n\n\nHersbach, H., Bell, B., Berrisford, P., Biavati, G., Horányi, A., Muñoz Sabater, J., … Thépaut, J.-N. (2023). ERA5 monthly averaged data on single levels from 1940 to present. Copernicus Climate Change Service Climate Data Store. https://doi.org/10.24381/cds.f17050d7\n\n\nIntegrated Modelling Partnership. (2026). Jrc.ecosystem.accounts.pollination: K.LAB project for the crop pollination accounts. Retrieved from https://bitbucket.org/integratedmodelling/jrc.ecosystem.accounts.pollination/src/develop/src/pollination/\n\n\nKoeble, R., Leip, A., Kempen, M., Petersen, J.-E., Gomez, O., Leip, D., … Van der Velde, M. (2024). EU wide disaggregated CAPRI model data: Crops, livestock, nitrogen in- and outputs (timeseries 2000-2018). Zenodo. https://doi.org/10.5281/zenodo.13992301\n\n\nOpenStreetMap contributors. (2026). OpenStreetMap main roads. Retrieved from https://www.openstreetmap.org\n\n\nPilli, R., & Grassi, G. (2021). Provision of technical and scientific support to DG ESTAT in relation to EU land footprint estimates and gap-filling techniques for european forest accounts (LAFO). Luxembourg: Publications Office of the European Union. Retrieved from Publications Office of the European Union website: https://data.jrc.ec.europa.eu/dataset/d4be2da6-54a1-4767-a262-dcebf66bf10b\n\n\nPolce, C., Maes, J., Rotllan-Puig, X., Michez, D., Castro, L., Cederberg, B., … Rasmont, P. (2018). Distribution of bumblebees across Europe. One Ecosystem, 3, e28143. https://doi.org/10.3897/oneeco.3.e28143\n\n\nRicke, K., Drouet, L., Caldeira, K., & Tavoni, M. (2019). Country-level social cost of carbon database, version 2. GitHub. Retrieved from https://github.com/country-level-scc/cscc-database-2018"
+  },
+  {
     "objectID": "site/services/carbon.html",
     "href": "site/services/carbon.html",
     "title": "Carbon sequestration",
     "section": "",
-    "text": "This page describes the method of the carbon sequestration accounts as the tool implements it. Each step points to the stage of the tool that carries it out, and the code annex at the end describes each stage with links to its code. The numbers and tables that a run produces are in the report of that run, in outputs/carbon/report/, which carries the same method text together with them."
+    "text": "This page describes the method of the carbon sequestration accounts as the tool implements it. Each step points to the stage of the tool that carries it out, and the code annex at the end describes each stage with links to its code. The numbers and tables that a run produces are in the report of that run, in outputs/carbon/report/, which carries the same method text together with them.\nA separate valuation of the same national flows at the social cost of carbon of each country has its own page, carbon sequestration at country-level social costs of carbon, and its own workbook and report. It leaves these accounts and their products unchanged."
   },
   {
     "objectID": "site/services/carbon.html#overview",
@@ -201,118 +369,6 @@
     "title": "Carbon sequestration",
     "section": "maps_100m",
     "text": "maps_100m\nmaps.py, forestmaps.py · esa run carbon -s maps_100m\nComputes the 100 m key in tiles from the productivity kept in work/shared/forest_gdmp_100m/ (or resamples it and keeps it, when wood has not run), writes five whole-number maps per year, in kilograms of CO2 and euro cents, and checks every country against its national values."
-  },
-  {
-    "objectID": "site/inputs.html",
-    "href": "site/inputs.html",
-    "title": "Inputs",
-    "section": "",
-    "text": "Every input goes to one folder, the store, which all services share, so a layer that two services use is downloaded once. esa inputs lists the inputs with their state, and esa fetch downloads what is missing. The fetchers write each file under a temporary name and rename it when it is complete, so an interrupted download leaves nothing half written. The code annex of each service page describes what its fetchers do, and the catalogue and the fetchers hold the code."
-  },
-  {
-    "objectID": "site/inputs.html#releases",
-    "href": "site/inputs.html#releases",
-    "title": "Inputs",
-    "section": "Releases",
-    "text": "Releases\nCorine, the NUTS boundaries, the productivity, the bumblebee model, the crop data and version 32.0e of E-OBS are fixed releases, so a new download gives the same files. The E-OBS layers need a download of 2.1 GB, which the fetcher removes once it has written the five small files that the tool keeps. The fitted bumblebee models and the elevation layer that they read travel inside the package, as the page on crop pollination explains. Eurostat revises its datasets with each release, and so the fetcher records the date of retrieval of every extract in the file extracts.json beside it. The report of each run lists its inputs with those dates. Eurostat publishes the EU27 price index from 2000, and the fetcher estimates the years before from the rates of the euro area and the other Member States, as the page on crop pollination explains."
-  },
-  {
-    "objectID": "site/inputs.html#keys",
-    "href": "site/inputs.html#keys",
-    "title": "Inputs",
-    "section": "Keys",
-    "text": "Keys\nThe annual productivity needs a free account of the Copernicus Data Space Ecosystem with S3 keys, in the variables CDSE_S3_ACCESS_KEY and CDSE_S3_SECRET_KEY. The tool never writes the keys to a file or a log. Reading the 180 files of the productivity takes several hours, and all other inputs take a few minutes."
-  },
-  {
-    "objectID": "site/inputs.html#attribution",
-    "href": "site/inputs.html#attribution",
-    "title": "Inputs",
-    "section": "Attribution",
-    "text": "Attribution\nThe administrative boundaries carry the notice © EuroGeographics. The road network is © OpenStreetMap contributors and available under the Open Database License. Corine Land Cover and the productivity are products of the Copernicus Land Monitoring Service, © European Union, and the climate layers contain modified Copernicus Climate Change Service information. Eurostat data are © European Union and may be reused with acknowledgement of the source. We acknowledge the E-OBS dataset and the data providers in the ECA&D project (https://www.ecad.eu). The elevation layer is produced using Copernicus WorldDEM-90 © DLR e.V. 2010 to 2014 and © Airbus Defence and Space GmbH 2014 to 2018, provided under COPERNICUS by the European Union and ESA, all rights reserved."
-  },
-  {
-    "objectID": "site/inputs.html#references",
-    "href": "site/inputs.html#references",
-    "title": "Inputs",
-    "section": "References",
-    "text": "References\n\n\nCopernicus Climate Change Service. (2020). Climate and energy indicators for Europe from 1979 to present derived from reanalysis. Copernicus Climate Change Service Climate Data Store.\n\n\nCopernicus Land Monitoring Service. (n.d.-a). Gross dry matter productivity 1999-2020 (raster 1 km), global, 10-daily, version 2. Copernicus Land Monitoring Service. https://doi.org/10.2909/b54be6e3-5962-4e9a-a443-9ff7ea943dfe\n\n\nCopernicus Land Monitoring Service. (n.d.-b). Gross dry matter productivity 2014-present (raster 300 m), global, 10-daily, version 2. Copernicus Land Monitoring Service. https://doi.org/10.2909/fd838f95-21e9-4f37-a9b8-b438d9dc4edf\n\n\nCornes, R. C., Schrier, G. van der, Besselaar, E. J. M. van den, & Jones, P. D. (2018). An ensemble version of the E-OBS temperature and precipitation data sets. Journal of Geophysical Research: Atmospheres, 123(17), 9391–9409. https://doi.org/10.1029/2017JD028200\n\n\nEuropean Environment Agency. (2026). Corine land cover accounting layers (raster 100 m), version 21. EEA Datahub. https://doi.org/10.2909/a65428d3-bd66-4b47-bcf9-6bfd6fa5df0c\n\n\nEurostat. (2024). GISCO territorial units for statistics (NUTS), 2024. Retrieved from https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics\n\n\nEurostat. (2026a). Crop production in EU standard humidity (apro_cpsh1). Retrieved from https://ec.europa.eu/eurostat/databrowser/product/page/apro_cpsh1\n\n\nEurostat. (2026b). Economic accounts for agriculture, values at n-1 prices (aact_eaa02). Retrieved from https://ec.europa.eu/eurostat/databrowser/product/page/aact_eaa02\n\n\nEurostat. (2026c). Greenhouse gas emissions by source sector (source: EEA) [env_air_gge]. Eurostat database. https://doi.org/10.2908/ENV_AIR_GGE\n\n\nEurostat. (2026d). Harmonised index of consumer prices, annual data (prc_hicp_aind). Retrieved from https://ec.europa.eu/eurostat/databrowser/product/page/prc_hicp_aind\n\n\nEurostat. (2026e). Roundwood, fuelwood and other basic products [for_basic]. Eurostat database. Retrieved from https://ec.europa.eu/eurostat/databrowser/view/for_basic\n\n\nEurostat. (2026f). Supply and use of products within forestry [for_sup_cp]. Eurostat database. Retrieved from https://ec.europa.eu/eurostat/databrowser/view/for_sup_cp\n\n\nEurostat. (2026g). Volume of timber over bark (EFA questionnaire) [for_vol_efa]. Eurostat database. https://doi.org/10.2908/FOR_VOL_EFA\n\n\nHersbach, H., Bell, B., Berrisford, P., Biavati, G., Horányi, A., Muñoz Sabater, J., … Thépaut, J.-N. (2023). ERA5 monthly averaged data on single levels from 1940 to present. Copernicus Climate Change Service Climate Data Store. https://doi.org/10.24381/cds.f17050d7\n\n\nIntegrated Modelling Partnership. (2026). Jrc.ecosystem.accounts.pollination: K.LAB project for the crop pollination accounts. Retrieved from https://bitbucket.org/integratedmodelling/jrc.ecosystem.accounts.pollination/src/develop/src/pollination/\n\n\nKoeble, R., Leip, A., Kempen, M., Petersen, J.-E., Gomez, O., Leip, D., … Van der Velde, M. (2024). EU wide disaggregated CAPRI model data: Crops, livestock, nitrogen in- and outputs (timeseries 2000-2018). Zenodo. https://doi.org/10.5281/zenodo.13992301\n\n\nOpenStreetMap contributors. (2026). OpenStreetMap main roads. Retrieved from https://www.openstreetmap.org\n\n\nPilli, R., & Grassi, G. (2021). Provision of technical and scientific support to DG ESTAT in relation to EU land footprint estimates and gap-filling techniques for european forest accounts (LAFO). Luxembourg: Publications Office of the European Union. Retrieved from Publications Office of the European Union website: https://data.jrc.ec.europa.eu/dataset/d4be2da6-54a1-4767-a262-dcebf66bf10b\n\n\nPolce, C., Maes, J., Rotllan-Puig, X., Michez, D., Castro, L., Cederberg, B., … Rasmont, P. (2018). Distribution of bumblebees across Europe. One Ecosystem, 3, e28143. https://doi.org/10.3897/oneeco.3.e28143"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "ESA toolbox",
-    "section": "",
-    "text": "The ESA toolbox is a desktop tool that builds the ecosystem service accounts of the European Union for crop pollination, wood provision and carbon sequestration, for the reporting years 2000, 2006, 2012, 2018 and 2024. It downloads its inputs from their publishers, calculates the physical and monetary accounts, writes the maps and the results workbooks, and renders one report per service that explains the method and presents the results of that run. Each service runs on its own, so a run can cover one, two or all of them."
-  },
-  {
-    "objectID": "index.html#what-a-run-produces",
-    "href": "index.html#what-a-run-produces",
-    "title": "ESA toolbox",
-    "section": "What a run produces",
-    "text": "What a run produces\nEach service writes its products to its own folder, outputs/&lt;service&gt;/, with the workbook by NUTS level in tables/, the maps in maps/, the report in HTML, PDF and Word in report/, and a record of the tool version, settings and timings in run.json.\n\n\n\nTable 1: Products of each service.\n\n\n\n\n\n\n\n\n\n\nService\nMaps (100 m and 1 km)\nWorkbook (NUTS0, NUTS2, NUTS3)\n\n\n\n\nCrop pollination\nPotential on all ecosystem types and on agroecosystems, demand, actual flow on all ecosystem types and on agroecosystems, unmet demand, value of the flow and of unmet demand\nPotential, demand, actual flow and unmet demand in physical and monetary terms, and flow by ecosystem type\n\n\nCarbon sequestration\nFlow without offset, actual flow, missed flow, and the value of the actual and missed flows\nThe same quantities in physical and monetary terms\n\n\nWood provision\nActual flow, sustainable flow and overuse, in physical and monetary terms\nThe same quantities\n\n\n\n\n\n\nThe reports carry no code. The method as implemented, with references to the code, is on the page of each service on this site."
-  },
-  {
-    "objectID": "index.html#install",
-    "href": "index.html#install",
-    "title": "ESA toolbox",
-    "section": "Install",
-    "text": "Install\nInstall uv, then run:\nuv tool install git+https://github.com/renatovargas/esa-toolbox\nIf an earlier version of the tool is installed, uv can keep it and report that the tool is already installed. The option --force replaces it, and uv tool list then shows the installed version:\nuv tool install --force git+https://github.com/renatovargas/esa-toolbox\nuv tool list\nTo work with exactly the versions of the libraries that made the published results, clone the repository and run the tool from it, which installs the environment recorded in uv.lock:\ngit clone https://github.com/renatovargas/esa-toolbox && cd esa-toolbox\nuv sync --frozen\nuv run esa doctor\nA release can also be installed by its tag, and each tagged release on GitHub carries a wheel for machines that install from a file:\nuv tool install git+https://github.com/renatovargas/esa-toolbox@v0.2.0\nuv tool install ./esa_toolbox-0.2.0-py3-none-any.whl\nGDAL comes inside the packages, so no system libraries are needed. The reports need Quarto, which also ships with Positron and RStudio. The tool finds those copies, and QUARTO_PATH points to any other."
-  },
-  {
-    "objectID": "index.html#working-folder",
-    "href": "index.html#working-folder",
-    "title": "ESA toolbox",
-    "section": "Working folder",
-    "text": "Working folder\nThe tool works in the folder from which it is called. It keeps three folders there, store/ for the inputs, outputs/ for the products and work/ for the intermediate files, and it creates them when they are missing. Before the first run, open a terminal and use cd to move into an empty folder made for the accounts, where the tool fetches every input itself. A run can also start from a folder where the store from the Downloads page was unzipped, so that store/ sits at its top level, and it then skips the downloads.\nmkdir esa-accounts && cd esa-accounts\nesa\nFetching is the better route. The tool takes each input from its publisher, checks it and records the date of retrieval, so a new store carries the latest releases of the statistics. The downloaded store saves several hours of downloads, and it repeats the inputs of the published results exactly. Later runs start from the same folder, since the tool finds there what it has already done. The file esa.toml and the variables ESA_STORE, ESA_OUTPUTS and ESA_WORK can place the three folders elsewhere, as Using the tool explains."
-  },
-  {
-    "objectID": "index.html#quick-start",
-    "href": "index.html#quick-start",
-    "title": "ESA toolbox",
-    "section": "Quick start",
-    "text": "Quick start\nRun esa with no arguments for a guided menu. It shows which inputs are in the store and which steps of each service are done, and it asks what to run. Every choice prints the equivalent command.\nesa                       # guided menu\nesa doctor                # check the installation, disk, memory and Quarto\nesa fetch carbon          # download the inputs of one service into the store\nesa run carbon            # calculate, write maps, workbook and report\nesa run pollination wood  # several services in one go\nesa status                # what is done and what is out of date\nA run resumes where it stopped, and it repeats only the steps whose code or settings changed. The full chain of the three services takes about an hour on a desktop with 12 cores, most of it for the 100 m maps. See Using the tool for every command and setting."
-  },
-  {
-    "objectID": "site/downloads.html",
-    "href": "site/downloads.html",
-    "title": "Downloads",
-    "section": "",
-    "text": "The tool downloads its own inputs from their publishers and calculates its own results, so a run needs nothing from this page, and the Home page explains how to install it. The files below serve readers who want the results without running the tool, and those who want to start a run from the same inputs. They hold the products of a complete run of the latest version of the tool and the store of inputs that made them.\n\n\n\nTable 1: Downloads of the latest version. Both links open in a new tab.\n\n\n\n\n\nDownload\nContents\nLink\n\n\n\n\nResults\nThe outputs folder of each service, with its workbook, its 100 m maps and its report, which names the tool version and the inputs of the run. Each file can be downloaded on its own, which helps with the maps, since they are large.\n Download the results\n\n\nStore\nThe inputs of the three services as the tool fetched them, in one compressed archive. Unzipped into a working folder, it lets a run start without the downloads, as the Home page explains.\n Download the store"
-  },
-  {
-    "objectID": "site/usage.html",
-    "href": "site/usage.html",
-    "title": "Using the tool",
-    "section": "",
-    "text": "esa with no arguments opens a menu. The top shows, for each service, whether its inputs are in the store and the state of each stage (done, outdated or not run), with the time it took. The menu then offers to run accounts, list and fetch inputs, open the outputs folder or check the installation. When it runs accounts it asks which services, which years and how much to run, and it prints the command that does the same, so the menu also teaches the commands below."
-  },
-  {
-    "objectID": "site/usage.html#the-guided-menu",
-    "href": "site/usage.html#the-guided-menu",
-    "title": "Using the tool",
-    "section": "",
-    "text": "esa with no arguments opens a menu. The top shows, for each service, whether its inputs are in the store and the state of each stage (done, outdated or not run), with the time it took. The menu then offers to run accounts, list and fetch inputs, open the outputs folder or check the installation. When it runs accounts it asks which services, which years and how much to run, and it prints the command that does the same, so the menu also teaches the commands below."
-  },
-  {
-    "objectID": "site/usage.html#commands",
-    "href": "site/usage.html#commands",
-    "title": "Using the tool",
-    "section": "Commands",
-    "text": "Commands\n\n\n\nTable 1: Commands. Run any command with --help for its options.\n\n\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nesa\nGuided menu\n\n\nesa status [services]\nInputs in the store and state of each stage. --json for scripts\n\n\nesa inputs [services]\nEvery input, its source and whether the store holds it\n\n\nesa fetch [datasets or services]\nDownloads what is missing into the store. --dry-run lists it first\n\n\nesa run [services]\nRuns the stages that are not up to date, then renders the reports\n\n\nesa run carbon -s accounts\nRuns one stage only (repeat -s for several)\n\n\nesa run --years 2018,2024\nLimits a run to some reporting years\n\n\nesa run --force\nRuns every stage again\n\n\nesa run pollination --method original\nRuns crop pollination with the dependency ratios of Klein et al. (2007) and the bumblebee layer of 2012 for every year, into outputs/pollination_original/. status, report and clean take the same option\n\n\nesa report [services]\nRenders the reports from the last run. --formats html,pdf\n\n\nesa doctor\nChecks the installation, folders, free disk, memory, Quarto and Copernicus keys\n\n\nesa clean [services]\nDeletes the working files of a service. --outputs also deletes its products\n\n\n\n\n\n\nExit codes are 0 for success, 1 for a failed check or an unexpected error, 2 for invalid usage and 3 for inputs or settings that cannot be used."
-  },
-  {
-    "objectID": "site/usage.html#stages",
-    "href": "site/usage.html#stages",
-    "title": "Using the tool",
-    "section": "Stages",
-    "text": "Stages\nEach service runs in stages, in order, and each stage reads what the earlier ones wrote. A stage reruns when its code, the tool version or the years change, and the stages after it rerun as well.\n\n\n\nTable 2: Stages of each service. The code annex of each service page describes them.\n\n\n\n\n\n\n\n\n\nService\nStages\n\n\n\n\nCrop pollination\nprepare, model, sdm, accounts, maps_1km, maps_100m\n\n\nWood provision\nprepare, accounts, maps_1km, maps_100m\n\n\nCarbon sequestration\nprepare, accounts, maps_1km, maps_100m"
-  },
-  {
-    "objectID": "site/usage.html#folders-and-settings",
-    "href": "site/usage.html#folders-and-settings",
-    "title": "Using the tool",
-    "section": "Folders and settings",
-    "text": "Folders and settings\nThe tool works with three folders, which esa.toml in the working folder can set, as can the variables ESA_STORE, ESA_OUTPUTS and ESA_WORK.\n[esa]\nstore = \"store\"       # inputs, as fetched. Shared by all services\noutputs = \"outputs\"   # products, one folder per service\nwork = \"work\"         # intermediate files, safe to delete\nworkers = 8           # processes for the raster steps, default from cores and memory\nformats = [\"html\", \"pdf\", \"docx\"]\nThe store needs about 5 GB, the outputs about 12 GB for the three services, and the work folder a few GB while the 100 m maps are written."
   },
   {
     "objectID": "site/services/pollination.html",

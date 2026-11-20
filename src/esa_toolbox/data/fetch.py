@@ -592,6 +592,36 @@ def fetch_roads(d: Dataset, store: Path, log) -> None:
     log(f"  wrote {out}")
 
 
+# ---------------------------------------------------------------------------------------------------------
+# Country-level social cost of carbon
+# ---------------------------------------------------------------------------------------------------------
+
+CSCC_URL = "https://raw.githubusercontent.com/country-level-scc/cscc-database-2018/master/cscc_db_v2.csv"
+# The reference case of Ricke et al. (2018): damage function BHM short run, damage and climate uncertainty, SSP2 with
+# RCP 6.0, and growth-adjusted discounting with a pure rate of time preference of 2 percent and an elasticity of 1.5.
+CSCC_REFERENCE = {"run": "bhm_sr", "dmgfuncpar": "bootstrap", "climate": "uncertain", "SSP": "SSP2", "RCP": "rcp60",
+                  "prtp": "2", "eta": "1p5"}
+
+
+def fetch_cscc(d: Dataset, store: Path, log) -> None:
+    """The three quantiles of the reference case for every country, in US dollars of 2005 per tonne of CO2."""
+    raw = store / "cscc" / "_download" / Path(CSCC_URL).name
+    _get(CSCC_URL, raw, log)
+    t = pl.read_csv(raw, null_values="NA", infer_schema_length=0)
+    for k, v in CSCC_REFERENCE.items():
+        t = t.filter(pl.col(k) == v)
+    t = t.select(iso3="ISO3", **{q: pl.col(c).cast(pl.Float64) for q, c in
+                                 (("cscc_low", "16.7%"), ("cscc_median", "50%"), ("cscc_high", "83.3%"))})
+    if t.height == 0 or t["iso3"].n_unique() != t.height:
+        raise EsaError(f"The reference case of {CSCC_URL} has {t.height} rows, and one per country was expected.")
+    _save(t.sort("iso3"), store / "cscc" / "cscc_reference_case.parquet",
+          {"retrieved": date.today().isoformat(), "source": CSCC_URL, "filter": CSCC_REFERENCE,
+           "unit": "US dollars of 2005 per tonne of CO2, emissions of 2020"})
+    shutil.rmtree(raw.parent)
+    log(f"  wrote {store / 'cscc' / 'cscc_reference_case.parquet'} ({t.height} countries)")
+
+
 FETCHERS = {"http": fetch_http, "eea_datashare": fetch_clc, "gisco": fetch_gisco, "eurostat": fetch_eurostat,
             "stac_activity": fetch_activity, "stac_sdm": fetch_sdm, "eobs": fetch_eobs, "stac_capri": fetch_capri,
-            "copernicus_s3": fetch_gdmp, "wfs_roads": fetch_roads}
+            "copernicus_s3": fetch_gdmp, "wfs_roads": fetch_roads,
+            "cscc": fetch_cscc}

@@ -1,0 +1,128 @@
+---
+title: "Carbon Sequestration Valued at Country-Level Social Costs of Carbon"
+subtitle: "European Union, 2000 to 2024: methods and results"
+author:
+  - name: renatovargas
+date: "{{< fact run_date >}}"
+results: true
+bibliography: references.bib
+csl: apa.csl
+number-sections: true
+toc: true
+toc-depth: 3
+format:
+  html:
+    embed-resources: true
+    theme: cosmo
+  typst:
+    section-numbering: "1.1.1"
+    papersize: a4
+    margin:
+      x: 2.2cm
+      y: 2.2cm
+    fontsize: 10pt
+  docx: default
+---
+
+::: {.callout-note appearance="minimal"}
+Results of esa-toolbox {{< fact tool_version >}}, run on {{< fact run_date >}}, from the inputs listed in the file `run.json` beside
+this report and the carbon sequestration accounts calculated on {{< fact carbon_run_date >}}. The workbook is in the folder `tables`
+of the same run.
+:::
+
+# Summary {.unnumbered}
+
+We value the carbon sequestration of the 27 Member States of the European Union in 2000, 2006, 2012, 2018 and 2024 at the
+country-level social cost of carbon of @ricke2018, which is the damage that one more tonne of CO2 causes in each country alone. The
+physical flows are those of the carbon sequestration accounts, which value them at a global social cost of carbon. At the
+country-level price, the actual flow of the European Union in {{< fact last_year >}} is worth {{< fact cscc_value_median_2024 >}}
+million euro at constant 2010 prices, with a range from {{< fact cscc_value_low_2024 >}} to {{< fact cscc_value_high_2024 >}}
+million euro, against {{< fact cscc_global_bn_2024 >}} billion euro at the global price. The central value is close to zero because
+{{< fact cscc_negative >}} of the {{< fact cscc_countries >}} countries with a value have a negative country-level social cost of
+carbon, and the values of the others offset theirs.
+
+# Introduction
+
+Carbon sequestration contributes to global climate regulation, and most of the damage that it avoids falls outside the country where
+it happens. The carbon sequestration accounts therefore value it at a global social cost of carbon. The valuation in this report
+asks a narrower question, namely how much of that benefit accrues to the country itself, and it uses for this a price for each
+country.
+
+The two valuations answer different questions and should not be added up or used in place of each other. The terms in @tbl-terms
+recur throughout the report.
+
+| Term | Meaning in this report |
+|:---|:-----|
+| Social cost of carbon | The present value of the damage that one more tonne of CO2 emitted today causes over time. |
+| Global social cost of carbon | The social cost of carbon summed over all countries of the world. |
+| Country-level social cost of carbon (CSCC) | The part of the social cost of carbon that falls on one country. |
+| Actual flow | The net CO2 that ecosystems deliver to society after the emissions of land are offset, as in the carbon sequestration accounts. |
+| Missed flow | The part of the removals that compensates the emissions of land, as in the carbon sequestration accounts. |
+| Low, central and high values | Values at the 16.7 percent quantile, the median and the 83.3 percent quantile of the CSCC. |
+
+: Key terms of the report. {#tbl-terms}
+
+{{< include methods.qmd >}}
+
+# Results
+
+## The European Union
+
+@tbl-eu sets the value of the actual flow at the country-level price beside its value at the global price of the carbon
+sequestration accounts. The central value goes from {{< fact cscc_value_median_2000 >}} million euro in 2000 to
+{{< fact cscc_value_median_2024 >}} million euro in 2024. Its sign depends on how the flow is shared between countries with a
+negative and a positive price, so it can change between years while the flow changes little. The range between the low and the high
+value is wide in every year and includes zero.
+
+::: {#tbl-eu}
+{{< datatable cscc_eu_series >}}
+
+Actual flow of the EU27 and its value at the country-level social cost of carbon and at the global social cost of carbon of the
+carbon sequestration accounts, in million euro at constant 2010 prices.
+:::
+
+## Countries
+
+@tbl-countries shows the value of each country in {{< fact last_year >}}. In {{< fact cscc_negative_value_countries >}} countries the
+actual flow has a negative central value, which adds up to {{< fact cscc_negative_value_meur >}} million euro, and the countries with
+a positive value add up to {{< fact cscc_positive_value_meur >}} million euro. A country with no actual flow in a year has no value in
+that year.
+
+::: {#tbl-countries}
+{{< datatable cscc_value_by_country >}}
+
+Actual flow in {{< fact last_year >}}, in thousand tonnes of CO2, and its value at the country-level social cost of carbon and at the
+global social cost of carbon of the carbon sequestration accounts, in million euro at constant 2010 prices.
+:::
+
+# Limitations
+
+**Price.** The country-level social cost of carbon rests on one family of empirical damage functions, which relate growth to
+temperature, and on one scenario and one discount rate. Other damage functions in the same database give different values for each
+country, and the sign of the value of several European countries changes between them [@ricke2018]. The values describe emissions
+of 2020 and serve every year of the series, as the global price of the carbon sequestration accounts does.
+
+**Negative values.** A negative value means that the damage function expects one more tonne of CO2 to raise the output of the country
+in the coming decades. It does not include trade, migration and other links through which the damage abroad reaches the country, and
+it does not mean that sequestration harms the country.
+
+**Coverage.** Malta has no value in the database, and its flow is not valued. The values of the European Union add up the other 26
+countries.
+
+**Flows.** The physical flows inherit the limitations of the carbon sequestration accounts, which are described in their report.
+
+# Appendix: inputs {.unnumbered}
+
+The inputs of this run, with the date on which each was retrieved. The national flows come from the carbon sequestration accounts of
+the same version of the tool.
+
+::: {#tbl-inputs}
+{{< datatable inputs >}}
+
+Inputs of the run.
+:::
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

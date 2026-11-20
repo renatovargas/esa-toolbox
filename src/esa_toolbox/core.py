@@ -26,7 +26,7 @@ import polars as pl
 
 from esa_toolbox import __version__
 
-SERVICES = ("pollination", "wood", "carbon")
+SERVICES = ("pollination", "wood", "carbon", "carbon_cscc")
 METHOD = "revised"  # the method of a normal run. A service lists the others it offers in `METHODS`
 YEARS = (2000, 2006, 2012, 2018, 2024)
 PARAMS = Path(__file__).parent / "params"

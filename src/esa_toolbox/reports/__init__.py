@@ -20,7 +20,8 @@ from esa_toolbox import __version__
 from esa_toolbox.core import EsaError, Settings, markdown_table
 
 HERE = Path(__file__).parent
-FILE_NAME = {"carbon": "carbon_sequestration_report", "wood": "wood_provision_report",
+FILE_NAME = {"carbon": "carbon_sequestration_report", "carbon_cscc": "carbon_sequestration_cscc_report",
+             "wood": "wood_provision_report",
              "pollination": "crop_pollination_report"}
 EXT = {"html": "html", "typst": "pdf", "pdf": "pdf", "docx": "docx"}
 

@@ -4,6 +4,7 @@ bibliography:
   - ../src/esa_toolbox/reports/pollination/references.bib
   - ../src/esa_toolbox/reports/wood/references.bib
   - ../src/esa_toolbox/reports/carbon/references.bib
+  - ../src/esa_toolbox/reports/carbon_cscc/references.bib
 csl: ../src/esa_toolbox/reports/apa.csl
 ---
 
@@ -23,11 +24,12 @@ and the [fetchers](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa
 | `bumblebee_sdm` | Mean probability of occurrence of 47 bumblebee species in 2012, 1 km | @polce2018, through @klab2026 | pollination | 0.01 |
 | `eobs_bioclim` | Four bioclimatic layers of the bumblebee models for each reporting year, 10 km, from the daily E-OBS grids, version 32.0e | @cornes2018 | pollination | 0.006 |
 | `capri` | Disaggregated CAPRI crop area and yield of ten pollinator-dependent crop groups, 1 km, 2000 to 2018 | @koeble2024, through @klab2026 | pollination | 0.12 |
-| `eurostat_hicp` | Harmonised index of consumer prices, EU27, annual average (2015 = 100) | @eurostathicp | pollination, wood, carbon | 0 |
+| `eurostat_hicp` | Harmonised index of consumer prices, EU27, annual average (2015 = 100) | @eurostathicp | pollination, wood, carbon, carbon_cscc | 0 |
 | `eurostat_pollination` | Crop production and the value of crop output at basic prices | @eurostatcrops; @eurostateaa | pollination | 0 |
 | `eurostat_wood` | Forest volumes, output of forest trees and roundwood exports | @eurostat2026forvolefa; @eurostat2026forsupcp; @eurostat2026forbasic | wood, carbon | 0 |
 | `eurostat_carbon` | CO2 inventory by source sector | @eurostat2026envairgge | carbon | 0 |
 | `cbm` | Net annual increment of the carbon budget model | @pilli2021 | wood | 0.002 |
+| `cscc` | Country-level social cost of carbon, reference case, median and 16.7 and 83.3 percent quantiles for each country | @ricke2019db | carbon_cscc | 0.0001 |
 
 : Inputs of the accounts. {#tbl-inputs}
 

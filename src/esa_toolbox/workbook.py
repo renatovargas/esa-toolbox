@@ -94,6 +94,28 @@ class Workbook:
             ws.set_column(2, n_cols - 1, 15)
         ws.freeze_panes(start, 2)
 
+    def table(self, name: str, title: str, note: str, data: pl.DataFrame) -> None:
+        """A plain table with a banner and one header row, and no total row, for values that do not add up."""
+        ws = self.wb.add_worksheet(name)
+        last = max(len(data.columns) - 1, 1)
+        for i, text in enumerate([self.heading, title, note]):
+            ws.merge_range(i, 0, i, last, text, self.f_banner)
+        ws.set_row(2, 32)
+        for j, c in enumerate(data.columns):
+            ws.write_string(4, j, c, self.f_head2)
+        ws.set_row(4, 34)
+        for i, row in enumerate(data.iter_rows()):
+            for j, v in enumerate(row):
+                if isinstance(v, (int, float)) and not isinstance(v, bool):
+                    if v == v:
+                        ws.write_number(5 + i, j, v, self.f_num)
+                elif v is not None:
+                    ws.write_string(5 + i, j, str(v))
+        ws.set_column(0, 0, 10)
+        ws.set_column(1, 1, 30)
+        ws.set_column(2, len(data.columns) - 1, 16)
+        ws.freeze_panes(5, 2)
+
     def close(self) -> Path:
         self.wb.close()
         os.replace(self.tmp, self.path)

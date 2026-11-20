@@ -41,6 +41,7 @@ version or the years change, and the stages after it rerun as well.
 | Crop pollination | `prepare`, `model`, `sdm`, `accounts`, `maps_1km`, `maps_100m` |
 | Wood provision | `prepare`, `accounts`, `maps_1km`, `maps_100m` |
 | Carbon sequestration | `prepare`, `accounts`, `maps_1km`, `maps_100m` |
+| Carbon sequestration at country-level social costs of carbon (`carbon_cscc`) | `accounts`, after the stage `accounts` of carbon sequestration |
 
 : Stages of each service. The code annex of each service page describes them. {#tbl-stages}
 

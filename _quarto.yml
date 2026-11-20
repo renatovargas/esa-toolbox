@@ -22,6 +22,8 @@ website:
             text: Wood provision
           - href: site/services/carbon.qmd
             text: Carbon sequestration
+          - href: site/services/carbon_cscc.qmd
+            text: Carbon sequestration at country-level social costs of carbon
       - href: site/inputs.qmd
         text: Inputs
       - href: site/downloads.qmd

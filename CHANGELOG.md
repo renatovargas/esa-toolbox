@@ -2,6 +2,17 @@
 
 Every version that can change a published number names the services it affects.
 
+## Unreleased
+
+Results affected: none. Pollination, wood and carbon keep their numbers and their products.
+
+- New service `carbon_cscc`, a separate valuation of the national actual and missed flows of carbon sequestration at the
+  country-level social cost of carbon of Ricke et al. (2018), reference case, with low, central and high values. It reads the
+  national tables of `esa run carbon` and writes its own workbook and report to `outputs/carbon_cscc/`, with no regional tables
+  and no maps. Malta has no value in the source.
+- New input `cscc`, which `esa fetch` builds from version 2 of the database of the authors.
+- `params/eu27_countries.csv` gains the ISO3 code of each Member State.
+
 ## 0.2.0 (2026-11-16)
 
 Results affected: pollination. Wood and carbon keep their numbers, and their stages run again with the new version.

@@ -1,0 +1,102 @@
+
+# Methods
+
+## Overview
+
+The carbon sequestration accounts value the CO2 that ecosystems take out of the atmosphere at a global social cost of carbon,
+which is the damage that one more tonne of CO2 causes anywhere in the world. That price fits a service that benefits society as a
+whole. A second question is how much of that benefit stays in the country where the sequestration happens. The country-level social
+cost of carbon of @ricke2018 answers it, since it is the damage that one more tonne of CO2 causes in one country alone. This
+valuation applies it to the same physical flows as the carbon sequestration accounts.
+
+The valuation changes only the price. The actual flow and the missed flow of each country and year are those of the carbon
+sequestration accounts of the same version of the tool, described in their own documentation and report, and the steps that lead
+to them are not repeated here. The valuation is national, because the country-level social cost of carbon is one value for each
+country, so it has no regional tables and no maps. It is kept apart from the carbon sequestration accounts, which keep their global
+price, and it answers a different question. A country-level price also serves accounts of countries outside the European Union,
+where the same database holds a value for most countries of the world.
+
+## The country-level social cost of carbon
+
+@ricke2018 estimate the social cost of carbon of each country as the present value of the change in its output that a pulse of CO2
+emitted in 2020 causes up to 2200. They project output with the shared socio-economic pathways and warming with 26 climate models
+and 15 carbon cycle models, and they translate the warming of each country into a change of its growth rate with the empirical
+damage functions of @burke2015, which relate economic growth to temperature. The global social cost of carbon is the sum of the
+values of all countries.
+
+The database of the authors [@ricke2019db] holds the values of several damage functions, scenarios and discount rates. A decision
+was made to use their reference case, which is the case that the article presents. It combines the short-run damage function of
+@burke2015, the pathway SSP2 with the forcing RCP 6.0, and growth-adjusted discounting with a pure rate of time preference of
+2 percent and an elasticity of the marginal utility of consumption of 1.5. The database gives the median and the 16.7 and 83.3
+percent quantiles of each value, which together cover two thirds of the estimates of the uncertainty analysis. The valuation uses
+the median for its central values and the two quantiles for its low and high values[\ (see the stage
+[`fetch`](#code-fetch) in the code annex)]{.content-visible unless-meta="results"}.
+
+The values can be negative. A country whose climate is cooler than the temperature at which output peaks in the damage function
+gains output from moderate warming, so one more tonne of CO2 raises its output, and @ricke2018 find this for many rich northern
+countries in 2020. Sequestration in those countries then has a negative value in this valuation. The authors add that trade,
+migration and other links between countries can bring costs to a country whose own value is negative, and that most values turn
+positive as warming continues [@ricke2018]. Malta is not in the database, so it has no value.
+
+@tol2019 also estimates a social cost of carbon for most countries, with impact functions imputed from global estimates. That work
+treats the European Union as one unit, since climate policy is set at that level, so it gives no value for the Member States and
+cannot value their flows.
+
+## From US dollars to euros
+
+The database expresses the values in US dollars of 2005 per tonne of CO2. The valuation moves them to the euros of 2023 in the same
+way as the carbon sequestration accounts move their global price, with the consumer price index of the United States from 2005 to
+2023 [@bls2023cpi], a factor of 304.70/195.30, and the exchange rate of 2023, 1.0813 US dollars per euro [@ecb2023usd].[\ The
+resulting factor is {{< fact cscc_factor >}} euros of 2023 per US dollar of 2005.]{.content-visible when-meta="results"} The
+database does not state whether its dollars are at market exchange rates or at purchasing power parity. Open question. The
+conversion treats them as US dollars.
+
+The price $P_{c}$ of country $c$ in 2023 euros is then a real value that stays the same in every year. As in the carbon
+sequestration accounts, the harmonised index of consumer prices $H$ of the European Union [@eurostat2026hicp] moves it to the euros
+of each year $t$, and the deflator to the prices of 2010.
+
+$$
+P_{c,t} = P_{c}\, \frac{H_t}{H_{2023}}, \qquad V^{\text{current}}_{c,t} = F_{c,t}\, P_{c,t}, \qquad
+V^{\text{constant}}_{c,t} = V^{\text{current}}_{c,t}\, \frac{H_{2010}}{H_t}
+$$ {#eq-value}
+
+Here $F_{c,t}$ is the actual flow of the country in tonnes of CO2. The missed flow is valued in the same way. The total of the
+European Union adds up the values of its countries, each at its own price, and leaves out Malta[\ (see the stage
+[`accounts`](#code-accounts) in the code annex)]{.content-visible unless-meta="results"}.
+
+::: {.content-visible when-meta="results"}
+@tbl-prices lists the price of each country. {{< fact cscc_negative >}} of the {{< fact cscc_countries >}} countries with a value
+have a negative median, and {{< fact cscc_positive >}} a positive one. The lowest median is that of {{< fact cscc_min_country >}},
+EUR {{< fact cscc_min_eur >}} per tonne of CO2, and the highest that of {{< fact cscc_max_country >}}, EUR
+{{< fact cscc_max_eur >}}. The medians of the {{< fact cscc_countries >}} countries add up to EUR {{< fact cscc_eu_sum_eur >}},
+against a global median of US\$ {{< fact cscc_world_usd >}} of 2005 (US\$ {{< fact cscc_world_low_usd >}} to
+{{< fact cscc_world_high_usd >}}), which is EUR {{< fact cscc_world_eur >}} of 2023.
+
+::: {#tbl-prices}
+{{< datatable cscc_prices >}}
+
+Country-level social cost of carbon per tonne of CO2 emitted in 2020, median in US dollars of 2005 as published, and low, median
+and high values in euros of 2023 (Ricke et al., 2018, reference case).
+:::
+:::
+
+## Products
+
+**Workbook.** The workbook holds a sheet of prices, with the low, median and high value of each country in US dollars of 2005 and in
+euros of 2023, and sheets of the value of the actual flow and of the missed flow by country, in million euro at constant prices
+of 2010 and at current prices. Each sheet gives the low, central and high value of every reporting year, and its total row adds up
+the countries with a value. The physical flows are in the workbook of the carbon sequestration accounts.
+
+## Checks
+
+The run stops if the national flows do not cover the 27 Member States, if the database has no global value, if a median lies outside
+its two quantiles, or if a value differs from the flow times its price and deflator.
+
+::: {.content-visible when-meta="results"}
+::: {#tbl-checks}
+{{< datatable checks >}}
+
+Consistency checks, with the largest gap and the tolerance that would stop the run. Gaps are relative unless they are marked as
+absolute.
+:::
+:::

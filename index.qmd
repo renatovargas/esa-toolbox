@@ -19,6 +19,7 @@ Each service writes its products to its own folder, `outputs/<service>/`, with t
 | Crop pollination | Potential on all ecosystem types and on agroecosystems, demand, actual flow on all ecosystem types and on agroecosystems, unmet demand, value of the flow and of unmet demand | Potential, demand, actual flow and unmet demand in physical and monetary terms, and flow by ecosystem type |
 | Carbon sequestration | Flow without offset, actual flow, missed flow, and the value of the actual and missed flows | The same quantities in physical and monetary terms |
 | Wood provision | Actual flow, sustainable flow and overuse, in physical and monetary terms | The same quantities |
+| Carbon sequestration at country-level social costs of carbon | None | Value of the actual and missed flows of carbon sequestration at the social cost of carbon of each country, NUTS0 only |
 
 : Products of each service. {#tbl-products}
 

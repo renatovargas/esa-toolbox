@@ -84,7 +84,8 @@ DATASETS = [
             tuple(f"capri/capri_{k}_{y}.tif" for k in ("area_ha", "yield_kgha") for y in (2000, 2006, 2012, 2018)),
             ("pollination",), 0.12, note="Spatial crop data end in 2018, which also represents 2024."),
     Dataset("eurostat_hicp", "Harmonised index of consumer prices, EU27, annual average (2015 = 100)", "Eurostat",
-            "prc_hicp_aind, prc_hicp_cow", "eurostat", ("eurostat/shared/hicp_eu27.parquet",), ("pollination", "wood", "carbon"),
+            "prc_hicp_aind, prc_hicp_cow", "eurostat", ("eurostat/shared/hicp_eu27.parquet",),
+            ("pollination", "wood", "carbon", "carbon_cscc"),
             note="One extract for all services. Years before 2000 are estimated from the euro area and the other members."),
     Dataset("eurostat_pollination", "Crop production and production value", "Eurostat",
             "apro_cpsh1, aact_eaa02", "eurostat",
@@ -99,6 +100,10 @@ DATASETS = [
     Dataset("cbm", "Net annual increment of the carbon budget model (EFA FRA CBM data analysis)", "JRC",
             "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/EFA/EFA_FRA_CBM/LATEST/EFA_FRA_CBM_Data_analysis_20210121.xlsx",
             "http", ("jrc/EFA_FRA_CBM_Data_analysis_20210121.xlsx",), ("wood",), 0.002),
+    Dataset("cscc", "Country-level social cost of carbon, database version 2, reference case", "Ricke et al. (2018)",
+            "https://github.com/country-level-scc/cscc-database-2018", "cscc", ("cscc/cscc_reference_case.parquet",),
+            ("carbon_cscc",), 0.0001,
+            note="Downloads the database (27 MB) and keeps the three quantiles of the reference case for each country."),
 ]
 
 BY_ID = {d.id: d for d in DATASETS}

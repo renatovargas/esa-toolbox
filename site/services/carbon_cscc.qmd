@@ -1,0 +1,46 @@
+---
+title: "Carbon sequestration at country-level social costs of carbon"
+subtitle: "A separate valuation of the national flows, method as implemented, and the code of each step"
+bibliography: ../../src/esa_toolbox/reports/carbon_cscc/references.bib
+csl: ../../src/esa_toolbox/reports/apa.csl
+number-sections: true
+---
+
+This page describes a valuation of the national flows of the [carbon sequestration](carbon.qmd) accounts at the social cost of
+carbon of each country. It is a separate service of the tool, `carbon_cscc`, with its own workbook and report in
+`outputs/carbon_cscc/`, and it leaves the carbon sequestration accounts and their products unchanged. The numbers and tables that a
+run produces are in its report, which carries the same method text together with them.
+
+{{< include ../../src/esa_toolbox/reports/carbon_cscc/methods.qmd >}}
+
+# Code annex {#code-annex .unnumbered}
+
+The service has one stage, which reads the national tables that `esa run carbon` writes to `work/carbon/tables/`, so the carbon
+sequestration accounts run first. `esa run` runs the services in the order pollination, wood, carbon and carbon_cscc. After a new
+run of the carbon sequestration accounts, `esa run carbon_cscc --force` values the new flows.
+
+## `fetch` {#code-fetch .unnumbered}
+
+[catalog.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/catalog.py), [fetch.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/data/fetch.py) · `esa fetch carbon_cscc`
+
+| Input | Source | Fetcher |
+|:---|:---|:---|
+| Country-level social cost of carbon, database version 2 | @ricke2019db | `fetch_cscc` |
+| Harmonised index of consumer prices | @eurostat2026hicp | `fetch_eurostat` |
+
+: Inputs of the valuation at country-level social costs of carbon. {#tbl-fetch}
+
+`fetch_cscc` downloads the file `cscc_db_v2.csv` (27 MB) from the repository of the authors and keeps the rows of the reference case,
+one for each country and one for the world (`WLD`), with the 16.7 percent quantile, the median and the 83.3 percent quantile. It
+writes them to `store/cscc/cscc_reference_case.parquet`, records the date of retrieval, the address and the filter in
+`extracts.json`, and removes the download. The fetcher stops if the reference case does not give exactly one row for each country.
+
+## `accounts` {#code-accounts .unnumbered}
+
+[tables.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/services/carbon_cscc/tables.py), [accounts.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/accounts.py), [workbook.py](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/workbook.py) · `esa run carbon_cscc -s accounts`
+
+Joins the values of the database to the Member States through their ISO3 codes in
+[eu27_countries.csv](https://github.com/renatovargas/esa-toolbox/blob/main/src/esa_toolbox/params/eu27_countries.csv), converts them
+to euros of 2023, and values the actual flow and the missed flow of `carbon_value_country_year.parquet` for each reporting year at
+the three quantiles. It writes `carbon_sequestration_cscc_results.xlsx` to `outputs/carbon_cscc/tables/`, runs the checks, and
+writes the facts and tables of the report.

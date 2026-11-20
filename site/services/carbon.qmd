@@ -10,6 +10,10 @@ This page describes the method of the carbon sequestration accounts as the tool 
 tool that carries it out, and the code annex at the end describes each stage with links to its code. The numbers and tables that a
 run produces are in the report of that run, in `outputs/carbon/report/`, which carries the same method text together with them.
 
+A separate valuation of the same national flows at the social cost of carbon of each country has its own page,
+[carbon sequestration at country-level social costs of carbon](carbon_cscc.qmd), and its own workbook and report. It leaves these
+accounts and their products unchanged.
+
 {{< include ../../src/esa_toolbox/reports/carbon/methods.qmd >}}
 
 # Code annex {#code-annex .unnumbered}

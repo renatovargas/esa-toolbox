@@ -23,7 +23,7 @@ app = typer.Typer(name="esa", help="Ecosystem service accounts for the EU27, fro
 console = Console(stderr=True)
 out = Console()
 
-ServicesArg = Annotated[Optional[list[str]], typer.Argument(help="Services: pollination, wood, carbon. All when omitted.")]
+ServicesArg = Annotated[Optional[list[str]], typer.Argument(help="Services: pollination, wood, carbon, carbon_cscc. All when omitted.")]
 ConfigOpt = Annotated[Optional[Path], typer.Option("--config", "-c", help="Settings file (default esa.toml).")]
 JsonOpt = Annotated[bool, typer.Option("--json", help="Print results as JSON on stdout.")]
 MethodOpt = Annotated[Optional[str], typer.Option(
