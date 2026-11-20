@@ -90,7 +90,9 @@ def status_tables(settings: Settings, services: list[str]) -> list[Table]:
             t.add_row(f"{r['stage']}", f"[{colour}]{r['state']}[/]", (r["when"] or "")[5:16].replace("T", " "),
                       f"{r['seconds']:.0f} s" if r["seconds"] else "")
         rep = settings.outputs / settings.folder(s) / "report"
-        files = sorted(p.suffix[1:] for p in rep.glob(f"{s}*.*")) if rep.exists() else []
+        from esa_toolbox.reports import FILE_NAME
+
+        files = sorted(p.suffix[1:] for p in rep.glob(f"{FILE_NAME[s]}.*")) if rep.exists() else []
         t.add_row("report", f"[green]{', '.join(files)}[/]" if files else "[dim]not rendered[/]", "", "")
         tables.append(t)
     return tables
